@@ -14,11 +14,12 @@ import recycledFashionImage from "@/assets/recycled-fashion.jpg";
 interface Product {
   id: string;
   name: string;
-  price: number;
+  selling_price: number;
+  original_price?: number;
   image_url: string;
-  co2_emission: number;
-  category: string;
-  description: string;
+  'co2-emissiom': number;
+  category: number;
+  descripton: string;
 }
 
 const Homepage = () => {
@@ -208,9 +209,10 @@ const Homepage = () => {
                   key={product.id}
                   id={product.id}
                   name={product.name}
-                  price={product.price}
+                  price={product.selling_price}
+                  originalPrice={product.original_price}
                   image={product.image_url}
-                  co2Emission={product.co2_emission}
+                  co2Emission={product['co2-emissiom']}
                   certification={["Eco"]}
                   rating={4.5}
                   sold={Math.floor(Math.random() * 500) + 50}
