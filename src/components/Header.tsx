@@ -1,8 +1,15 @@
-import { Search, ShoppingCart, User, Leaf } from "lucide-react";
+import { Search, ShoppingCart, User, Leaf, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import AdminProductForm from "@/components/AdminProductForm";
 
 const Header = () => {
+  const { user, isAdmin } = useAuth();
+  const navigate = useNavigate();
+  const [showAdminForm, setShowAdminForm] = useState(false);
   return (
     <header className="bg-background border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
@@ -28,18 +35,42 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-3">
+            {isAdmin && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowAdminForm(true)}
+                title="Thêm sản phẩm"
+              >
+                <Plus className="w-5 h-5" />
+              </Button>
+            )}
             <Button variant="ghost" size="icon" className="relative">
               <ShoppingCart className="w-5 h-5" />
               <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
                 3
               </span>
             </Button>
-            <Button variant="ghost" size="icon">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              onClick={() => user ? navigate('/profile') : navigate('/auth')}
+            >
               <User className="w-5 h-5" />
             </Button>
           </div>
         </div>
       </div>
+
+      {/* Admin Product Form */}
+      <AdminProductForm
+        open={showAdminForm}
+        onOpenChange={setShowAdminForm}
+        onProductAdded={() => {
+          // Refresh the page to show new products
+          window.location.reload();
+        }}
+      />
     </header>
   );
 };

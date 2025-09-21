@@ -1,13 +1,62 @@
+import { useEffect, useState } from "react";
 import { Apple, Home, Shirt, Package, Zap, TrendingUp } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import HeroBanner from "@/components/HeroBanner";
 import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
+import { supabase } from "@/integrations/supabase/client";
 import organicFoodImage from "@/assets/organic-food.jpg";
 import homeProductsImage from "@/assets/home-products.jpg";
 import recycledFashionImage from "@/assets/recycled-fashion.jpg";
 
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image_url: string;
+  co2_emission: number;
+  category: string;
+  description: string;
+}
+
 const Homepage = () => {
+  const { loading } = useAuth();
+  const navigate = useNavigate();
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const { data, error } = await (supabase as any)
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setProducts(data || []);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Đang tải...</p>
+        </div>
+      </div>
+    );
+  }
   const categories = [
     {
       title: "Thực phẩm organic",
@@ -141,11 +190,38 @@ const Homepage = () => {
               Xem tất cả →
             </button>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))}
-          </div>
+          {loadingProducts ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-muted h-48 rounded-lg mb-2"></div>
+                  <div className="bg-muted h-4 rounded mb-1"></div>
+                  <div className="bg-muted h-4 rounded w-2/3"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+              {/* Show database products first */}
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  price={product.price}
+                  image={product.image_url}
+                  co2Emission={product.co2_emission}
+                  certification={["Eco"]}
+                  rating={4.5}
+                  sold={Math.floor(Math.random() * 500) + 50}
+                />
+              ))}
+              {/* Show sample products if no database products */}
+              {products.length === 0 && featuredProducts.map((product) => (
+                <ProductCard key={product.id} {...product} />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Stats Section */}
