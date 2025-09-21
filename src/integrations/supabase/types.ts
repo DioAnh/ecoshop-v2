@@ -14,7 +14,68 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      category: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          category: number | null
+          "co2-emissiom": number | null
+          created_at: string | null
+          descripton: string | null
+          id: number
+          image_url: string | null
+          name: string
+          original_price: number | null
+          selling_price: number | null
+        }
+        Insert: {
+          category?: number | null
+          "co2-emissiom"?: number | null
+          created_at?: string | null
+          descripton?: string | null
+          id?: number
+          image_url?: string | null
+          name: string
+          original_price?: number | null
+          selling_price?: number | null
+        }
+        Update: {
+          category?: number | null
+          "co2-emissiom"?: number | null
+          created_at?: string | null
+          descripton?: string | null
+          id?: number
+          image_url?: string | null
+          name?: string
+          original_price?: number | null
+          selling_price?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_category_fkey"
+            columns: ["category"]
+            isOneToOne: false
+            referencedRelation: "category"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
