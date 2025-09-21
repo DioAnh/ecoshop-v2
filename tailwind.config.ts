@@ -22,6 +22,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          hover: "hsl(var(--primary-hover))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -46,6 +47,21 @@ export default {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
+        },
+        // Eco-themed colors
+        eco: {
+          green: "hsl(var(--eco-green))",
+          light: "hsl(var(--eco-light))",
+          dark: "hsl(var(--eco-dark))",
+        },
+        earth: {
+          brown: "hsl(var(--earth-brown))",
+          beige: "hsl(var(--natural-beige))",
+        },
+        co2: {
+          low: "hsl(var(--co2-low))",
+          medium: "hsl(var(--co2-medium))",
+          high: "hsl(var(--co2-high))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
