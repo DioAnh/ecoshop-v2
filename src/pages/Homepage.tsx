@@ -22,14 +22,23 @@ interface Product {
   descripton: string;
 }
 
+interface Category {
+  id: number;
+  name: string;
+  productCount: number;
+}
+
 const Homepage = () => {
   const { loading } = useAuth();
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
+  const [loadingCategories, setLoadingCategories] = useState(true);
 
   useEffect(() => {
     fetchProducts();
+    fetchCategories();
   }, []);
 
   const fetchProducts = async () => {
@@ -48,6 +57,40 @@ const Homepage = () => {
     }
   };
 
+  const fetchCategories = async () => {
+    try {
+      const { data: categoriesData, error: categoriesError } = await (supabase as any)
+        .from('category')
+        .select('*')
+        .order('name', { ascending: true });
+
+      if (categoriesError) throw categoriesError;
+
+      // Count products for each category
+      const categoriesWithCount = await Promise.all(
+        (categoriesData || []).map(async (category: any) => {
+          const { count, error: countError } = await (supabase as any)
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .eq('category', category.id);
+
+          if (countError) {
+            console.error('Error counting products:', countError);
+            return { ...category, productCount: 0 };
+          }
+
+          return { ...category, productCount: count || 0 };
+        })
+      );
+
+      setCategories(categoriesWithCount);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -58,43 +101,17 @@ const Homepage = () => {
       </div>
     );
   }
-  const categories = [
-    {
-      title: "Thực phẩm organic",
-      icon: Apple,
-      image: organicFoodImage,
-      description: "Thực phẩm sạch, không hóa chất",
-      itemCount: 1234
-    },
-    {
-      title: "Đồ gia dụng xanh",
-      icon: Home,
-      image: homeProductsImage,
-      description: "Tiện ích bền vững cho gia đình",
-      itemCount: 856
-    },
-    {
-      title: "Thời trang tái chế",
-      icon: Shirt,
-      image: recycledFashionImage,
-      description: "Quần áo từ vật liệu tái chế",
-      itemCount: 642
-    },
-    {
-      title: "Bao bì sinh học",
-      icon: Package,
-      image: organicFoodImage,
-      description: "Bao bì phân hủy sinh học",
-      itemCount: 389
-    },
-    {
-      title: "Tiết kiệm năng lượng",
-      icon: Zap,
-      image: homeProductsImage,
-      description: "Thiết bị hiệu quả năng lượng",
-      itemCount: 567
-    }
-  ];
+  // Default icons for categories (you can customize this logic)
+  const getCategoryIcon = (index: number) => {
+    const icons = [Apple, Home, Shirt, Package, Zap];
+    return icons[index % icons.length];
+  };
+
+  // Default images for categories (you can customize this logic)
+  const getCategoryImage = (index: number) => {
+    const images = [organicFoodImage, homeProductsImage, recycledFashionImage];
+    return images[index % images.length];
+  };
 
   const featuredProducts = [
     {
@@ -176,11 +193,31 @@ const Homepage = () => {
             <TrendingUp className="w-6 h-6 text-primary" />
             <h2 className="text-2xl font-bold text-foreground">Danh mục sản phẩm</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {categories.map((category) => (
-              <CategoryCard key={category.title} {...category} />
-            ))}
-          </div>
+          {loadingCategories ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-muted h-32 rounded-lg mb-2"></div>
+                  <div className="bg-muted h-4 rounded mb-1"></div>
+                  <div className="bg-muted h-3 rounded w-3/4 mb-1"></div>
+                  <div className="bg-muted h-3 rounded w-1/2"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {categories.map((category, index) => (
+                <CategoryCard
+                  key={category.id}
+                  title={category.name}
+                  icon={getCategoryIcon(index)}
+                  image={getCategoryImage(index)}
+                  description={`Danh mục ${category.name.toLowerCase()}`}
+                  itemCount={category.productCount}
+                />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Featured Products */}
