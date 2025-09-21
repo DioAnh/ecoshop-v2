@@ -1,6 +1,7 @@
 import { ShoppingCart, Plus, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
 
 interface ProductCardProps {
   id: string;
@@ -15,6 +16,7 @@ interface ProductCardProps {
 }
 
 const ProductCard = ({ 
+  id,
   name, 
   price, 
   originalPrice, 
@@ -24,6 +26,7 @@ const ProductCard = ({
   rating, 
   sold 
 }: ProductCardProps) => {
+  const navigate = useNavigate();
   const getCO2BadgeClass = (emission: number) => {
     if (emission < 1) return "co2-low";
     if (emission < 3) return "co2-medium";
@@ -31,7 +34,7 @@ const ProductCard = ({
   };
 
   return (
-    <div className="eco-card group cursor-pointer">
+    <div className="eco-card group cursor-pointer" onClick={() => navigate(`/product/${id}`)}>
       <div className="relative overflow-hidden rounded-lg mb-3">
         <img 
           src={image} 
