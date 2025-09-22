@@ -2,6 +2,8 @@ import { ShoppingCart, Plus, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProductCardProps {
   id: string;
@@ -27,10 +29,28 @@ const ProductCard = ({
   sold 
 }: ProductCardProps) => {
   const navigate = useNavigate();
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+  
   const getCO2BadgeClass = (emission: number) => {
     if (emission < 1) return "co2-low";
     if (emission < 3) return "co2-medium";
     return "co2-high";
+  };
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addToCart({
+      id: parseInt(id),
+      name,
+      price,
+      originalPrice,
+      image
+    });
+    toast({
+      title: "Đã thêm vào giỏ hàng",
+      description: `${name} đã được thêm vào giỏ hàng.`,
+    });
   };
 
   return (
@@ -78,6 +98,7 @@ const ProductCard = ({
           <Button 
             size="sm" 
             className="flex-1 h-8 text-xs bg-primary hover:bg-primary-hover"
+            onClick={handleAddToCart}
           >
             <Plus className="w-3 h-3 mr-1" />
             Thêm
@@ -86,6 +107,10 @@ const ProductCard = ({
             size="sm" 
             variant="outline" 
             className="h-8 px-2"
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/product/${id}`);
+            }}
           >
             <ShoppingCart className="w-3 h-3" />
           </Button>

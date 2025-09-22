@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useCart } from "@/contexts/CartContext";
 import Header from "@/components/Header";
 import organicFoodImage from "@/assets/organic-food.jpg";
 import homeProductsImage from "@/assets/home-products.jpg";
@@ -15,6 +16,7 @@ const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { addToCart } = useCart();
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   // Mock product data (in real app, this would come from API/database)
@@ -81,10 +83,26 @@ const ProductDetail = () => {
   };
 
   const handleBuyNow = () => {
-    setShowPaymentModal(true);
+    // Add to cart first
+    addToCart({
+      id: parseInt(product.id),
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.image
+    });
+    // Navigate to checkout
+    navigate('/checkout');
   };
 
   const handleAddToCart = () => {
+    addToCart({
+      id: parseInt(product.id),
+      name: product.name,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      image: product.image
+    });
     toast({
       title: "Đã thêm vào giỏ hàng",
       description: `${product.name} đã được thêm vào giỏ hàng của bạn.`,

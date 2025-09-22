@@ -2,12 +2,14 @@ import { Search, ShoppingCart, User, Leaf, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import AdminProductForm from "@/components/AdminProductForm";
 
 const Header = () => {
   const { user, isAdmin } = useAuth();
+  const { getTotalItems } = useCart();
   const navigate = useNavigate();
   const [showAdminForm, setShowAdminForm] = useState(false);
   return (
@@ -45,11 +47,18 @@ const Header = () => {
                 <Plus className="w-5 h-5" />
               </Button>
             )}
-            <Button variant="ghost" size="icon" className="relative">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="relative"
+              onClick={() => navigate('/cart')}
+            >
               <ShoppingCart className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                3
-              </span>
+              {getTotalItems() > 0 && (
+                <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {getTotalItems()}
+                </span>
+              )}
             </Button>
             <Button 
               variant="ghost" 
