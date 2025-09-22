@@ -18,16 +18,19 @@ export type Database = {
         Row: {
           created_at: string
           id: number
+          image: string | null
           name: string
         }
         Insert: {
           created_at?: string
           id?: number
+          image?: string | null
           name: string
         }
         Update: {
           created_at?: string
           id?: number
+          image?: string | null
           name?: string
         }
         Relationships: []
@@ -35,33 +38,36 @@ export type Database = {
       products: {
         Row: {
           category: number | null
-          "co2-emissiom": number | null
+          co2_emission: number | null
           created_at: string | null
           descripton: string | null
           id: number
           image_url: string | null
+          is_hot: boolean | null
           name: string
           original_price: number | null
           selling_price: number | null
         }
         Insert: {
           category?: number | null
-          "co2-emissiom"?: number | null
+          co2_emission?: number | null
           created_at?: string | null
           descripton?: string | null
           id?: number
           image_url?: string | null
+          is_hot?: boolean | null
           name: string
           original_price?: number | null
           selling_price?: number | null
         }
         Update: {
           category?: number | null
-          "co2-emissiom"?: number | null
+          co2_emission?: number | null
           created_at?: string | null
           descripton?: string | null
           id?: number
           image_url?: string | null
+          is_hot?: boolean | null
           name?: string
           original_price?: number | null
           selling_price?: number | null
@@ -75,6 +81,99 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      transactions: {
+        Row: {
+          amount: number | null
+          co2_saved: number | null
+          created_at: string | null
+          greenpoints_earned: number | null
+          id: number
+          note: string | null
+          product_id: number | null
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number | null
+          co2_saved?: number | null
+          created_at?: string | null
+          greenpoints_earned?: number | null
+          id?: number
+          note?: string | null
+          product_id?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number | null
+          co2_saved?: number | null
+          created_at?: string | null
+          greenpoints_earned?: number | null
+          id?: number
+          note?: string | null
+          product_id?: number | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string
+          email: string | null
+          greenpoints: number | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          greenpoints?: number | null
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          greenpoints?: number | null
+          id?: string
+        }
+        Relationships: []
+      }
+      vouchers: {
+        Row: {
+          code: string
+          cost_greenpoints: number | null
+          created_at: string
+          discount_percent: number | null
+          id: number
+        }
+        Insert: {
+          code: string
+          cost_greenpoints?: number | null
+          created_at?: string
+          discount_percent?: number | null
+          id?: number
+        }
+        Update: {
+          code?: string
+          cost_greenpoints?: number | null
+          created_at?: string
+          discount_percent?: number | null
+          id?: number
+        }
+        Relationships: []
       }
     }
     Views: {
