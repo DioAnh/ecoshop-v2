@@ -2,139 +2,127 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { Coins, Gift, User, LogOut, Wallet, ShoppingBag } from 'lucide-react';
+import { Coins, Gift, User, LogOut, Wallet } from 'lucide-react';
 
-interface Profile {
+interface UserData {
   id: string;
-  green_points: number;
-  first_name: string | null;
-  last_name: string | null;
+  email: string;
+  greenpoints: number;
 }
 
 interface Voucher {
   id: string;
   name: string;
-  discount_percentage: number;
+  value: string;
   required_points: number;
   description: string;
-}
-
-interface UserVoucher {
-  id: string;
-  voucher: Voucher;
-  used_at: string | null;
 }
 
 const Profile = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [availableVouchers, setAvailableVouchers] = useState<Voucher[]>([]);
-  const [userVouchers, setUserVouchers] = useState<UserVoucher[]>([]);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Hardcoded vouchers as requested
+  const availableVouchers: Voucher[] = [
+    {
+      id: 'voucher-50k',
+      name: 'Voucher 50K',
+      value: '50.000đ',
+      required_points: 100,
+      description: 'Giảm 50.000đ cho đơn hàng từ 200.000đ'
+    },
+    {
+      id: 'voucher-100k',
+      name: 'Voucher 100K', 
+      value: '100.000đ',
+      required_points: 200,
+      description: 'Giảm 100.000đ cho đơn hàng từ 500.000đ'
+    },
+    {
+      id: 'voucher-200k',
+      name: 'Voucher 200K',
+      value: '200.000đ', 
+      required_points: 400,
+      description: 'Giảm 200.000đ cho đơn hàng từ 1.000.000đ'
+    }
+  ];
 
   useEffect(() => {
     if (user) {
-      fetchProfile();
-      fetchVouchers();
-      fetchUserVouchers();
+      fetchUserData();
     }
   }, [user]);
 
-  const fetchProfile = async () => {
+  const fetchUserData = async () => {
     try {
-      const { data, error } = await (supabase as any)
-        .from('profiles')
-        .select('*')
+      const { data, error } = await supabase
+        .from('users')
+        .select('id, email, greenpoints')
         .eq('id', user?.id)
         .single();
 
       if (error) throw error;
-      setProfile(data);
+      setUserData(data);
     } catch (error: any) {
-      console.error('Error fetching profile:', error);
+      console.error('Error fetching user data:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tải thông tin người dùng",
+        variant: "destructive"
+      });
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchVouchers = async () => {
-    try {
-      const { data, error } = await (supabase as any)
-        .from('vouchers')
-        .select('*')
-        .order('required_points', { ascending: true });
-
-      if (error) throw error;
-      setAvailableVouchers(data || []);
-    } catch (error: any) {
-      console.error('Error fetching vouchers:', error);
-    }
-  };
-
-  const fetchUserVouchers = async () => {
-    try {
-      const { data, error } = await (supabase as any)
-        .from('user_vouchers')
-        .select(`
-          id,
-          used_at,
-          voucher:vouchers(*)
-        `)
-        .eq('user_id', user?.id);
-
-      if (error) throw error;
-      setUserVouchers(data || []);
-    } catch (error: any) {
-      console.error('Error fetching user vouchers:', error);
-    }
-  };
-
-  const redeemVoucher = async (voucherId: string, requiredPoints: number) => {
-    if (!profile || profile.green_points < requiredPoints) {
+  const redeemVoucher = async (voucher: Voucher) => {
+    if (!userData || userData.greenpoints < voucher.required_points) {
       toast({
         title: "Không đủ điểm",
-        description: `Bạn cần ${requiredPoints} GreenPoint để đổi voucher này`,
+        description: `Bạn cần ${voucher.required_points} GreenPoint để đổi voucher này`,
         variant: "destructive"
       });
       return;
     }
 
     try {
-      // Add voucher to user
-      const { error: voucherError } = await (supabase as any)
-        .from('user_vouchers')
-        .insert([
-          {
-            user_id: user?.id,
-            voucher_id: voucherId
-          }
-        ]);
-
-      if (voucherError) throw voucherError;
-
       // Deduct points from user
-      const { error: updateError } = await (supabase as any)
-        .from('profiles')
-        .update({ green_points: profile.green_points - requiredPoints })
+      const newPoints = userData.greenpoints - voucher.required_points;
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ greenpoints: newPoints })
         .eq('id', user?.id);
 
       if (updateError) throw updateError;
 
+      // Add transaction record
+      const { error: transactionError } = await supabase
+        .from('transactions')
+        .insert({
+          user_id: user?.id,
+          product_id: null,
+          amount: 0,
+          greenpoints_earned: -voucher.required_points,
+          co2_saved: 0,
+          note: `Đổi ${voucher.name}`
+        });
+
+      if (transactionError) throw transactionError;
+
       toast({
         title: "Đổi voucher thành công!",
-        description: "Voucher đã được thêm vào ví của bạn",
+        description: `Bạn đã đổi ${voucher.name} thành công`,
       });
 
-      fetchProfile();
-      fetchUserVouchers();
+      // Refresh user data
+      fetchUserData();
     } catch (error: any) {
       toast({
-        title: "Lỗi",
+        title: "Lỗi", 
         description: "Không thể đổi voucher: " + error.message,
         variant: "destructive"
       });
@@ -172,9 +160,9 @@ const Profile = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-foreground">
-                  Xin chào, {profile?.first_name || 'Bạn'}!
+                  Trang cá nhân
                 </h1>
-                <p className="text-muted-foreground">{user?.email}</p>
+                <p className="text-muted-foreground">{userData?.email}</p>
               </div>
             </div>
             <Button variant="outline" onClick={handleSignOut} className="flex items-center gap-2">
@@ -183,133 +171,78 @@ const Profile = () => {
             </Button>
           </div>
 
-          {/* GreenPoint Wallet */}
-          <Card className="mb-6">
+          {/* GreenPoint Wallet Card - Green Theme */}
+          <Card className="mb-6 bg-gradient-to-r from-green-50 to-green-100 border-green-200">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Wallet className="w-5 h-5 text-primary" />
-                Ví GreenPoint
+              <CardTitle className="flex items-center gap-2 text-green-800">
+                <Wallet className="w-5 h-5 text-green-600" />
+                GreenPoints
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-green-600">
                 Điểm thưởng từ việc mua sắm xanh
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-4">
-                <div className="text-3xl font-bold text-primary flex items-center gap-2">
-                  <Coins className="w-8 h-8" />
-                  {profile?.green_points || 0}
+                <div className="text-4xl font-bold text-green-700 flex items-center gap-2">
+                  <Coins className="w-8 h-8 text-green-600" />
+                  {userData?.greenpoints || 0}
                 </div>
-                <div className="text-muted-foreground">
+                <div className="text-green-600">
                   GreenPoint khả dụng
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <div className="grid lg:grid-cols-2 gap-6">
-            {/* Available Vouchers */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Gift className="w-5 h-5 text-primary" />
-                  Đổi Voucher
-                </CardTitle>
-                <CardDescription>
-                  Sử dụng GreenPoint để đổi voucher giảm giá
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {availableVouchers.map((voucher) => (
-                  <div key={voucher.id} className="p-4 border border-border rounded-lg">
-                    <div className="flex items-start justify-between mb-2">
+          {/* Voucher Exchange Section */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Gift className="w-5 h-5 text-primary" />
+                Đổi voucher
+              </CardTitle>
+              <CardDescription>
+                Sử dụng GreenPoint để đổi voucher giảm giá
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {availableVouchers.map((voucher) => {
+                const hasEnoughPoints = userData && userData.greenpoints >= voucher.required_points;
+                
+                return (
+                  <div key={voucher.id} className="p-4 border border-border rounded-lg bg-card">
+                    <div className="flex items-start justify-between mb-3">
                       <div>
-                        <h3 className="font-semibold text-foreground">{voucher.name}</h3>
-                        <p className="text-sm text-muted-foreground">{voucher.description}</p>
+                        <h3 className="font-semibold text-foreground text-lg">{voucher.name}</h3>
+                        <p className="text-sm text-muted-foreground mb-1">{voucher.description}</p>
+                        <div className="text-lg font-bold text-green-600">{voucher.value}</div>
                       </div>
-                      <Badge variant="secondary" className="ml-2">
-                        -{voucher.discount_percentage}%
-                      </Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium flex items-center gap-1">
-                        <Coins className="w-4 h-4" />
-                        {voucher.required_points} điểm
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <Coins className="w-4 h-4 text-green-600" />
+                        <span className="text-sm font-medium">
+                          {voucher.required_points} điểm
+                        </span>
+                      </div>
                       <Button
                         size="sm"
-                        onClick={() => redeemVoucher(voucher.id, voucher.required_points)}
-                        disabled={!profile || profile.green_points < voucher.required_points}
+                        onClick={() => redeemVoucher(voucher)}
+                        disabled={!hasEnoughPoints}
+                        className={hasEnoughPoints 
+                          ? "bg-green-600 hover:bg-green-700 text-white" 
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        }
                       >
-                        Đổi ngay
+                        {hasEnoughPoints ? "Đổi ngay" : "Không đủ điểm"}
                       </Button>
                     </div>
                   </div>
-                ))}
-                {availableVouchers.length === 0 && (
-                  <p className="text-center text-muted-foreground py-8">
-                    Hiện tại chưa có voucher nào
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* My Vouchers */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ShoppingBag className="w-5 h-5 text-primary" />
-                  Voucher của tôi
-                </CardTitle>
-                <CardDescription>
-                  Các voucher bạn đã đổi và có thể sử dụng
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {userVouchers.map((userVoucher) => (
-                  <div
-                    key={userVoucher.id}
-                    className={`p-4 border border-border rounded-lg ${
-                      userVoucher.used_at ? 'opacity-50' : ''
-                    }`}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h3 className="font-semibold text-foreground">
-                          {userVoucher.voucher.name}
-                        </h3>
-                        <p className="text-sm text-muted-foreground">
-                          {userVoucher.voucher.description}
-                        </p>
-                      </div>
-                      <Badge
-                        variant={userVoucher.used_at ? "outline" : "default"}
-                        className="ml-2"
-                      >
-                        -{userVoucher.voucher.discount_percentage}%
-                      </Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-muted-foreground">
-                        {userVoucher.used_at
-                          ? `Đã sử dụng: ${new Date(userVoucher.used_at).toLocaleDateString()}`
-                          : 'Có thể sử dụng'
-                        }
-                      </span>
-                      {!userVoucher.used_at && (
-                        <Badge variant="secondary">Khả dụng</Badge>
-                      )}
-                    </div>
-                  </div>
-                ))}
-                {userVouchers.length === 0 && (
-                  <p className="text-center text-muted-foreground py-8">
-                    Bạn chưa có voucher nào
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                );
+              })}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
