@@ -1,65 +1,80 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, ShoppingCart, Plus, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useCart } from "@/contexts/CartContext";
 import Header from "@/components/Header";
-import organicFoodImage from "@/assets/organic-food.jpg";
-import homeProductsImage from "@/assets/home-products.jpg";
-import recycledFashionImage from "@/assets/recycled-fashion.jpg";
-import qrCodeImage from "@/assets/qr-code-placeholder.jpg";
+import { supabase } from "@/integrations/supabase/client";
+
+interface Product {
+  id: number;
+  name: string;
+  selling_price: number;
+  original_price?: number;
+  image_url: string;
+  co2_emission: number;
+  descripton: string; // Note: this is the actual field name in DB (typo)
+}
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { addToCart } = useCart();
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock product data (in real app, this would come from API/database)
-  const products = {
-    "1": {
-      id: "1",
-      name: "Combo rau củ organic tươi từ Đà Lạt - Gói 2kg",
-      price: 125000,
-      originalPrice: 150000,
-      image: organicFoodImage,
-      co2Emission: 0.8,
-      certification: ["Organic", "VietGAP"],
-      rating: 4.8,
-      sold: 234,
-      description: "Combo rau củ organic tươi ngon từ nông trại Đà Lạt, được trồng hoàn toàn tự nhiên không sử dụng thuốc trừ sâu hay phân bón hóa học. Gói 2kg bao gồm: cà rót, cà chua, rau muống, xà lách, cải thảo. Sản phẩm được chứng nhận Organic quốc tế và VietGAP, đảm bảo an toàn tuyệt đối cho sức khỏe gia đình bạn."
-    },
-    "2": {
-      id: "2", 
-      name: "Bộ đồ dùng bếp tre tự nhiên 100% - Set 5 món",
-      price: 89000,
-      originalPrice: 120000,
-      image: homeProductsImage,
-      co2Emission: 1.2,
-      certification: ["FSC", "Eco"],
-      rating: 4.9,
-      sold: 156,
-      description: "Bộ đồ dùng bếp làm từ tre tự nhiên 100%, thân thiện với môi trường. Set gồm 5 món: thớt, muỗng múc cơm, đũa, muỗng canh, và thìa ăn. Tre được chọn lọc kỹ càng, qua xử lý đặc biệt để chống nấm mốc và kháng khuẩn tự nhiên. Có chứng nhận FSC về nguồn gốc bền vững."
-    },
-    "3": {
-      id: "3",
-      name: "Áo thun cotton organic unisex - Màu xanh lá",
-      price: 199000,
-      originalPrice: 250000,
-      image: recycledFashionImage,
-      co2Emission: 2.1,
-      certification: ["GOTS", "Organic"],
-      rating: 4.7,
-      sold: 89,
-      description: "Áo thun unisex được làm từ 100% cotton organic, mềm mại và thoáng mát. Chất liệu cotton được trồng không sử dụng thuốc trừ sâu, an toàn cho da. Thiết kế đơn giản, phù hợp cho cả nam và nữ. Có chứng nhận GOTS (Global Organic Textile Standard) đảm bảo quy trình sản xuất bền vững."
+  useEffect(() => {
+    if (id) {
+      fetchProduct();
+    }
+  }, [id]);
+
+  const fetchProduct = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', parseInt(id || '0'))
+        .single();
+
+      if (error) throw error;
+      setProduct(data);
+    } catch (error) {
+      console.error('Error fetching product:', error);
+      toast({
+        title: "Lỗi",
+        description: "Không thể tải thông tin sản phẩm",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const product = products[id as keyof typeof products];
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="container mx-auto px-4 py-8">
+          <div className="animate-pulse">
+            <div className="bg-muted h-8 w-32 mb-6"></div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="bg-muted h-96 lg:h-[500px] rounded-lg"></div>
+              <div className="space-y-4">
+                <div className="bg-muted h-8 w-3/4"></div>
+                <div className="bg-muted h-4 w-1/2"></div>
+                <div className="bg-muted h-6 w-1/3"></div>
+                <div className="bg-muted h-20 w-full"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -83,25 +98,25 @@ const ProductDetail = () => {
   };
 
   const handleBuyNow = () => {
-    // Add to cart first
+    const price = product.selling_price || product.original_price || 0;
     addToCart({
-      id: parseInt(product.id),
+      id: product.id,
       name: product.name,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: product.image
+      price: price,
+      originalPrice: product.original_price,
+      image: product.image_url
     });
-    // Navigate to checkout
     navigate('/checkout');
   };
 
   const handleAddToCart = () => {
+    const price = product.selling_price || product.original_price || 0;
     addToCart({
-      id: parseInt(product.id),
+      id: product.id,
       name: product.name,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: product.image
+      price: price,
+      originalPrice: product.original_price,
+      image: product.image_url
     });
     toast({
       title: "Đã thêm vào giỏ hàng",
@@ -109,8 +124,8 @@ const ProductDetail = () => {
     });
   };
 
-  const greenPointsEarned = Math.floor(product.price / 1000);
-  const co2Saved = product.co2Emission;
+  const displayPrice = product.selling_price || product.original_price || 0;
+  const hasDiscount = product.selling_price && product.original_price && product.selling_price < product.original_price;
 
   return (
     <div className="min-h-screen bg-background">
@@ -131,16 +146,18 @@ const ProductDetail = () => {
           {/* Product Image */}
           <div className="relative">
             <img 
-              src={product.image} 
+              src={product.image_url} 
               alt={product.name}
               className="w-full h-96 lg:h-[500px] object-cover rounded-lg"
             />
-            <div className="absolute top-4 left-4">
-              <div className={`co2-badge ${getCO2BadgeClass(product.co2Emission)}`}>
-                <Leaf className="w-3 h-3" />
-                {product.co2Emission}kg CO₂e
+            {product.co2_emission && (
+              <div className="absolute top-4 left-4">
+                <div className={`co2-badge ${getCO2BadgeClass(product.co2_emission)}`}>
+                  <Leaf className="w-3 h-3" />
+                  {product.co2_emission}kg CO₂e
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Product Info */}
@@ -151,36 +168,36 @@ const ProductDetail = () => {
               </h1>
               
               <div className="flex items-center gap-2 mb-4">
-                {product.certification.map((cert) => (
-                  <Badge key={cert} variant="secondary" className="bg-eco-light text-eco-dark">
-                    {cert}
-                  </Badge>
-                ))}
+                <Badge variant="secondary" className="bg-eco-light text-eco-dark">
+                  Eco-Friendly
+                </Badge>
               </div>
 
               <div className="flex items-center gap-4 mb-4">
-                <span className="text-3xl font-bold text-primary">₫{product.price.toLocaleString()}</span>
-                {product.originalPrice && (
+                <span className="text-3xl font-bold text-primary">₫{displayPrice.toLocaleString()}</span>
+                {hasDiscount && (
                   <span className="text-xl text-muted-foreground line-through">
-                    ₫{product.originalPrice.toLocaleString()}
+                    ₫{product.original_price?.toLocaleString()}
                   </span>
                 )}
               </div>
 
               <div className="flex items-center gap-4 text-sm text-muted-foreground mb-6">
-                <span>⭐ {product.rating}</span>
+                <span>⭐ 4.5</span>
                 <span>•</span>
-                <span>Đã bán {product.sold}</span>
+                <span>Sản phẩm eco-friendly</span>
               </div>
             </div>
 
             {/* Description */}
-            <div>
-              <h3 className="text-lg font-semibold text-foreground mb-3">Mô tả sản phẩm</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                {product.description}
-              </p>
-            </div>
+            {product.descripton && (
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Mô tả sản phẩm</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  {product.descripton}
+                </p>
+              </div>
+            )}
 
             {/* Action Buttons */}
             <div className="flex gap-4">
@@ -203,46 +220,6 @@ const ProductDetail = () => {
           </div>
         </div>
       </main>
-
-      {/* Payment Modal */}
-      <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-center text-primary">Thanh toán QR Code</DialogTitle>
-          </DialogHeader>
-          <div className="flex flex-col items-center space-y-4 py-4">
-            <img 
-              src={qrCodeImage} 
-              alt="QR Code thanh toán" 
-              className="w-48 h-48 object-contain border border-border rounded-lg"
-            />
-            <div className="text-center space-y-2">
-              <p className="text-lg font-medium text-foreground">
-                Quét mã QR để thanh toán
-              </p>
-              <p className="text-2xl font-bold text-primary">
-                ₫{product.price.toLocaleString()}
-              </p>
-            </div>
-            <div className="bg-eco-light/30 p-4 rounded-lg text-center max-w-sm">
-              <p className="text-eco-dark font-medium mb-2">
-                🌱 Cảm ơn bạn đã mua hàng xanh!
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Bạn đã tiết kiệm được <span className="font-bold text-eco-dark">{co2Saved}kg CO₂e</span> và 
-                nhận <span className="font-bold text-primary">{greenPointsEarned} GreenPoint</span>.
-              </p>
-            </div>
-            <Button 
-              onClick={() => setShowPaymentModal(false)}
-              variant="outline"
-              className="w-full"
-            >
-              Đóng
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
