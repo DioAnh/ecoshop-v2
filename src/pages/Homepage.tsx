@@ -17,7 +17,7 @@ interface Product {
   selling_price: number;
   original_price?: number;
   image_url: string;
-  'co2-emissiom': number;
+  co2_emission: number;
   category: number;
   descripton: string;
 }
@@ -249,7 +249,7 @@ const Homepage = () => {
                   price={product.selling_price}
                   originalPrice={product.original_price}
                   image={product.image_url}
-                  co2Emission={product['co2-emissiom']}
+                  co2Emission={product.co2_emission || 0}
                   certification={["Eco"]}
                   rating={4.5}
                   sold={Math.floor(Math.random() * 500) + 50}
