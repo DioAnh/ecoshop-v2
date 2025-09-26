@@ -32,6 +32,64 @@ const Checkout = () => {
     }).format(price);
   };
 
+  const calculateAndAwardPoints = async (cartItems: any[], userId: string, orderId: string) => {
+    try {
+      let totalPointsEarned = 0;
+      let totalCo2Saved = 0;
+
+      // Get product details to calculate points
+      for (const item of cartItems) {
+        const { data: product, error: productError } = await (supabase as any)
+          .from('products')
+          .select('point, co2_emission')
+          .eq('id', item.id)
+          .single();
+
+        if (product && !productError) {
+          const pointsForItem = (Number(product.point) || 0) * item.quantity;
+          const co2ForItem = (Number(product.co2_emission) || 0) * item.quantity;
+          
+          totalPointsEarned += pointsForItem;
+          totalCo2Saved += co2ForItem;
+
+          // Record transaction for each product
+          await supabase
+            .from('transactions')
+            .insert({
+              user_id: userId,
+              product_id: item.id,
+              amount: item.price * item.quantity,
+              co2_saved: co2ForItem,
+              greenpoints_earned: pointsForItem,
+              note: `Mua ${item.quantity} x ${item.name}`
+            });
+        }
+      }
+
+      // Update user's total greenpoints
+      if (totalPointsEarned > 0) {
+        const { data: currentUser } = await supabase
+          .from('users')
+          .select('greenpoints')
+          .eq('id', userId)
+          .single();
+
+        if (currentUser) {
+          await supabase
+            .from('users')
+            .update({ 
+              greenpoints: (currentUser.greenpoints || 0) + totalPointsEarned 
+            })
+            .eq('id', userId);
+        }
+      }
+
+      return { totalPointsEarned, totalCo2Saved };
+    } catch (error) {
+      console.error('Error calculating and awarding points:', error);
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -85,6 +143,9 @@ const Checkout = () => {
         .insert(orderItems);
 
       if (itemsError) throw itemsError;
+
+      // Calculate and award GreenPoints
+      await calculateAndAwardPoints(items, user.id, order.id);
 
       // Clear cart and show success message
       clearCart();

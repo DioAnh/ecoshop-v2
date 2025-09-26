@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import HeroBanner from "@/components/HeroBanner";
 import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
+import GreenPointsWallet from "@/components/GreenPointsWallet";
 import { supabase } from "@/integrations/supabase/client";
 import organicFoodImage from "@/assets/organic-food.jpg";
 import homeProductsImage from "@/assets/home-products.jpg";
@@ -29,7 +30,7 @@ interface Category {
 }
 
 const Homepage = () => {
-  const { loading } = useAuth();
+  const { loading, user } = useAuth();
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -262,6 +263,13 @@ const Homepage = () => {
             </div>
           )}
         </section>
+
+        {/* GreenPoints Wallet - Only show if user is authenticated */}
+        {user && (
+          <section className="mb-12">
+            <GreenPointsWallet />
+          </section>
+        )}
 
         {/* Stats Section */}
         <section className="bg-eco-light/30 rounded-2xl p-8 text-center">
