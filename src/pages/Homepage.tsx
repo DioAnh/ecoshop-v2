@@ -26,6 +26,7 @@ interface Product {
 interface Category {
   id: number;
   name: string;
+  image?: string;
   productCount: number;
 }
 
@@ -210,9 +211,10 @@ const Homepage = () => {
               {categories.map((category, index) => (
                 <CategoryCard
                   key={category.id}
+                  id={category.id}
                   title={category.name}
                   icon={getCategoryIcon(index)}
-                  image={getCategoryImage(index)}
+                  image={category.image || getCategoryImage(index)}
                   description={`Danh mục ${category.name.toLowerCase()}`}
                   itemCount={category.productCount}
                 />

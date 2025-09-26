@@ -8,6 +8,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import ProductDetail from "./pages/ProductDetail";
+import CategoryProducts from "./pages/CategoryProducts";
 import Auth from "./pages/Auth";
 import Profile from "./pages/Profile";
 import Cart from "./pages/Cart";
@@ -27,6 +28,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/category/:categoryId" element={<CategoryProducts />} />
               <Route path="/cart" element={<Cart />} />
               <Route 
                 path="/checkout" 

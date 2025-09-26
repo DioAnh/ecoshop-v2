@@ -1,6 +1,8 @@
 import { LucideIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface CategoryCardProps {
+  id: number;
   title: string;
   icon: LucideIcon;
   image: string;
@@ -8,12 +10,21 @@ interface CategoryCardProps {
   itemCount: number;
 }
 
-const CategoryCard = ({ title, icon: Icon, image, description, itemCount }: CategoryCardProps) => {
+const CategoryCard = ({ id, title, icon: Icon, image, description, itemCount }: CategoryCardProps) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/category/${id}`);
+  };
+
   return (
-    <div className="category-card">
+    <div 
+      className="category-card cursor-pointer hover:transform hover:scale-105 transition-all duration-200" 
+      onClick={handleClick}
+    >
       <div className="relative mb-4">
         <img 
-          src={image} 
+          src={image || '/placeholder.svg'} 
           alt={title}
           className="w-full h-32 object-cover rounded-lg"
         />
