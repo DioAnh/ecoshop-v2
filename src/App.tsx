@@ -14,6 +14,10 @@ import Profile from "./pages/Profile";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
+import GreenPointsWallet from "./pages/GreenPointsWallet";
+import GreenDelivery from "./pages/GreenDelivery";
+import Partners from "./pages/Partners";
+import About from "./pages/About";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +50,17 @@ const App = () => (
                   </ProtectedRoute>
                 } 
               />
+              <Route 
+                path="/greenpoints" 
+                element={
+                  <ProtectedRoute>
+                    <GreenPointsWallet />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route path="/green-delivery" element={<GreenDelivery />} />
+              <Route path="/partners" element={<Partners />} />
+              <Route path="/about" element={<About />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
