@@ -1,4 +1,4 @@
-import { Search, ShoppingCart, User, Leaf, Plus } from "lucide-react";
+import { Search, ShoppingCart, User, Leaf, Plus, Home, Wallet, Bike, Store, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -6,6 +6,16 @@ import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import AdminProductForm from "@/components/AdminProductForm";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import { cn } from "@/lib/utils";
 
 const Header = () => {
   const { user, isAdmin } = useAuth();
@@ -24,8 +34,63 @@ const Header = () => {
             <span className="text-xl font-bold text-primary">EcoShop</span>
           </div>
 
+          {/* Navigation Menu */}
+          <NavigationMenu className="flex-1">
+            <NavigationMenuList className="flex gap-2">
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
+                  onClick={() => navigate('/')}
+                >
+                  <Home className="w-4 h-4 mr-2" />
+                  Trang chủ
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
+                  onClick={() => navigate('/greenpoints')}
+                >
+                  <Wallet className="w-4 h-4 mr-2" />
+                  Ví điểm GreenPoints
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
+                  onClick={() => navigate('/green-delivery')}
+                >
+                  <Bike className="w-4 h-4 mr-2" />
+                  Giao hàng xanh
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
+                  onClick={() => navigate('/partners')}
+                >
+                  <Store className="w-4 h-4 mr-2" />
+                  Đối tác
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
+                  onClick={() => navigate('/about')}
+                >
+                  <Info className="w-4 h-4 mr-2" />
+                  Giới thiệu
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+
           {/* Search Bar */}
-          <div className="flex-1 max-w-2xl mx-4">
+          <div className="flex-1 max-w-md">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <Input 
