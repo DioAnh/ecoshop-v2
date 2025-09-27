@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { Coins, Gift, Wallet, TreePine, TrendingUp, ShoppingBag } from 'lucide-react';
 import Header from '@/components/Header';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface UserData {
   id: string;
@@ -37,6 +38,7 @@ const GreenPointsWallet = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [totalCO2Saved, setTotalCO2Saved] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [co2ChartData, setCo2ChartData] = useState<any[]>([]);
 
   const availableVouchers: Voucher[] = [
     {
@@ -94,6 +96,29 @@ const GreenPointsWallet = () => {
       const totalCO2 = transactionData?.reduce((sum, transaction) => 
         sum + (transaction.co2_saved || 0), 0) || 0;
       setTotalCO2Saved(totalCO2);
+
+      // Generate CO2 chart data for the past 2 weeks
+      const chartData = [];
+      const today = new Date();
+      for (let i = 13; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split('T')[0];
+        
+        const dayTransactions = (transactionData || []).filter(t => {
+          const transactionDate = new Date(t.created_at).toISOString().split('T')[0];
+          return transactionDate === dateStr;
+        });
+        
+        const dayCO2 = dayTransactions.reduce((sum, t) => sum + (t.co2_saved || 0), 0);
+        
+        chartData.push({
+          date: date.toLocaleDateString('vi-VN', { month: 'short', day: 'numeric' }),
+          co2_saved: Number(dayCO2.toFixed(2)),
+          week: i >= 7 ? 'Tuần này' : 'Tuần trước'
+        });
+      }
+      setCo2ChartData(chartData);
 
     } catch (error: any) {
       console.error('Error fetching data:', error);
@@ -198,8 +223,42 @@ const GreenPointsWallet = () => {
             <p className="text-muted-foreground">Quản lý điểm thưởng và tác động môi trường của bạn</p>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* CO2 Emissions Chart */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              Biểu đồ phát thải CO₂ (2 tuần)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={co2ChartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip 
+                    formatter={(value: any, name: string) => [
+                      `${value} kg CO₂`, 
+                      name === 'co2_saved' ? 'CO₂ tiết kiệm' : name
+                    ]}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="co2_saved" 
+                    stroke="hsl(var(--primary))" 
+                    strokeWidth={2}
+                    dot={{ fill: "hsl(var(--primary))", strokeWidth: 2 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {/* GreenPoints Balance */}
             <Card className="bg-gradient-to-r from-primary/10 to-eco-light/20 border-primary/20">
               <CardHeader className="pb-3">

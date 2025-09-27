@@ -21,6 +21,7 @@ interface Product {
   co2_emission: number;
   category: number;
   descripton: string;
+  is_hot?: boolean;
 }
 
 interface Category {
@@ -243,8 +244,8 @@ const Homepage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-              {/* Show database products first */}
-              {products.map((product) => (
+              {/* Show database products that are marked as hot/featured */}
+              {products.filter(product => product.is_hot === true).map((product) => (
                 <ProductCard
                   key={product.id}
                   id={product.id}
@@ -258,8 +259,8 @@ const Homepage = () => {
                   sold={Math.floor(Math.random() * 500) + 50}
                 />
               ))}
-              {/* Show sample products if no database products */}
-              {products.length === 0 && featuredProducts.map((product) => (
+              {/* Show sample products if no hot database products */}
+              {products.filter(product => product.is_hot === true).length === 0 && featuredProducts.map((product) => (
                 <ProductCard key={product.id} {...product} />
               ))}
             </div>
