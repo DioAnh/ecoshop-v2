@@ -82,7 +82,7 @@ const ProductCard = ({
         </h3>
         
         <div className="flex items-center gap-2">
-          <span className="text-primary font-bold">₫{price.toLocaleString()}</span>
+          <span className="text-primary font-bold">₫{(price || 0).toLocaleString()}</span>
           {originalPrice && (
             <span className="text-muted-foreground line-through text-sm">
               ₫{originalPrice.toLocaleString()}

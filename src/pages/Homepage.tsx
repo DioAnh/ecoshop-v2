@@ -248,10 +248,10 @@ const Homepage = () => {
                 <ProductCard
                   key={product.id}
                   id={product.id}
-                  name={product.name}
-                  price={product.selling_price}
+                  name={product.name || "Sản phẩm"}
+                  price={product.selling_price || 0}
                   originalPrice={product.original_price}
-                  image={product.image_url}
+                  image={product.image_url || ""}
                   co2Emission={product.co2_emission || 0}
                   certification={["Eco"]}
                   rating={4.5}
