@@ -234,7 +234,7 @@ const RecycleExchange = () => {
           <div className="mb-8">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
               <h1 className="text-3xl font-bold text-foreground">
-                Quy đổi ve chai nhận GreenPoint
+                Quy đổi và tái chế nhận GreenPoint
               </h1>
               <Card className="bg-gradient-to-r from-green-500 to-emerald-500 border-none">
                 <CardContent className="p-4 flex items-center gap-3">

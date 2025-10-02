@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Bike, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -19,6 +20,8 @@ const Checkout = () => {
   const navigate = useNavigate();
   
   const [loading, setLoading] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
+  const [deliveryVehicle, setDeliveryVehicle] = useState('electric'); // 'bicycle' or 'electric'
   const [formData, setFormData] = useState({
     shippingAddress: '',
     phoneNumber: '',
@@ -145,17 +148,48 @@ const Checkout = () => {
       if (itemsError) throw itemsError;
 
       // Calculate and award GreenPoints
-      await calculateAndAwardPoints(items, user.id, order.id);
+      const pointsResult = await calculateAndAwardPoints(items, user.id, order.id);
+      
+      // Add extra points for bicycle delivery
+      if (deliveryVehicle === 'bicycle' && pointsResult) {
+        const bonusPoints = 10;
+        const { data: currentUser } = await supabase
+          .from('users')
+          .select('greenpoints')
+          .eq('id', user.id)
+          .single();
+
+        if (currentUser) {
+          await supabase
+            .from('users')
+            .update({ 
+              greenpoints: (currentUser.greenpoints || 0) + bonusPoints 
+            })
+            .eq('id', user.id);
+          
+          // Record bonus transaction
+          await supabase
+            .from('transactions')
+            .insert({
+              user_id: user.id,
+              greenpoints_earned: bonusPoints,
+              co2_saved: 2.0,
+              amount: 0,
+              note: `Thưởng chọn giao hàng bằng xe đạp`
+            });
+        }
+      }
 
       // Clear cart and show success message
       clearCart();
+      setOrderSuccess(true);
       
       toast({
         title: "Đặt hàng thành công!",
-        description: "Đơn hàng của bạn đã được tạo thành công. Chúng tôi sẽ liên hệ với bạn sớm nhất có thể.",
+        description: deliveryVehicle === 'bicycle' 
+          ? "Bạn nhận thêm 10 GreenPoints khi chọn xe đạp! Đơn hàng sẽ được giao trong 2 tiếng."
+          : "Đơn hàng của bạn đã được tạo thành công. Chúng tôi sẽ liên hệ với bạn sớm nhất.",
       });
-
-      navigate('/profile');
     } catch (error) {
       console.error('Error creating order:', error);
       toast({
@@ -167,6 +201,42 @@ const Checkout = () => {
       setLoading(false);
     }
   };
+
+  // Show success screen after order
+  if (orderSuccess) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <main className="container mx-auto px-4 py-8">
+          <div className="max-w-md mx-auto text-center">
+            <Card>
+              <CardContent className="pt-6 pb-8 space-y-4">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-foreground">Đặt hàng thành công!</h2>
+                <p className="text-muted-foreground">
+                  {deliveryVehicle === 'bicycle' 
+                    ? "Cảm ơn bạn đã chọn giao hàng bằng xe đạp! Bạn đã nhận thêm 10 GreenPoints."
+                    : "Đơn hàng của bạn đã được tạo. Chúng tôi sẽ liên hệ sớm nhất."}
+                </p>
+                <div className="flex flex-col gap-3 pt-4">
+                  <Button onClick={() => navigate('/')} size="lg" className="w-full">
+                    Quay về mua hàng tiếp
+                  </Button>
+                  <Button onClick={() => navigate('/profile')} variant="outline" size="lg" className="w-full">
+                    Xem đơn hàng
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   // Redirect to cart if empty
   if (items.length === 0) {
@@ -243,6 +313,33 @@ const Checkout = () => {
                       placeholder="Ghi chú thêm cho đơn hàng..."
                       className="mt-1"
                     />
+                  </div>
+
+                  <div>
+                    <Label className="text-base font-semibold mb-3 block">Chọn phương tiện giao hàng</Label>
+                    <RadioGroup value={deliveryVehicle} onValueChange={setDeliveryVehicle} className="space-y-3">
+                      <div className="flex items-start space-x-3 border-2 border-input rounded-lg p-4 cursor-pointer hover:border-primary transition-colors">
+                        <RadioGroupItem value="electric" id="electric" className="mt-1" />
+                        <Label htmlFor="electric" className="flex-1 cursor-pointer">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Zap className="w-5 h-5 text-yellow-500" />
+                            <span className="font-semibold">Xe máy điện</span>
+                          </div>
+                          <p className="text-sm text-muted-foreground">Giao hàng nhanh trong nội thành</p>
+                        </Label>
+                      </div>
+                      <div className="flex items-start space-x-3 border-2 border-primary rounded-lg p-4 cursor-pointer bg-green-50/50">
+                        <RadioGroupItem value="bicycle" id="bicycle" className="mt-1" />
+                        <Label htmlFor="bicycle" className="flex-1 cursor-pointer">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Bike className="w-5 h-5 text-green-600" />
+                            <span className="font-semibold">Xe đạp</span>
+                            <span className="text-xs bg-green-600 text-white px-2 py-0.5 rounded-full">+10 điểm</span>
+                          </div>
+                          <p className="text-sm text-muted-foreground">Giao hàng chậm hơn 2 tiếng nhưng thân thiện môi trường</p>
+                        </Label>
+                      </div>
+                    </RadioGroup>
                   </div>
 
                   <Button 

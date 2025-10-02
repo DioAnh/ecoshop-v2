@@ -1,4 +1,4 @@
-import { Search, ShoppingCart, User, Leaf, Plus, Home, Wallet, Bike, Store, Info, Recycle } from "lucide-react";
+import { Search, ShoppingCart, User, Leaf, Plus, Home, Wallet, Bike, Store, Info, Recycle, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -73,7 +73,7 @@ const Header = () => {
                   onClick={() => navigate('/recycle-exchange')}
                 >
                   <Recycle className="w-4 h-4 mr-2" />
-                  Quy đổi ve chai
+                  Quy đổi và tái chế
                 </NavigationMenuLink>
               </NavigationMenuItem>
               
@@ -112,6 +112,13 @@ const Header = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-3">
+            <Button 
+              variant="ghost" 
+              size="icon"
+              title="Quét mã QR"
+            >
+              <QrCode className="w-5 h-5" />
+            </Button>
             {isAdmin && (
               <Button
                 variant="ghost"
