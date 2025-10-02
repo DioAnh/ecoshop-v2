@@ -1,4 +1,4 @@
-import { Search, ShoppingCart, User, Leaf, Plus, Home, Wallet, Bike, Store, Info } from "lucide-react";
+import { Search, ShoppingCart, User, Leaf, Plus, Home, Wallet, Bike, Store, Info, Recycle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -64,6 +64,16 @@ const Header = () => {
                 >
                   <Bike className="w-4 h-4 mr-2" />
                   Giao hàng xanh
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <NavigationMenuLink
+                  className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
+                  onClick={() => navigate('/recycle-exchange')}
+                >
+                  <Recycle className="w-4 h-4 mr-2" />
+                  Quy đổi ve chai
                 </NavigationMenuLink>
               </NavigationMenuItem>
               
