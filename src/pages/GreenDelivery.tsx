@@ -1,8 +1,93 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Bike, Truck, TreePine, Clock, MapPin, Award } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Bike, Truck, TreePine, Clock, MapPin, Award, Recycle } from 'lucide-react';
 import Header from '@/components/Header';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const GreenDelivery = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [recycleWeight, setRecycleWeight] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleRecycleSubmit = async () => {
+    if (!user) {
+      toast({
+        title: "Vui lòng đăng nhập",
+        description: "Bạn cần đăng nhập để quy đổi điểm",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const weight = parseFloat(recycleWeight);
+    if (isNaN(weight) || weight <= 0) {
+      toast({
+        title: "Số liệu không hợp lệ",
+        description: "Vui lòng nhập số kg hợp lệ",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const pointsEarned = Math.floor(weight * 10); // 1kg = 10 điểm
+      const co2Saved = weight * 2.5; // Giả sử 1kg rác tái chế = 2.5kg CO2 tiết kiệm
+
+      // Lấy greenpoints hiện tại của user
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('greenpoints')
+        .eq('id', user.id)
+        .single();
+
+      if (userError) throw userError;
+
+      // Cập nhật greenpoints
+      const newGreenpoints = (userData?.greenpoints || 0) + pointsEarned;
+      const { error: updateError } = await supabase
+        .from('users')
+        .update({ greenpoints: newGreenpoints })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      // Tạo transaction
+      const { error: transactionError } = await supabase
+        .from('transactions')
+        .insert({
+          user_id: user.id,
+          greenpoints_earned: pointsEarned,
+          co2_saved: co2Saved,
+          amount: weight,
+          note: `Quy đổi ${weight}kg rác thải tái chế`,
+        });
+
+      if (transactionError) throw transactionError;
+
+      toast({
+        title: "Quy đổi thành công!",
+        description: `Bạn đã nhận ${pointsEarned} GreenPoints từ ${weight}kg rác thải tái chế`,
+      });
+
+      setRecycleWeight('');
+    } catch (error: any) {
+      console.error('Error:', error);
+      toast({
+        title: "Lỗi",
+        description: error.message || "Có lỗi xảy ra khi quy đổi điểm",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -163,6 +248,95 @@ const GreenDelivery = () => {
               </CardContent>
             </Card>
           </div>
+
+          {/* Recycle Exchange Section */}
+          <Card className="mt-8 bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-green-700">
+                <Recycle className="w-6 h-6" />
+                Quy đổi chai nhựa & rác thải tái chế
+              </CardTitle>
+              <CardDescription>
+                Đổi rác thải tái chế lấy GreenPoints - 1kg = 10 điểm
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <h4 className="font-semibold text-green-700">Rác thải được chấp nhận:</h4>
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      Chai nhựa (PET, HDPE)
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      Giấy, bìa carton
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      Lon nhôm, kim loại
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                      Thủy tinh
+                    </li>
+                  </ul>
+                  <div className="p-4 bg-white rounded-lg border border-green-200">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-green-700">Tỷ lệ quy đổi</span>
+                      <span className="text-2xl font-bold text-green-700">1kg = 10 điểm</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Mỗi 1kg rác tái chế giúp giảm ~2.5kg phát thải CO₂
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="space-y-4">
+                  <h4 className="font-semibold text-green-700">Quy đổi ngay:</h4>
+                  <div className="space-y-4 p-4 bg-white rounded-lg border border-green-200">
+                    <div>
+                      <label className="text-sm font-medium text-foreground mb-2 block">
+                        Số kg rác thải tái chế
+                      </label>
+                      <Input
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        placeholder="Nhập số kg (VD: 2.5)"
+                        value={recycleWeight}
+                        onChange={(e) => setRecycleWeight(e.target.value)}
+                        className="border-green-300 focus:border-green-500"
+                      />
+                    </div>
+                    {recycleWeight && parseFloat(recycleWeight) > 0 && (
+                      <div className="p-3 bg-green-50 rounded-lg">
+                        <p className="text-sm text-green-700">
+                          Bạn sẽ nhận được: <span className="font-bold">{Math.floor(parseFloat(recycleWeight) * 10)} GreenPoints</span>
+                        </p>
+                        <p className="text-xs text-green-600 mt-1">
+                          Giảm phát thải: ~{(parseFloat(recycleWeight) * 2.5).toFixed(2)} kg CO₂
+                        </p>
+                      </div>
+                    )}
+                    <Button 
+                      onClick={handleRecycleSubmit}
+                      disabled={isSubmitting || !recycleWeight || parseFloat(recycleWeight) <= 0}
+                      className="w-full bg-green-600 hover:bg-green-700"
+                    >
+                      {isSubmitting ? 'Đang xử lý...' : 'Xác nhận quy đổi'}
+                    </Button>
+                    {!user && (
+                      <p className="text-xs text-center text-amber-600">
+                        Vui lòng đăng nhập để quy đổi điểm
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Benefits Section */}
           <Card className="mt-8">
