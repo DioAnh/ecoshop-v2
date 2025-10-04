@@ -19,6 +19,7 @@ import GreenDelivery from "./pages/GreenDelivery";
 import Partners from "./pages/Partners";
 import About from "./pages/About";
 import RecycleExchange from "./pages/RecycleExchange";
+import Dashboard from "./pages/Dashboard";
 
 const queryClient = new QueryClient();
 
@@ -63,6 +64,7 @@ const App = () => (
               <Route path="/partners" element={<Partners />} />
               <Route path="/about" element={<About />} />
               <Route path="/recycle-exchange" element={<RecycleExchange />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
