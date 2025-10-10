@@ -1,125 +1,66 @@
-import { useState, useMemo } from "react";
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Package, Recycle, MapPin, TrendingDown } from "lucide-react";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
-
-// Fix for default marker icons in React-Leaflet
-import icon from "leaflet/dist/images/marker-icon.png";
-import iconShadow from "leaflet/dist/images/marker-shadow.png";
-
-let DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-});
-
-L.Marker.prototype.options.icon = DefaultIcon;
-
-interface DeliveryPoint {
-  id: string;
-  lat: number;
-  lng: number;
-  address: string;
-  type: "delivery" | "collection";
-  recycleCount: number;
-}
+import vietnamMap from "@/assets/vietnam-delivery-map.jpg";
 
 interface CityData {
   name: string;
-  center: [number, number];
-  deliveryPoints: DeliveryPoint[];
   orders: number;
   wasteKg: number;
   co2Delivery: number;
   co2Saved: number;
+  deliveryPoints: number;
 }
 
 const citiesData: Record<string, CityData> = {
   hanoi: {
     name: "Hà Nội",
-    center: [21.0285, 105.8542],
-    deliveryPoints: [
-      { id: "d1", lat: 21.0285, lng: 105.8542, address: "Hoàn Kiếm", type: "delivery", recycleCount: 3 },
-      { id: "d2", lat: 21.0245, lng: 105.8412, address: "Ba Đình", type: "delivery", recycleCount: 5 },
-      { id: "c1", lat: 21.0365, lng: 105.8345, address: "Trung tâm phân loại Hà Nội", type: "collection", recycleCount: 0 },
-      { id: "d3", lat: 21.0185, lng: 105.8642, address: "Hai Bà Trưng", type: "delivery", recycleCount: 2 },
-      { id: "d4", lat: 21.0125, lng: 105.8512, address: "Đống Đa", type: "delivery", recycleCount: 4 },
-    ],
     orders: 145,
     wasteKg: 320,
     co2Delivery: 85.5,
     co2Saved: 124.8,
+    deliveryPoints: 4,
   },
   hcm: {
     name: "TP. Hồ Chí Minh",
-    center: [10.8231, 106.6297],
-    deliveryPoints: [
-      { id: "d1", lat: 10.8231, lng: 106.6297, address: "Quận 1", type: "delivery", recycleCount: 6 },
-      { id: "d2", lat: 10.8131, lng: 106.6197, address: "Quận 3", type: "delivery", recycleCount: 4 },
-      { id: "c1", lat: 10.8331, lng: 106.6397, address: "Trung tâm phân loại HCM", type: "collection", recycleCount: 0 },
-      { id: "d3", lat: 10.8031, lng: 106.6097, address: "Quận 5", type: "delivery", recycleCount: 5 },
-      { id: "d4", lat: 10.8431, lng: 106.6497, address: "Bình Thạnh", type: "delivery", recycleCount: 7 },
-    ],
     orders: 289,
     wasteKg: 645,
     co2Delivery: 172.3,
     co2Saved: 251.4,
+    deliveryPoints: 4,
   },
   danang: {
     name: "Đà Nẵng",
-    center: [16.0544, 108.2022],
-    deliveryPoints: [
-      { id: "d1", lat: 16.0544, lng: 108.2022, address: "Hải Châu", type: "delivery", recycleCount: 3 },
-      { id: "c1", lat: 16.0644, lng: 108.2122, address: "Trung tâm phân loại Đà Nẵng", type: "collection", recycleCount: 0 },
-      { id: "d2", lat: 16.0444, lng: 108.1922, address: "Thanh Khê", type: "delivery", recycleCount: 2 },
-    ],
     orders: 98,
     wasteKg: 215,
     co2Delivery: 57.2,
     co2Saved: 83.8,
+    deliveryPoints: 2,
   },
   haiphong: {
     name: "Hải Phòng",
-    center: [20.8449, 106.6881],
-    deliveryPoints: [
-      { id: "d1", lat: 20.8449, lng: 106.6881, address: "Hồng Bàng", type: "delivery", recycleCount: 2 },
-      { id: "c1", lat: 20.8549, lng: 106.6981, address: "Trung tâm phân loại Hải Phòng", type: "collection", recycleCount: 0 },
-      { id: "d2", lat: 20.8349, lng: 106.6781, address: "Lê Chân", type: "delivery", recycleCount: 3 },
-    ],
     orders: 76,
     wasteKg: 168,
     co2Delivery: 44.6,
     co2Saved: 65.5,
+    deliveryPoints: 2,
   },
   cantho: {
     name: "Cần Thơ",
-    center: [10.0452, 105.7469],
-    deliveryPoints: [
-      { id: "d1", lat: 10.0452, lng: 105.7469, address: "Ninh Kiều", type: "delivery", recycleCount: 2 },
-      { id: "c1", lat: 10.0552, lng: 105.7569, address: "Trung tâm phân loại Cần Thơ", type: "collection", recycleCount: 0 },
-      { id: "d2", lat: 10.0352, lng: 105.7369, address: "Cái Răng", type: "delivery", recycleCount: 1 },
-    ],
     orders: 54,
     wasteKg: 118,
     co2Delivery: 31.4,
     co2Saved: 46.0,
+    deliveryPoints: 2,
   },
   binhduong: {
     name: "Bình Dương",
-    center: [10.9804, 106.6519],
-    deliveryPoints: [
-      { id: "d1", lat: 10.9804, lng: 106.6519, address: "Thủ Dầu Một", type: "delivery", recycleCount: 4 },
-      { id: "c1", lat: 10.9904, lng: 106.6619, address: "Trung tâm phân loại Bình Dương", type: "collection", recycleCount: 0 },
-      { id: "d2", lat: 10.9704, lng: 106.6419, address: "Dĩ An", type: "delivery", recycleCount: 3 },
-    ],
     orders: 112,
     wasteKg: 248,
     co2Delivery: 65.9,
     co2Saved: 96.6,
+    deliveryPoints: 2,
   },
 };
 
@@ -143,46 +84,12 @@ export default function TwoWayExchange() {
 
   const totalOrders = Object.values(citiesData).reduce((sum, city) => sum + city.orders, 0);
   const totalDeliveryPoints = Object.values(citiesData).reduce(
-    (sum, city) => sum + city.deliveryPoints.filter((p) => p.type === "delivery").length,
+    (sum, city) => sum + city.deliveryPoints,
     0
   );
   const totalCO2Saved = Object.values(citiesData).reduce((sum, city) => sum + city.co2Saved, 0);
   const totalCO2Delivery = Object.values(citiesData).reduce((sum, city) => sum + city.co2Delivery, 0);
   const totalNetCO2 = totalCO2Delivery - totalCO2Saved;
-
-  const deliveryIcon = useMemo(() => L.divIcon({
-    className: "custom-icon",
-    html: `<div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white shadow-lg">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-    </div>`,
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-  }), []);
-
-  const collectionIcon = useMemo(() => L.divIcon({
-    className: "custom-icon",
-    html: `<div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white shadow-lg">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
-    </div>`,
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-  }), []);
-
-  const routes = useMemo(() => {
-    return cityData.deliveryPoints
-      .filter((p) => p.type === "delivery")
-      .map((p) => {
-        const collection = cityData.deliveryPoints.find((c) => c.type === "collection");
-        if (collection) {
-          return [
-            [p.lat, p.lng],
-            [collection.lat, collection.lng],
-          ] as [number, number][];
-        }
-        return null;
-      })
-      .filter(Boolean) as [number, number][][];
-  }, [cityData]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -213,50 +120,24 @@ export default function TwoWayExchange() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <MapPin className="w-5 h-5 text-primary" />
-              Bản đồ giao hàng & thu gom - {cityData.name}
+              Bản đồ giao hàng & thu gom Việt Nam
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[500px] rounded-lg overflow-hidden border">
-              <MapContainer
-                key={selectedCity}
-                center={cityData.center}
-                zoom={13}
-                scrollWheelZoom={false}
-                style={{ height: "100%", width: "100%" }}
-              >
-                <>
-                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                  {routes.map((route, idx) => (
-                    <Polyline 
-                      key={`route-${idx}`}
-                      positions={route} 
-                      pathOptions={{ color: "#9ca3af", weight: 2, dashArray: "5, 10" }} 
-                    />
-                  ))}
-                  {cityData.deliveryPoints.map((point) => (
-                    <Marker
-                      key={point.id}
-                      position={[point.lat, point.lng]}
-                      icon={point.type === "delivery" ? deliveryIcon : collectionIcon}
-                    >
-                      <Popup>
-                        <div className="text-sm">
-                          <p className="font-semibold">{point.address}</p>
-                          <p className="text-muted-foreground">
-                            {point.type === "delivery" ? "Điểm giao hàng" : "Trung tâm phân loại"}
-                          </p>
-                          {point.type === "delivery" && (
-                            <p className="text-green-600 font-medium mt-1">
-                              +{point.recycleCount} đơn tái chế
-                            </p>
-                          )}
-                        </div>
-                      </Popup>
-                    </Marker>
-                  ))}
-                </>
-              </MapContainer>
+            <div className="relative rounded-lg overflow-hidden border bg-gray-50">
+              <img 
+                src={vietnamMap} 
+                alt="Bản đồ Việt Nam - Hệ thống giao hàng và thu gom" 
+                className="w-full h-auto"
+              />
+              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-4">
+                <h3 className="font-semibold text-foreground mb-2">Thành phố: {cityData.name}</h3>
+                <div className="space-y-1 text-sm">
+                  <p className="text-muted-foreground">Điểm giao hàng: <span className="font-medium text-green-600">{cityData.deliveryPoints}</span></p>
+                  <p className="text-muted-foreground">Đơn hàng: <span className="font-medium text-foreground">{cityData.orders}</span></p>
+                  <p className="text-muted-foreground">CO₂ tiết kiệm: <span className="font-medium text-green-600">{cityData.co2Saved.toFixed(1)} kg</span></p>
+                </div>
+              </div>
             </div>
 
             {/* Map Stats */}
@@ -266,7 +147,7 @@ export default function TwoWayExchange() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm text-muted-foreground">Tổng chuyến</p>
-                      <p className="text-2xl font-bold text-foreground">{cityData.orders}</p>
+                      <p className="text-2xl font-bold text-foreground">{totalOrders}</p>
                     </div>
                     <Package className="w-8 h-8 text-primary" />
                   </div>
@@ -277,10 +158,8 @@ export default function TwoWayExchange() {
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">Số điểm giao</p>
-                      <p className="text-2xl font-bold text-foreground">
-                        {cityData.deliveryPoints.filter((p) => p.type === "delivery").length}
-                      </p>
+                      <p className="text-sm text-muted-foreground">Tổng điểm giao</p>
+                      <p className="text-2xl font-bold text-foreground">{totalDeliveryPoints}</p>
                     </div>
                     <MapPin className="w-8 h-8 text-green-500" />
                   </div>
@@ -291,9 +170,9 @@ export default function TwoWayExchange() {
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-muted-foreground">CO₂ tiết kiệm</p>
+                      <p className="text-sm text-muted-foreground">Tổng CO₂ tiết kiệm</p>
                       <p className="text-2xl font-bold text-green-600">
-                        {cityData.co2Saved.toFixed(1)} kg
+                        {totalCO2Saved.toFixed(1)} kg
                       </p>
                     </div>
                     <TrendingDown className="w-8 h-8 text-purple-500" />
