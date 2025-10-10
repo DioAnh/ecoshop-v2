@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -150,37 +150,39 @@ export default function TwoWayExchange() {
   const totalCO2Delivery = Object.values(citiesData).reduce((sum, city) => sum + city.co2Delivery, 0);
   const totalNetCO2 = totalCO2Delivery - totalCO2Saved;
 
-  const deliveryIcon = L.divIcon({
+  const deliveryIcon = useMemo(() => L.divIcon({
     className: "custom-icon",
     html: `<div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white shadow-lg">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
     </div>`,
     iconSize: [32, 32],
     iconAnchor: [16, 32],
-  });
+  }), []);
 
-  const collectionIcon = L.divIcon({
+  const collectionIcon = useMemo(() => L.divIcon({
     className: "custom-icon",
     html: `<div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white shadow-lg">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
     </div>`,
     iconSize: [32, 32],
     iconAnchor: [16, 32],
-  });
+  }), []);
 
-  const routes = cityData.deliveryPoints
-    .filter((p) => p.type === "delivery")
-    .map((p) => {
-      const collection = cityData.deliveryPoints.find((c) => c.type === "collection");
-      if (collection) {
-        return [
-          [p.lat, p.lng],
-          [collection.lat, collection.lng],
-        ] as [number, number][];
-      }
-      return null;
-    })
-    .filter(Boolean) as [number, number][][];
+  const routes = useMemo(() => {
+    return cityData.deliveryPoints
+      .filter((p) => p.type === "delivery")
+      .map((p) => {
+        const collection = cityData.deliveryPoints.find((c) => c.type === "collection");
+        if (collection) {
+          return [
+            [p.lat, p.lng],
+            [collection.lat, collection.lng],
+          ] as [number, number][];
+        }
+        return null;
+      })
+      .filter(Boolean) as [number, number][][];
+  }, [cityData]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -217,40 +219,43 @@ export default function TwoWayExchange() {
           <CardContent>
             <div className="h-[500px] rounded-lg overflow-hidden border">
               <MapContainer
+                key={selectedCity}
                 center={cityData.center}
                 zoom={13}
                 scrollWheelZoom={false}
                 style={{ height: "100%", width: "100%" }}
               >
-                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                {routes.map((route, idx) => (
-                  <Polyline 
-                    key={idx} 
-                    positions={route} 
-                    pathOptions={{ color: "#9ca3af", weight: 2, dashArray: "5, 10" }} 
-                  />
-                ))}
-                {cityData.deliveryPoints.map((point) => (
-                  <Marker
-                    key={point.id}
-                    position={[point.lat, point.lng]}
-                    icon={point.type === "delivery" ? deliveryIcon : collectionIcon}
-                  >
-                    <Popup>
-                      <div className="text-sm">
-                        <p className="font-semibold">{point.address}</p>
-                        <p className="text-muted-foreground">
-                          {point.type === "delivery" ? "Điểm giao hàng" : "Trung tâm phân loại"}
-                        </p>
-                        {point.type === "delivery" && (
-                          <p className="text-green-600 font-medium mt-1">
-                            +{point.recycleCount} đơn tái chế
+                <>
+                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                  {routes.map((route, idx) => (
+                    <Polyline 
+                      key={`route-${idx}`}
+                      positions={route} 
+                      pathOptions={{ color: "#9ca3af", weight: 2, dashArray: "5, 10" }} 
+                    />
+                  ))}
+                  {cityData.deliveryPoints.map((point) => (
+                    <Marker
+                      key={point.id}
+                      position={[point.lat, point.lng]}
+                      icon={point.type === "delivery" ? deliveryIcon : collectionIcon}
+                    >
+                      <Popup>
+                        <div className="text-sm">
+                          <p className="font-semibold">{point.address}</p>
+                          <p className="text-muted-foreground">
+                            {point.type === "delivery" ? "Điểm giao hàng" : "Trung tâm phân loại"}
                           </p>
-                        )}
-                      </div>
-                    </Popup>
-                  </Marker>
-                ))}
+                          {point.type === "delivery" && (
+                            <p className="text-green-600 font-medium mt-1">
+                              +{point.recycleCount} đơn tái chế
+                            </p>
+                          )}
+                        </div>
+                      </Popup>
+                    </Marker>
+                  ))}
+                </>
               </MapContainer>
             </div>
 
