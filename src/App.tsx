@@ -20,6 +20,7 @@ import Partners from "./pages/Partners";
 import About from "./pages/About";
 import RecycleExchange from "./pages/RecycleExchange";
 import Dashboard from "./pages/Dashboard";
+import TwoWayExchange from "./pages/TwoWayExchange";
 
 const queryClient = new QueryClient();
 
@@ -64,6 +65,7 @@ const App = () => (
               <Route path="/partners" element={<Partners />} />
               <Route path="/about" element={<About />} />
               <Route path="/recycle-exchange" element={<RecycleExchange />} />
+              <Route path="/two-way-exchange" element={<TwoWayExchange />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
