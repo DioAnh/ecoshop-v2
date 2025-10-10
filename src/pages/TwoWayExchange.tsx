@@ -223,8 +223,6 @@ export default function TwoWayExchange() {
                 style={{ height: "100%", width: "100%" }}
               >
                 <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
-                {/* Routes */}
                 {routes.map((route, idx) => (
                   <Polyline 
                     key={idx} 
@@ -232,8 +230,6 @@ export default function TwoWayExchange() {
                     pathOptions={{ color: "#9ca3af", weight: 2, dashArray: "5, 10" }} 
                   />
                 ))}
-
-                {/* Markers */}
                 {cityData.deliveryPoints.map((point) => (
                   <Marker
                     key={point.id}
