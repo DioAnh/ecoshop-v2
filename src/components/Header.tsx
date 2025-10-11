@@ -70,16 +70,6 @@ const Header = () => {
               <NavigationMenuItem>
                 <NavigationMenuLink
                   className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
-                  onClick={() => navigate('/recycle-exchange')}
-                >
-                  <Recycle className="w-4 h-4 mr-2" />
-                  Quy đổi và tái chế
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
                   onClick={() => navigate('/two-way-exchange')}
                 >
                   <Package className="w-4 h-4 mr-2" />

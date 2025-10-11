@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Package, Recycle, MapPin, TrendingDown } from "lucide-react";
-import vietnamMap from "@/assets/vietnam-delivery-map.jpg";
+import { Button } from "@/components/ui/button";
+import { Package, Recycle, MapPin, TrendingDown, Home } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import CreateDeliveryModal from "@/components/CreateDeliveryModal";
 import { supabase } from "@/integrations/supabase/client";
 interface CityData {
@@ -76,6 +77,7 @@ const getEmissionLabel = (netCo2: number) => {
   return "Rất cao";
 };
 export default function TwoWayExchange() {
+  const navigate = useNavigate();
   const [selectedCity, setSelectedCity] = useState<string>("hanoi");
   const [refreshKey, setRefreshKey] = useState(0);
   const cityData = citiesData[selectedCity];
@@ -90,8 +92,19 @@ export default function TwoWayExchange() {
   return <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-4xl font-bold text-foreground mb-2">Quy đổi 2 chiều</h1>
+          <div className="flex-1">
+            <div className="flex items-center gap-4 mb-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/')}
+                className="flex items-center gap-2"
+              >
+                <Home className="w-4 h-4" />
+                Trang chủ
+              </Button>
+              <h1 className="text-4xl font-bold text-foreground">Quy đổi 2 chiều</h1>
+            </div>
             <p className="text-muted-foreground">Giao hàng xanh & Thu gom tái chế</p>
           </div>
           <CreateDeliveryModal onSuccess={handleDeliverySuccess} />
@@ -120,7 +133,20 @@ export default function TwoWayExchange() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="relative rounded-lg overflow-hidden border bg-gray-50">
+            <div className="relative rounded-lg overflow-hidden border bg-gray-50 min-h-[500px]">
+              <img 
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Vietnam_location_map.svg/800px-Vietnam_location_map.svg.png" 
+                alt="Bản đồ Việt Nam"
+                className="w-full h-full object-contain"
+              />
+              
+              {/* Warehouse markers */}
+              <div className="absolute top-[15%] left-[52%] w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-lg" title="Hà Nội"></div>
+              <div className="absolute top-[78%] left-[48%] w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-lg" title="TP.HCM"></div>
+              <div className="absolute top-[48%] left-[50%] w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-lg" title="Đà Nẵng"></div>
+              <div className="absolute top-[22%] left-[50%] w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-lg" title="Hải Phòng"></div>
+              <div className="absolute top-[88%] left-[46%] w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-lg" title="Cần Thơ"></div>
+              <div className="absolute top-[75%] left-[49%] w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-lg" title="Bình Dương"></div>
               
               <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-4">
                 <h3 className="font-semibold text-foreground mb-2">Thành phố: {cityData.name}</h3>

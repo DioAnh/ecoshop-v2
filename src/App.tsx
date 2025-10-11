@@ -18,7 +18,6 @@ import GreenPointsWallet from "./pages/GreenPointsWallet";
 import GreenDelivery from "./pages/GreenDelivery";
 import Partners from "./pages/Partners";
 import About from "./pages/About";
-import RecycleExchange from "./pages/RecycleExchange";
 import Dashboard from "./pages/Dashboard";
 import TwoWayExchange from "./pages/TwoWayExchange";
 
@@ -64,7 +63,6 @@ const App = () => (
               <Route path="/green-delivery" element={<GreenDelivery />} />
               <Route path="/partners" element={<Partners />} />
               <Route path="/about" element={<About />} />
-              <Route path="/recycle-exchange" element={<RecycleExchange />} />
               <Route path="/two-way-exchange" element={<TwoWayExchange />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/product/:id" element={<ProductDetail />} />
