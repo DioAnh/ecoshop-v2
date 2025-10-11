@@ -32,11 +32,11 @@ import { toast } from "@/hooks/use-toast";
 import { Plus } from "lucide-react";
 
 const formSchema = z.object({
-  customerName: z.string().min(1, "Vui lòng nhập tên khách hàng"),
-  orderCode: z.string().min(1, "Vui lòng nhập mã đơn mua"),
-  phoneNumber: z.string().min(1, "Vui lòng nhập số điện thoại"),
-  weightKg: z.string().min(1, "Vui lòng nhập số lượng kg"),
-  shipperName: z.string().min(1, "Vui lòng nhập tên shipper"),
+  customerName: z.string().trim().min(1, "Vui lòng nhập tên khách hàng").max(100),
+  orderCode: z.string().trim().min(1, "Vui lòng nhập mã đơn mua").regex(/^\d+$/, "Mã đơn mua phải là số"),
+  phoneNumber: z.string().trim().min(10, "Số điện thoại phải có ít nhất 10 số").max(11, "Số điện thoại không hợp lệ").regex(/^\d+$/, "Số điện thoại chỉ được chứa số"),
+  weightKg: z.string().trim().min(1, "Vui lòng nhập số lượng kg").regex(/^\d+(\.\d+)?$/, "Số lượng kg phải là số"),
+  shipperName: z.string().trim().min(1, "Vui lòng nhập tên shipper").max(100),
   warehouseAddress: z.string().min(1, "Vui lòng chọn địa chỉ kho"),
 });
 
@@ -65,12 +65,21 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
     try {
+      // Parse and validate numbers
+      const orderCode = parseInt(values.orderCode, 10);
+      const phoneNumber = parseInt(values.phoneNumber, 10);
+      const weightKg = parseFloat(values.weightKg);
+
+      if (isNaN(orderCode) || isNaN(phoneNumber) || isNaN(weightKg)) {
+        throw new Error("Dữ liệu số không hợp lệ");
+      }
+
       const { data, error } = await (supabase as any).from("2waydelivery").insert({
-        "Tên khách hàng": values.customerName,
-        "Mã đơn mua": parseInt(values.orderCode),
-        "Số điện thoại": parseInt(values.phoneNumber),
-        "Số lượng kg": parseInt(values.weightKg),
-        "Tên shipper": values.shipperName,
+        "Tên khách hàng": values.customerName.trim(),
+        "Mã đơn mua": orderCode,
+        "Số điện thoại": phoneNumber,
+        "Số lượng kg": weightKg,
+        "Tên shipper": values.shipperName.trim(),
         "Địa chỉ kho": values.warehouseAddress,
       }).select();
 
@@ -84,11 +93,11 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
       form.reset();
       setOpen(false);
       onSuccess();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating delivery:", error);
       toast({
         title: "Lỗi",
-        description: "Không thể tạo đơn thu về. Vui lòng thử lại.",
+        description: error.message || "Không thể tạo đơn thu về. Vui lòng kiểm tra lại thông tin.",
         variant: "destructive",
       });
     } finally {
@@ -134,7 +143,7 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
                 <FormItem>
                   <FormLabel>Mã đơn mua</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nhập mã đơn mua" {...field} />
+                    <Input type="number" placeholder="Nhập mã đơn mua" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -148,7 +157,12 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
                 <FormItem>
                   <FormLabel>Số điện thoại</FormLabel>
                   <FormControl>
-                    <Input type="tel" placeholder="Nhập số điện thoại" {...field} />
+                    <Input 
+                      type="tel" 
+                      placeholder="Nhập số điện thoại (10-11 số)" 
+                      maxLength={11}
+                      {...field} 
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
