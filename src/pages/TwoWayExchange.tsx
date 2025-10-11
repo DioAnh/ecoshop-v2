@@ -5,7 +5,6 @@ import { Package, Recycle, MapPin, TrendingDown } from "lucide-react";
 import vietnamMap from "@/assets/vietnam-delivery-map.jpg";
 import CreateDeliveryModal from "@/components/CreateDeliveryModal";
 import { supabase } from "@/integrations/supabase/client";
-
 interface CityData {
   name: string;
   orders: number;
@@ -14,7 +13,6 @@ interface CityData {
   co2Saved: number;
   deliveryPoints: number;
 }
-
 const citiesData: Record<string, CityData> = {
   hanoi: {
     name: "Hà Nội",
@@ -22,7 +20,7 @@ const citiesData: Record<string, CityData> = {
     wasteKg: 320,
     co2Delivery: 85.5,
     co2Saved: 124.8,
-    deliveryPoints: 4,
+    deliveryPoints: 4
   },
   hcm: {
     name: "TP. Hồ Chí Minh",
@@ -30,7 +28,7 @@ const citiesData: Record<string, CityData> = {
     wasteKg: 645,
     co2Delivery: 172.3,
     co2Saved: 251.4,
-    deliveryPoints: 4,
+    deliveryPoints: 4
   },
   danang: {
     name: "Đà Nẵng",
@@ -38,7 +36,7 @@ const citiesData: Record<string, CityData> = {
     wasteKg: 215,
     co2Delivery: 57.2,
     co2Saved: 83.8,
-    deliveryPoints: 2,
+    deliveryPoints: 2
   },
   haiphong: {
     name: "Hải Phòng",
@@ -46,7 +44,7 @@ const citiesData: Record<string, CityData> = {
     wasteKg: 168,
     co2Delivery: 44.6,
     co2Saved: 65.5,
-    deliveryPoints: 2,
+    deliveryPoints: 2
   },
   cantho: {
     name: "Cần Thơ",
@@ -54,7 +52,7 @@ const citiesData: Record<string, CityData> = {
     wasteKg: 118,
     co2Delivery: 31.4,
     co2Saved: 46.0,
-    deliveryPoints: 2,
+    deliveryPoints: 2
   },
   binhduong: {
     name: "Bình Dương",
@@ -62,44 +60,34 @@ const citiesData: Record<string, CityData> = {
     wasteKg: 248,
     co2Delivery: 65.9,
     co2Saved: 96.6,
-    deliveryPoints: 2,
-  },
+    deliveryPoints: 2
+  }
 };
-
 const getEmissionColor = (netCo2: number) => {
   if (netCo2 <= 0) return "text-green-600 bg-green-50";
   if (netCo2 <= 20) return "text-yellow-600 bg-yellow-50";
   if (netCo2 <= 50) return "text-orange-600 bg-orange-50";
   return "text-red-600 bg-red-50";
 };
-
 const getEmissionLabel = (netCo2: number) => {
   if (netCo2 <= 0) return "Tốt";
   if (netCo2 <= 20) return "Trung bình";
   if (netCo2 <= 50) return "Cao";
   return "Rất cao";
 };
-
 export default function TwoWayExchange() {
   const [selectedCity, setSelectedCity] = useState<string>("hanoi");
   const [refreshKey, setRefreshKey] = useState(0);
   const cityData = citiesData[selectedCity];
-
   const handleDeliverySuccess = () => {
     setRefreshKey(prev => prev + 1);
   };
-
   const totalOrders = Object.values(citiesData).reduce((sum, city) => sum + city.orders, 0);
-  const totalDeliveryPoints = Object.values(citiesData).reduce(
-    (sum, city) => sum + city.deliveryPoints,
-    0
-  );
+  const totalDeliveryPoints = Object.values(citiesData).reduce((sum, city) => sum + city.deliveryPoints, 0);
   const totalCO2Saved = Object.values(citiesData).reduce((sum, city) => sum + city.co2Saved, 0);
   const totalCO2Delivery = Object.values(citiesData).reduce((sum, city) => sum + city.co2Delivery, 0);
   const totalNetCO2 = totalCO2Delivery - totalCO2Saved;
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
@@ -116,11 +104,9 @@ export default function TwoWayExchange() {
               <SelectValue placeholder="Chọn thành phố" />
             </SelectTrigger>
             <SelectContent>
-              {Object.entries(citiesData).map(([key, city]) => (
-                <SelectItem key={key} value={key}>
+              {Object.entries(citiesData).map(([key, city]) => <SelectItem key={key} value={key}>
                   {city.name}
-                </SelectItem>
-              ))}
+                </SelectItem>)}
             </SelectContent>
           </Select>
         </div>
@@ -135,11 +121,7 @@ export default function TwoWayExchange() {
           </CardHeader>
           <CardContent>
             <div className="relative rounded-lg overflow-hidden border bg-gray-50">
-              <img 
-                src={vietnamMap} 
-                alt="Bản đồ Việt Nam - Hệ thống giao hàng và thu gom" 
-                className="w-full h-auto"
-              />
+              
               <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-4">
                 <h3 className="font-semibold text-foreground mb-2">Thành phố: {cityData.name}</h3>
                 <div className="space-y-1 text-sm">
@@ -206,7 +188,9 @@ export default function TwoWayExchange() {
                 <span className="text-sm text-muted-foreground">Trung tâm phân loại</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-8 h-0.5 bg-gray-400" style={{ borderTop: "2px dashed" }}></div>
+                <div className="w-8 h-0.5 bg-gray-400" style={{
+                borderTop: "2px dashed"
+              }}></div>
                 <span className="text-sm text-muted-foreground">Tuyến vận chuyển</span>
               </div>
             </div>
@@ -262,9 +246,8 @@ export default function TwoWayExchange() {
                 </thead>
                 <tbody>
                   {Object.entries(citiesData).map(([key, city]) => {
-                    const netCo2 = city.co2Delivery - city.co2Saved;
-                    return (
-                      <tr key={key} className="border-b hover:bg-muted/50 transition-colors">
+                  const netCo2 = city.co2Delivery - city.co2Saved;
+                  return <tr key={key} className="border-b hover:bg-muted/50 transition-colors">
                         <td className="py-3 px-4 font-medium text-foreground">{city.name}</td>
                         <td className="py-3 px-4 text-right text-muted-foreground">{city.orders}</td>
                         <td className="py-3 px-4 text-right text-muted-foreground">{city.wasteKg}</td>
@@ -278,9 +261,8 @@ export default function TwoWayExchange() {
                             {getEmissionLabel(netCo2)}
                           </span>
                         </td>
-                      </tr>
-                    );
-                  })}
+                      </tr>;
+                })}
                 </tbody>
               </table>
             </div>
@@ -331,6 +313,5 @@ export default function TwoWayExchange() {
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
+    </div>;
 }
