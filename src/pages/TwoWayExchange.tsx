@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Package, Recycle, MapPin, TrendingDown } from "lucide-react";
 import vietnamMap from "@/assets/vietnam-delivery-map.jpg";
+import CreateDeliveryModal from "@/components/CreateDeliveryModal";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CityData {
   name: string;
@@ -80,7 +82,12 @@ const getEmissionLabel = (netCo2: number) => {
 
 export default function TwoWayExchange() {
   const [selectedCity, setSelectedCity] = useState<string>("hanoi");
+  const [refreshKey, setRefreshKey] = useState(0);
   const cityData = citiesData[selectedCity];
+
+  const handleDeliverySuccess = () => {
+    setRefreshKey(prev => prev + 1);
+  };
 
   const totalOrders = Object.values(citiesData).reduce((sum, city) => sum + city.orders, 0);
   const totalDeliveryPoints = Object.values(citiesData).reduce(
@@ -94,9 +101,12 @@ export default function TwoWayExchange() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">Quy đổi 2 chiều</h1>
-          <p className="text-muted-foreground">Giao hàng xanh & Thu gom tái chế</p>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-4xl font-bold text-foreground mb-2">Quy đổi 2 chiều</h1>
+            <p className="text-muted-foreground">Giao hàng xanh & Thu gom tái chế</p>
+          </div>
+          <CreateDeliveryModal onSuccess={handleDeliverySuccess} />
         </div>
 
         {/* City Filter */}
