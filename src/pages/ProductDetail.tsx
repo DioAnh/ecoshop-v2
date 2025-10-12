@@ -16,6 +16,8 @@ interface Product {
   image_url: string;
   co2_emission: number;
   descripton: string; // Note: this is the actual field name in DB (typo)
+  "Thành phần"?: string;
+  "Câu chuyện"?: string;
 }
 
 const ProductDetail = () => {
@@ -195,6 +197,26 @@ const ProductDetail = () => {
                 <h3 className="text-lg font-semibold text-foreground mb-3">Mô tả sản phẩm</h3>
                 <p className="text-muted-foreground leading-relaxed">
                   {product.descripton}
+                </p>
+              </div>
+            )}
+
+            {/* Ingredients */}
+            {product["Thành phần"] && (
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Thành phần sản phẩm</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  {product["Thành phần"]}
+                </p>
+              </div>
+            )}
+
+            {/* Story */}
+            {product["Câu chuyện"] && (
+              <div>
+                <h3 className="text-lg font-semibold text-foreground mb-3">Câu chuyện sản phẩm</h3>
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+                  {product["Câu chuyện"]}
                 </p>
               </div>
             )}
