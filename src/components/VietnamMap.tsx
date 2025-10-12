@@ -1,6 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 interface CityData {
   name: string;
@@ -27,12 +29,14 @@ export const VietnamMap = ({ citiesData, selectedCity }: VietnamMapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const markers = useRef<mapboxgl.Marker[]>([]);
+  const [mapboxToken, setMapboxToken] = useState('');
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
 
   useEffect(() => {
-    if (!mapContainer.current) return;
+    if (!mapContainer.current || !mapboxToken) return;
 
     // Initialize map
-    mapboxgl.accessToken = 'pk.eyJ1IjoibG92YWJsZS1haS1kZW1vIiwiYSI6ImNtNXQ4azUzNDA3dWoya3NjdnZhbXFybmUifQ.07d3hNdRlXwN6MzjsQAM4Q';
+    mapboxgl.accessToken = mapboxToken;
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
@@ -52,6 +56,7 @@ export const VietnamMap = ({ citiesData, selectedCity }: VietnamMapProps) => {
 
     // Add markers after map loads
     map.current.on('load', () => {
+      setIsMapLoaded(true);
       // Clear existing markers
       markers.current.forEach(marker => marker.remove());
       markers.current = [];
@@ -141,30 +146,61 @@ export const VietnamMap = ({ citiesData, selectedCity }: VietnamMapProps) => {
       markers.current.forEach(marker => marker.remove());
       map.current?.remove();
     };
-  }, [citiesData, selectedCity]);
+  }, [citiesData, selectedCity, mapboxToken]);
 
   return (
-    <div className="relative w-full h-[500px] rounded-lg overflow-hidden">
-      <div ref={mapContainer} className="absolute inset-0" />
-      
-      {/* Color Legend */}
-      <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3 text-sm">
-        <p className="font-semibold text-foreground mb-2">Mức CO₂ ròng</p>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#10b981' }}></div>
-            <span className="text-muted-foreground">Tốt (≤0 kg)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#f59e0b' }}></div>
-            <span className="text-muted-foreground">Trung bình (1-20 kg)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#ef4444' }}></div>
-            <span className="text-muted-foreground">Cao (&gt;20 kg)</span>
+    <div className="relative w-full rounded-lg overflow-hidden">
+      {!mapboxToken ? (
+        <div className="p-6 bg-muted/50 rounded-lg">
+          <h3 className="text-lg font-semibold mb-4">Nhập Mapbox Access Token</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Để hiển thị bản đồ, vui lòng nhập Mapbox public token của bạn. 
+            Bạn có thể lấy token tại <a href="https://account.mapbox.com/access-tokens/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">mapbox.com</a>
+          </p>
+          <div className="flex gap-2">
+            <Input
+              type="text"
+              placeholder="pk.eyJ1Ijoi..."
+              value={mapboxToken}
+              onChange={(e) => setMapboxToken(e.target.value)}
+              className="flex-1"
+            />
+            <Button onClick={() => setMapboxToken(mapboxToken)}>
+              Tải bản đồ
+            </Button>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="relative w-full h-[500px]">
+          <div ref={mapContainer} className="absolute inset-0" />
+          {!isMapLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center bg-background/80">
+              <p className="text-muted-foreground">Đang tải bản đồ...</p>
+            </div>
+          )}
+      
+          {/* Color Legend */}
+          {isMapLoaded && (
+            <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-3 text-sm">
+              <p className="font-semibold text-foreground mb-2">Mức CO₂ ròng</p>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#10b981' }}></div>
+                  <span className="text-muted-foreground">Tốt (≤0 kg)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#f59e0b' }}></div>
+                  <span className="text-muted-foreground">Trung bình (1-20 kg)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 rounded-full" style={{ backgroundColor: '#ef4444' }}></div>
+                  <span className="text-muted-foreground">Cao (&gt;20 kg)</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
