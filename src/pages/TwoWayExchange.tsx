@@ -6,7 +6,8 @@ import { Package, Recycle, MapPin, TrendingDown, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import CreateDeliveryModal from "@/components/CreateDeliveryModal";
 import { supabase } from "@/integrations/supabase/client";
-import vietnamMap from "@/assets/vietnam-warehouse-map.png";
+import { VietnamMap } from "@/components/VietnamMap";
+import Header from "@/components/Header";
 interface CityData {
   name: string;
   orders: number;
@@ -14,6 +15,7 @@ interface CityData {
   co2Delivery: number;
   co2Saved: number;
   deliveryPoints: number;
+  coordinates: [number, number]; // [longitude, latitude]
 }
 const citiesData: Record<string, CityData> = {
   hanoi: {
@@ -22,23 +24,8 @@ const citiesData: Record<string, CityData> = {
     wasteKg: 320,
     co2Delivery: 85.5,
     co2Saved: 124.8,
-    deliveryPoints: 4
-  },
-  hcm: {
-    name: "TP. Hồ Chí Minh",
-    orders: 289,
-    wasteKg: 645,
-    co2Delivery: 172.3,
-    co2Saved: 251.4,
-    deliveryPoints: 4
-  },
-  danang: {
-    name: "Đà Nẵng",
-    orders: 98,
-    wasteKg: 215,
-    co2Delivery: 57.2,
-    co2Saved: 83.8,
-    deliveryPoints: 2
+    deliveryPoints: 4,
+    coordinates: [105.8542, 21.0285]
   },
   haiphong: {
     name: "Hải Phòng",
@@ -46,15 +33,26 @@ const citiesData: Record<string, CityData> = {
     wasteKg: 168,
     co2Delivery: 44.6,
     co2Saved: 65.5,
-    deliveryPoints: 2
+    deliveryPoints: 2,
+    coordinates: [106.6881, 20.8449]
   },
-  cantho: {
-    name: "Cần Thơ",
-    orders: 54,
-    wasteKg: 118,
-    co2Delivery: 31.4,
-    co2Saved: 46.0,
-    deliveryPoints: 2
+  danang: {
+    name: "Đà Nẵng",
+    orders: 98,
+    wasteKg: 215,
+    co2Delivery: 57.2,
+    co2Saved: 83.8,
+    deliveryPoints: 2,
+    coordinates: [108.2022, 16.0544]
+  },
+  hcm: {
+    name: "TP. Hồ Chí Minh",
+    orders: 289,
+    wasteKg: 645,
+    co2Delivery: 172.3,
+    co2Saved: 251.4,
+    deliveryPoints: 4,
+    coordinates: [106.6297, 10.8231]
   },
   binhduong: {
     name: "Bình Dương",
@@ -62,7 +60,17 @@ const citiesData: Record<string, CityData> = {
     wasteKg: 248,
     co2Delivery: 65.9,
     co2Saved: 96.6,
-    deliveryPoints: 2
+    deliveryPoints: 2,
+    coordinates: [106.6500, 11.3254]
+  },
+  cantho: {
+    name: "Cần Thơ",
+    orders: 54,
+    wasteKg: 118,
+    co2Delivery: 31.4,
+    co2Saved: 46.0,
+    deliveryPoints: 2,
+    coordinates: [105.7851, 10.0452]
   }
 };
 const getEmissionColor = (netCo2: number) => {
@@ -91,6 +99,7 @@ export default function TwoWayExchange() {
   const totalCO2Delivery = Object.values(citiesData).reduce((sum, city) => sum + city.co2Delivery, 0);
   const totalNetCO2 = totalCO2Delivery - totalCO2Saved;
   return <div className="min-h-screen bg-background">
+      <Header />
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex-1">
@@ -134,22 +143,7 @@ export default function TwoWayExchange() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="relative rounded-lg overflow-hidden border bg-gray-50 min-h-[500px]">
-              <img 
-                src={vietnamMap} 
-                alt="Bản đồ Việt Nam với các kho xanh"
-                className="w-full h-full object-contain"
-              />
-              
-              <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm rounded-lg shadow-lg p-4">
-                <h3 className="font-semibold text-foreground mb-2">Thành phố: {cityData.name}</h3>
-                <div className="space-y-1 text-sm">
-                  <p className="text-muted-foreground">Điểm giao hàng: <span className="font-medium text-green-600">{cityData.deliveryPoints}</span></p>
-                  <p className="text-muted-foreground">Đơn hàng: <span className="font-medium text-foreground">{cityData.orders}</span></p>
-                  <p className="text-muted-foreground">CO₂ tiết kiệm: <span className="font-medium text-green-600">{cityData.co2Saved.toFixed(1)} kg</span></p>
-                </div>
-              </div>
-            </div>
+            <VietnamMap citiesData={citiesData} selectedCity={selectedCity} />
 
             {/* Map Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
