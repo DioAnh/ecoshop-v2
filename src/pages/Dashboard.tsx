@@ -129,7 +129,8 @@ const carbonCredits = [
     name: "VCS", 
     fullName: "Verified Carbon Standard", 
     image: carbonVCS,
-    price: "12,000 VNĐ/tấn CO₂",
+    price: 120000,
+    trees: 100,
     description: "Tiêu chuẩn tín chỉ carbon tự nguyện phổ biến nhất thế giới"
   },
   { 
@@ -137,7 +138,8 @@ const carbonCredits = [
     name: "Gold Standard", 
     fullName: "Gold Standard Carbon Credit", 
     image: carbonGoldStandard,
-    price: "18,000 VNĐ/tấn CO₂",
+    price: 180000,
+    trees: 150,
     description: "Tín chỉ carbon cao cấp với tác động phát triển bền vững"
   },
   { 
@@ -145,7 +147,8 @@ const carbonCredits = [
     name: "I-REC", 
     fullName: "International REC Standard", 
     image: carbonIREC,
-    price: "8,000 VNĐ/tấn CO₂",
+    price: 80000,
+    trees: 70,
     description: "Chứng chỉ năng lượng tái tạo quốc tế"
   },
   { 
@@ -153,7 +156,8 @@ const carbonCredits = [
     name: "VCU", 
     fullName: "Voluntary Carbon Units", 
     image: carbonVCU,
-    price: "10,000 VNĐ/tấn CO₂",
+    price: 100000,
+    trees: 85,
     description: "Đơn vị carbon tự nguyện được công nhận rộng rãi"
   },
 ];
@@ -193,6 +197,18 @@ const Dashboard = () => {
     setSelectedCompany(companyId);
     const company = companyList.find(c => c.id === companyId);
     toast.success(`Dữ liệu phát thải cá nhân và GreenPoint sẽ được đồng bộ với công ty ${company?.name}`);
+  };
+
+  const handleBuyCarbonCredit = (credit: typeof carbonCredits[0]) => {
+    if (greenpoints < credit.price) {
+      toast.error(`Không đủ GreenPoints! Bạn cần ${credit.price.toLocaleString()} điểm.`);
+      return;
+    }
+    
+    toast.success(
+      `🎉 Đã mua tín chỉ ${credit.name}! Bạn có thể trồng được ${credit.trees} cây xanh để bù đắp carbon.`,
+      { duration: 5000 }
+    );
   };
 
   return (
@@ -576,12 +592,20 @@ const Dashboard = () => {
                         <div className="flex-1">
                           <h4 className="font-semibold text-foreground">{credit.name}</h4>
                           <p className="text-xs text-muted-foreground mb-2">{credit.fullName}</p>
-                          <p className="text-sm text-primary font-bold mb-1">{credit.price}</p>
+                          <p className="text-sm text-primary font-bold mb-1">
+                            {credit.price.toLocaleString()} GreenPoints
+                          </p>
                           <p className="text-xs text-muted-foreground">{credit.description}</p>
+                          <p className="text-xs text-accent mt-1">🌱 Trồng được {credit.trees} cây</p>
                         </div>
                       </div>
-                      <Button className="w-full mt-3" size="sm">
-                        Mua tín chỉ
+                      <Button 
+                        className="w-full mt-3" 
+                        size="sm"
+                        onClick={() => handleBuyCarbonCredit(credit)}
+                        disabled={loading || greenpoints < credit.price}
+                      >
+                        {greenpoints < credit.price ? "Không đủ điểm" : "Mua tín chỉ"}
                       </Button>
                     </div>
                   ))}
@@ -768,12 +792,20 @@ const Dashboard = () => {
                         <div className="flex-1">
                           <h4 className="font-semibold text-foreground">{credit.name}</h4>
                           <p className="text-xs text-muted-foreground mb-2">{credit.fullName}</p>
-                          <p className="text-sm text-primary font-bold mb-1">{credit.price}</p>
+                          <p className="text-sm text-primary font-bold mb-1">
+                            {credit.price.toLocaleString()} GreenPoints
+                          </p>
                           <p className="text-xs text-muted-foreground">{credit.description}</p>
+                          <p className="text-xs text-accent mt-1">🌱 Trồng được {credit.trees} cây</p>
                         </div>
                       </div>
-                      <Button className="w-full mt-3" size="sm">
-                        Mua tín chỉ
+                      <Button 
+                        className="w-full mt-3" 
+                        size="sm"
+                        onClick={() => handleBuyCarbonCredit(credit)}
+                        disabled={loading || greenpoints < credit.price}
+                      >
+                        {greenpoints < credit.price ? "Không đủ điểm" : "Mua tín chỉ"}
                       </Button>
                     </div>
                   ))}
