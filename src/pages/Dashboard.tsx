@@ -49,6 +49,10 @@ import {
   Medal,
 } from "lucide-react";
 import { toast } from "sonner";
+import carbonVCS from "@/assets/carbon-vcs.jpg";
+import carbonGoldStandard from "@/assets/carbon-gold-standard.jpg";
+import carbonIREC from "@/assets/carbon-irec.jpg";
+import carbonVCU from "@/assets/carbon-vcu.jpg";
 
 // Mock data
 const wasteData = [
@@ -117,6 +121,41 @@ const companyList = [
   { id: "2", name: "EcoVietnam Ltd" },
   { id: "3", name: "Sustainable Co" },
   { id: "4", name: "Nature First" },
+];
+
+const carbonCredits = [
+  { 
+    id: 1, 
+    name: "VCS", 
+    fullName: "Verified Carbon Standard", 
+    image: carbonVCS,
+    price: "12,000 VNĐ/tấn CO₂",
+    description: "Tiêu chuẩn tín chỉ carbon tự nguyện phổ biến nhất thế giới"
+  },
+  { 
+    id: 2, 
+    name: "Gold Standard", 
+    fullName: "Gold Standard Carbon Credit", 
+    image: carbonGoldStandard,
+    price: "18,000 VNĐ/tấn CO₂",
+    description: "Tín chỉ carbon cao cấp với tác động phát triển bền vững"
+  },
+  { 
+    id: 3, 
+    name: "I-REC", 
+    fullName: "International REC Standard", 
+    image: carbonIREC,
+    price: "8,000 VNĐ/tấn CO₂",
+    description: "Chứng chỉ năng lượng tái tạo quốc tế"
+  },
+  { 
+    id: 4, 
+    name: "VCU", 
+    fullName: "Voluntary Carbon Units", 
+    image: carbonVCU,
+    price: "10,000 VNĐ/tấn CO₂",
+    description: "Đơn vị carbon tự nguyện được công nhận rộng rãi"
+  },
 ];
 
 const Dashboard = () => {
@@ -509,6 +548,46 @@ const Dashboard = () => {
                 </p>
               </CardContent>
             </Card>
+
+            {/* Carbon Credits Exchange */}
+            <Card className="eco-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Leaf className="text-primary" />
+                  Quy đổi tín chỉ carbon
+                </CardTitle>
+                <CardDescription>
+                  Mua tín chỉ carbon để bù đắp lượng phát thải của công ty
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {carbonCredits.map((credit) => (
+                    <div 
+                      key={credit.id}
+                      className="border rounded-lg p-4 hover:border-primary/50 transition-colors"
+                    >
+                      <div className="flex items-start gap-4">
+                        <img 
+                          src={credit.image} 
+                          alt={credit.name}
+                          className="w-16 h-16 rounded-lg object-cover"
+                        />
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-foreground">{credit.name}</h4>
+                          <p className="text-xs text-muted-foreground mb-2">{credit.fullName}</p>
+                          <p className="text-sm text-primary font-bold mb-1">{credit.price}</p>
+                          <p className="text-xs text-muted-foreground">{credit.description}</p>
+                        </div>
+                      </div>
+                      <Button className="w-full mt-3" size="sm">
+                        Mua tín chỉ
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Tab 3: Partner/Merchant */}
@@ -659,6 +738,46 @@ const Dashboard = () => {
                     </TableRow>
                   </TableBody>
                 </Table>
+              </CardContent>
+            </Card>
+
+            {/* Carbon Credits Exchange */}
+            <Card className="eco-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Leaf className="text-primary" />
+                  Quy đổi tín chỉ carbon
+                </CardTitle>
+                <CardDescription>
+                  Mua tín chỉ carbon để bù đắp lượng phát thải
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {carbonCredits.map((credit) => (
+                    <div 
+                      key={credit.id}
+                      className="border rounded-lg p-4 hover:border-primary/50 transition-colors"
+                    >
+                      <div className="flex items-start gap-4">
+                        <img 
+                          src={credit.image} 
+                          alt={credit.name}
+                          className="w-16 h-16 rounded-lg object-cover"
+                        />
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-foreground">{credit.name}</h4>
+                          <p className="text-xs text-muted-foreground mb-2">{credit.fullName}</p>
+                          <p className="text-sm text-primary font-bold mb-1">{credit.price}</p>
+                          <p className="text-xs text-muted-foreground">{credit.description}</p>
+                        </div>
+                      </div>
+                      <Button className="w-full mt-3" size="sm">
+                        Mua tín chỉ
+                      </Button>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
