@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -121,6 +122,33 @@ const companyList = [
 const Dashboard = () => {
   const { user } = useAuth();
   const [selectedCompany, setSelectedCompany] = useState("");
+  const [greenpoints, setGreenpoints] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      fetchUserData();
+    }
+  }, [user]);
+
+  const fetchUserData = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('greenpoints')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+      setGreenpoints(data?.greenpoints || 0);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCompanySelect = (companyId: string) => {
     setSelectedCompany(companyId);
@@ -188,7 +216,9 @@ const Dashboard = () => {
                 <CardContent className="space-y-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Điểm tích lũy hiện tại</p>
-                    <p className="text-3xl font-bold text-accent">1,245 điểm</p>
+                    <p className="text-3xl font-bold text-accent">
+                      {loading ? "..." : `${greenpoints.toLocaleString()} điểm`}
+                    </p>
                   </div>
                   <Button className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90">
                     <Gift className="mr-2 h-4 w-4" />
