@@ -24,8 +24,8 @@ const getMarkerColor = (netCo2: number): string => {
 
 // Relative positions for cities on the map (percentage-based)
 const cityPositions: Record<string, { top: string; left: string }> = {
-  hanoi: { top: '22%', left: '52%' },
-  haiphong: { top: '24%', left: '58%' },
+  hanoi: { top: '20%', left: '50%' },
+  haiphong: { top: '22%', left: '57%' },
   danang: { top: '48%', left: '58%' },
   hcm: { top: '82%', left: '54%' },
   binhduong: { top: '78%', left: '54%' },
