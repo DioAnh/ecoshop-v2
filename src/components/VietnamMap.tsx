@@ -24,7 +24,7 @@ const getMarkerColor = (netCo2: number): string => {
 
 // Relative positions for cities on the map (percentage-based)
 const cityPositions: Record<string, { top: string; left: string }> = {
-  hanoi: { top: '20%', left: '50%' },
+  hanoi: { top: '18%', left: '50%' },
   haiphong: { top: '22%', left: '57%' },
   danang: { top: '48%', left: '58%' },
   hcm: { top: '82%', left: '54%' },
@@ -82,7 +82,7 @@ export const VietnamMap = ({ citiesData, selectedCity }: VietnamMapProps) => {
               {/* Tooltip */}
               {isHovered && (
                 <div 
-                  className="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 w-64 bg-white rounded-lg shadow-xl p-3 text-sm z-[1001]"
+                  className="absolute right-full mr-2 top-1/2 -translate-y-1/2 w-64 bg-white rounded-lg shadow-xl p-3 text-sm z-[1001]"
                   style={{ pointerEvents: 'none' }}
                 >
                   <h3 className="font-semibold text-base mb-2 text-foreground">{city.name}</h3>
