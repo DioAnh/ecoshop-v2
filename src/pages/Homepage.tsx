@@ -22,6 +22,7 @@ interface Product {
   category: number;
   descripton: string;
   is_hot?: boolean;
+  category_name?: string;
 }
 
 interface Category {
@@ -48,11 +49,18 @@ const Homepage = () => {
     try {
       const { data, error } = await (supabase as any)
         .from('products')
-        .select('*')
+        .select('*, category(name)')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setProducts(data || []);
+      
+      // Map the data to include category name
+      const productsWithCategory = (data || []).map((product: any) => ({
+        ...product,
+        category_name: product.category?.name
+      }));
+      
+      setProducts(productsWithCategory);
     } catch (error) {
       console.error('Error fetching products:', error);
     } finally {
@@ -257,6 +265,7 @@ const Homepage = () => {
                   certification={["Eco"]}
                   rating={4.5}
                   sold={Math.floor(Math.random() * 500) + 50}
+                  categoryName={product.category_name}
                 />
               ))}
               {/* Show sample products if no hot database products */}

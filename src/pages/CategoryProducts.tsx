@@ -126,6 +126,7 @@ const CategoryProducts = () => {
                 certification={["Eco"]}
                 rating={4.5}
                 sold={Math.floor(Math.random() * 500) + 50}
+                categoryName={category?.name}
               />
             ))}
           </div>

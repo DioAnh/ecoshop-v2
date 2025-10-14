@@ -4,6 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import certFairtrade from "@/assets/cert-fairtrade.jpg";
+import certFSC from "@/assets/cert-fsc.jpg";
+import certOrganic from "@/assets/cert-organic.jpg";
 
 interface ProductCardProps {
   id: string;
@@ -15,6 +18,7 @@ interface ProductCardProps {
   certification: string[];
   rating: number;
   sold: number;
+  categoryName?: string;
 }
 
 const ProductCard = ({ 
@@ -26,11 +30,18 @@ const ProductCard = ({
   co2Emission, 
   certification, 
   rating, 
-  sold 
+  sold,
+  categoryName
 }: ProductCardProps) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const { toast } = useToast();
+
+  // Categories that should show organic certification
+  const organicCategories = ["Thời trang", "Thực phẩm", "Làm đẹp", "Chăm sóc sức khỏe"];
+  const showOrganicCert = categoryName && organicCategories.some(cat => 
+    categoryName.toLowerCase().includes(cat.toLowerCase())
+  );
   
   const getCO2BadgeClass = (emission: number) => {
     if (emission < 1) return "co2-low";
@@ -73,6 +84,14 @@ const ProductCard = ({
               {cert}
             </Badge>
           ))}
+        </div>
+        {/* Certification logos */}
+        <div className="absolute bottom-2 right-2 flex gap-1">
+          <img src={certFairtrade} alt="Fairtrade" className="w-6 h-6 bg-white rounded-sm p-0.5" />
+          <img src={certFSC} alt="FSC" className="w-6 h-6 bg-white rounded-sm p-0.5" />
+          {showOrganicCert && (
+            <img src={certOrganic} alt="Organic" className="w-6 h-6 bg-white rounded-sm p-0.5" />
+          )}
         </div>
       </div>
 
