@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Package, Recycle, MapPin, TrendingDown, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import CreateDeliveryModal from "@/components/CreateDeliveryModal";
+import CameraCapture from "@/components/CameraCapture";
 import { supabase } from "@/integrations/supabase/client";
 import { VietnamMap } from "@/components/VietnamMap";
 import Header from "@/components/Header";
@@ -101,7 +102,7 @@ export default function TwoWayExchange() {
   return <div className="min-h-screen bg-background">
       <Header />
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="mb-8 flex flex-col gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-4 mb-2">
               <Button 
@@ -117,7 +118,10 @@ export default function TwoWayExchange() {
             </div>
             <p className="text-muted-foreground">Giao hàng xanh & Thu gom tái chế</p>
           </div>
-          <CreateDeliveryModal onSuccess={handleDeliverySuccess} />
+          <div className="flex flex-wrap gap-3">
+            <CreateDeliveryModal onSuccess={handleDeliverySuccess} />
+            <CameraCapture />
+          </div>
         </div>
 
         {/* City Filter */}
