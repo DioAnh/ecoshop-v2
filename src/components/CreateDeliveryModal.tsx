@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -29,7 +29,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-import { Plus } from "lucide-react";
+import { Plus, Camera, X } from "lucide-react";
 
 const formSchema = z.object({
   customerName: z.string().trim().min(1, "Vui lòng nhập tên khách hàng").max(100),
@@ -49,6 +49,8 @@ interface CreateDeliveryModalProps {
 export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalProps) {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -61,6 +63,36 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
       warehouseAddress: "",
     },
   });
+
+  const handleCameraCapture = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCapturedImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setCapturedImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const triggerCamera = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleOpenChange = (newOpen: boolean) => {
+    setOpen(newOpen);
+    if (!newOpen) {
+      form.reset();
+      handleRemoveImage();
+    }
+  };
 
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
@@ -106,7 +138,7 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button className="bg-green-600 hover:bg-green-700 text-white rounded-full">
           <Plus className="w-4 h-4 mr-2" />
@@ -222,6 +254,51 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
                 </FormItem>
               )}
             />
+
+            {/* Camera Capture Section */}
+            <div className="space-y-3 pt-2">
+              <FormLabel className="text-base font-semibold">
+                Ảnh Báo Cáo Thu Gom
+              </FormLabel>
+              
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleCameraCapture}
+                className="hidden"
+              />
+              
+              {!capturedImage ? (
+                <Button
+                  type="button"
+                  onClick={triggerCamera}
+                  className="w-full h-14 text-lg font-semibold bg-green-600 hover:bg-green-700 text-white"
+                  size="lg"
+                >
+                  <Camera className="mr-2 h-6 w-6" />
+                  📸 Chụp Ảnh Báo Cáo
+                </Button>
+              ) : (
+                <div className="relative rounded-lg overflow-hidden border-2 border-green-500">
+                  <img 
+                    src={capturedImage} 
+                    alt="Ảnh báo cáo thu gom" 
+                    className="w-full h-auto"
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-2 right-2"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
+            </div>
 
             <div className="flex gap-3 pt-4">
               <Button
