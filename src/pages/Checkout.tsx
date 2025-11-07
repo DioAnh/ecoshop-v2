@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Bike, Zap } from 'lucide-react';
+import { ArrowLeft, Bike, Zap, Fish, Lightbulb, TreePine, Wind, Utensils, Waves, Leaf, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -22,6 +22,7 @@ const Checkout = () => {
   const [loading, setLoading] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [deliveryVehicle, setDeliveryVehicle] = useState('electric'); // 'bicycle' or 'electric'
+  const [purchasedMessages, setPurchasedMessages] = useState<Array<{name: string, message: string}>>([]);
   const [formData, setFormData] = useState({
     shippingAddress: '',
     phoneNumber: '',
@@ -147,6 +148,24 @@ const Checkout = () => {
 
       if (itemsError) throw itemsError;
 
+      // Fetch product messages
+      const messages: Array<{name: string, message: string}> = [];
+      for (const item of items) {
+        const { data: product } = await (supabase as any)
+          .from('products')
+          .select('name, "thông điệp"')
+          .eq('id', item.id)
+          .single();
+        
+        if (product && product['thông điệp']) {
+          messages.push({
+            name: product.name,
+            message: product['thông điệp']
+          });
+        }
+      }
+      setPurchasedMessages(messages);
+
       // Calculate and award GreenPoints
       const pointsResult = await calculateAndAwardPoints(items, user.id, order.id);
       
@@ -202,27 +221,74 @@ const Checkout = () => {
     }
   };
 
+  const getMessageIcon = (message: string) => {
+    const lowerMessage = message.toLowerCase();
+    
+    if (lowerMessage.includes('rùa') || lowerMessage.includes('đại dương') || lowerMessage.includes('biển')) {
+      return <Fish className="w-5 h-5" />;
+    } else if (lowerMessage.includes('điện') || lowerMessage.includes('bóng đèn') || lowerMessage.includes('năng lượng')) {
+      return <Lightbulb className="w-5 h-5" />;
+    } else if (lowerMessage.includes('cây') || lowerMessage.includes('rừng') || lowerMessage.includes('gỗ')) {
+      return <TreePine className="w-5 h-5" />;
+    } else if (lowerMessage.includes('không khí') || lowerMessage.includes('khói') || lowerMessage.includes('ô nhiễm')) {
+      return <Wind className="w-5 h-5" />;
+    } else if (lowerMessage.includes('ăn') || lowerMessage.includes('bữa') || lowerMessage.includes('dụng cụ')) {
+      return <Utensils className="w-5 h-5" />;
+    } else if (lowerMessage.includes('nước') || lowerMessage.includes('sông')) {
+      return <Waves className="w-5 h-5" />;
+    } else if (lowerMessage.includes('xanh') || lowerMessage.includes('môi trường')) {
+      return <Leaf className="w-5 h-5" />;
+    }
+    return <Sparkles className="w-5 h-5" />;
+  };
+
   // Show success screen after order
   if (orderSuccess) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <main className="container mx-auto px-4 py-8">
-          <div className="max-w-md mx-auto text-center">
+          <div className="max-w-2xl mx-auto">
             <Card>
-              <CardContent className="pt-6 pb-8 space-y-4">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
+              <CardContent className="pt-6 pb-8 space-y-6">
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-bold text-foreground mb-3">Đặt hàng thành công!</h2>
+                  <p className="text-muted-foreground">
+                    {deliveryVehicle === 'bicycle' 
+                      ? "Cảm ơn bạn đã chọn giao hàng bằng xe đạp! Bạn đã nhận thêm 10 GreenPoints."
+                      : "Đơn hàng của bạn đã được tạo. Chúng tôi sẽ liên hệ sớm nhất."}
+                  </p>
                 </div>
-                <h2 className="text-2xl font-bold text-foreground">Đặt hàng thành công!</h2>
-                <p className="text-muted-foreground">
-                  {deliveryVehicle === 'bicycle' 
-                    ? "Cảm ơn bạn đã chọn giao hàng bằng xe đạp! Bạn đã nhận thêm 10 GreenPoints."
-                    : "Đơn hàng của bạn đã được tạo. Chúng tôi sẽ liên hệ sớm nhất."}
-                </p>
-                <div className="flex flex-col gap-3 pt-4">
+
+                {/* Impact Messages */}
+                {purchasedMessages.length > 0 && (
+                  <div className="space-y-3">
+                    <h3 className="text-lg font-semibold text-center text-foreground">🌍 Tác động tích cực của bạn</h3>
+                    <div className="space-y-2">
+                      {purchasedMessages.map((item, index) => (
+                        <div 
+                          key={index}
+                          className="flex items-start gap-3 p-4 rounded-lg bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200"
+                        >
+                          <div className="flex-shrink-0 w-10 h-10 bg-white rounded-full flex items-center justify-center text-green-600">
+                            {getMessageIcon(item.message)}
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-green-900 mb-1">{item.name}</p>
+                            <p className="text-sm text-green-700">{item.message}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-3 pt-2">
                   <Button onClick={() => navigate('/')} size="lg" className="w-full">
                     Quay về mua hàng tiếp
                   </Button>
