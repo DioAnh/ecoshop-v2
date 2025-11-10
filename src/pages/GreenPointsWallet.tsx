@@ -97,10 +97,10 @@ const GreenPointsWallet = () => {
         sum + (transaction.co2_saved || 0), 0) || 0;
       setTotalCO2Saved(totalCO2);
 
-      // Generate CO2 chart data for the past 2 weeks
+      // Generate CO2 chart data for the past month (30 days)
       const chartData = [];
       const today = new Date();
-      for (let i = 13; i >= 0; i--) {
+      for (let i = 29; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(date.getDate() - i);
         const dateStr = date.toISOString().split('T')[0];
@@ -113,9 +113,9 @@ const GreenPointsWallet = () => {
         const dayCO2 = dayTransactions.reduce((sum, t) => sum + (t.co2_saved || 0), 0);
         
         chartData.push({
-          date: date.toLocaleDateString('vi-VN', { month: 'short', day: 'numeric' }),
+          date: date.toLocaleDateString('vi-VN', { day: 'numeric', month: 'short' }),
           co2_saved: Number(dayCO2.toFixed(2)),
-          week: i >= 7 ? 'Tuần này' : 'Tuần trước'
+          fullDate: dateStr
         });
       }
       setCo2ChartData(chartData);
@@ -228,28 +228,44 @@ const GreenPointsWallet = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
-              Biểu đồ phát thải CO₂ (2 tuần)
+              Biểu đồ phát thải CO₂ cá nhân (30 ngày)
             </CardTitle>
+            <CardDescription>
+              Theo dõi lượng CO₂ tiết kiệm được từ các hoạt động xanh của bạn
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-64">
+            <div className="h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={co2ChartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis 
+                    dataKey="date" 
+                    tick={{ fontSize: 12 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={60}
+                  />
+                  <YAxis 
+                    label={{ value: 'kg CO₂', angle: -90, position: 'insideLeft' }}
+                    tick={{ fontSize: 12 }}
+                  />
                   <Tooltip 
-                    formatter={(value: any, name: string) => [
-                      `${value} kg CO₂`, 
-                      name === 'co2_saved' ? 'CO₂ tiết kiệm' : name
-                    ]}
+                    formatter={(value: any) => [`${value} kg CO₂`, 'CO₂ tiết kiệm']}
+                    labelFormatter={(label) => `Ngày: ${label}`}
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px'
+                    }}
                   />
                   <Line 
                     type="monotone" 
                     dataKey="co2_saved" 
                     stroke="hsl(var(--primary))" 
-                    strokeWidth={2}
-                    dot={{ fill: "hsl(var(--primary))", strokeWidth: 2 }}
+                    strokeWidth={3}
+                    dot={{ fill: "hsl(var(--primary))", strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6 }}
                   />
                 </LineChart>
               </ResponsiveContainer>
