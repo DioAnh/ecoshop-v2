@@ -101,9 +101,13 @@ export default function CameraCapture() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full text-base sm:text-lg px-6 py-6">
-          <Camera className="w-5 h-5 mr-2" />
-          📸 Chụp Ảnh Báo Cáo
+        <Button 
+          variant="default"
+          size="lg"
+          className="rounded-full gap-2"
+        >
+          <Camera className="w-5 h-5" />
+          Chụp Ảnh Báo Cáo
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] bg-card">
@@ -142,11 +146,12 @@ export default function CameraCapture() {
                 type="button"
                 onClick={capturePhoto}
                 disabled={!isCameraActive}
-                className="w-full h-16 text-xl font-semibold bg-green-600 hover:bg-green-700 text-white"
+                variant="default"
+                className="w-full h-16 text-xl font-semibold"
                 size="lg"
               >
                 <Camera className="mr-3 h-8 w-8" />
-                📸 Chụp Ảnh
+                Chụp Ảnh
               </Button>
             </div>
           ) : (
@@ -189,7 +194,8 @@ export default function CameraCapture() {
                     });
                     setOpen(false);
                   }}
-                  className="flex-1 bg-green-600 hover:bg-green-700"
+                  variant="default"
+                  className="flex-1"
                 >
                   Xác nhận
                 </Button>
