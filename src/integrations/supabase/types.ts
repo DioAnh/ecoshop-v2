@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      "2waydelivery": {
+        Row: {
+          created_at: string
+          "Địa chỉ kho": string | null
+          id: number
+          "Mã đơn mua": number | null
+          "Số điện thoại": number | null
+          "Số lượng kg": number | null
+          "Tên khách hàng": string | null
+          "Tên shipper": string | null
+        }
+        Insert: {
+          created_at?: string
+          "Địa chỉ kho"?: string | null
+          id?: number
+          "Mã đơn mua"?: number | null
+          "Số điện thoại"?: number | null
+          "Số lượng kg"?: number | null
+          "Tên khách hàng"?: string | null
+          "Tên shipper"?: string | null
+        }
+        Update: {
+          created_at?: string
+          "Địa chỉ kho"?: string | null
+          id?: number
+          "Mã đơn mua"?: number | null
+          "Số điện thoại"?: number | null
+          "Số lượng kg"?: number | null
+          "Tên khách hàng"?: string | null
+          "Tên shipper"?: string | null
+        }
+        Relationships: []
+      }
+      "ảnh ve chai": {
+        Row: {
+          "ảnh thu gom": string | null
+          created_at: string
+          id: number
+        }
+        Insert: {
+          "ảnh thu gom"?: string | null
+          created_at?: string
+          id?: number
+        }
+        Update: {
+          "ảnh thu gom"?: string | null
+          created_at?: string
+          id?: number
+        }
+        Relationships: []
+      }
       category: {
         Row: {
           created_at: string
@@ -32,6 +83,27 @@ export type Database = {
           id?: number
           image?: string | null
           name?: string
+        }
+        Relationships: []
+      }
+      "chứng chỉ": {
+        Row: {
+          created_at: string
+          id: number
+          image: string | null
+          "tên công ty": string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          image?: string | null
+          "tên công ty"?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          image?: string | null
+          "tên công ty"?: string | null
         }
         Relationships: []
       }
@@ -113,6 +185,7 @@ export type Database = {
       products: {
         Row: {
           category: number | null
+          "Câu chuyện": string | null
           co2_emission: number | null
           created_at: string | null
           descripton: string | null
@@ -121,10 +194,14 @@ export type Database = {
           is_hot: boolean | null
           name: string
           original_price: number | null
+          point: number | null
           selling_price: number | null
+          "Thành phần": string | null
+          "thông điệp": string | null
         }
         Insert: {
           category?: number | null
+          "Câu chuyện"?: string | null
           co2_emission?: number | null
           created_at?: string | null
           descripton?: string | null
@@ -133,10 +210,14 @@ export type Database = {
           is_hot?: boolean | null
           name: string
           original_price?: number | null
+          point?: number | null
           selling_price?: number | null
+          "Thành phần"?: string | null
+          "thông điệp"?: string | null
         }
         Update: {
           category?: number | null
+          "Câu chuyện"?: string | null
           co2_emission?: number | null
           created_at?: string | null
           descripton?: string | null
@@ -145,7 +226,10 @@ export type Database = {
           is_hot?: boolean | null
           name?: string
           original_price?: number | null
+          point?: number | null
           selling_price?: number | null
+          "Thành phần"?: string | null
+          "thông điệp"?: string | null
         }
         Relationships: [
           {
