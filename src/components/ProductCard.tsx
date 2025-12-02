@@ -65,12 +65,16 @@ const ProductCard = ({
   };
 
   return (
-    <div className="eco-card group cursor-pointer" onClick={() => navigate(`/product/${id}`)}>
-      <div className="relative overflow-hidden rounded-lg mb-3">
+    <div 
+      className="eco-card group cursor-pointer flex flex-col h-full transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/10" 
+      onClick={() => navigate(`/product/${id}`)}
+    >
+      {/* Fixed aspect ratio image container */}
+      <div className="relative overflow-hidden rounded-lg mb-3 aspect-square">
         <img 
           src={image} 
           alt={name}
-          className="w-full h-48 object-cover transition-transform duration-300 group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
         <div className="absolute top-2 left-2">
           <div className={`co2-badge ${getCO2BadgeClass(co2Emission)}`}>
@@ -95,8 +99,10 @@ const ProductCard = ({
         </div>
       </div>
 
-      <div className="space-y-2">
-        <h3 className="font-medium text-sm line-clamp-2 text-foreground group-hover:text-primary transition-colors">
+      {/* Content area with flex-grow to push buttons down */}
+      <div className="flex flex-col flex-grow space-y-2">
+        {/* Title with fixed min-height and line-clamp */}
+        <h3 className="font-medium text-sm line-clamp-2 min-h-[2.5rem] text-foreground group-hover:text-primary transition-colors">
           {name}
         </h3>
         
@@ -113,10 +119,11 @@ const ProductCard = ({
           <span>⭐ {rating} | Đã bán {sold}</span>
         </div>
 
-        <div className="flex gap-2 pt-2">
+        {/* Buttons pushed to bottom with mt-auto */}
+        <div className="flex gap-2 pt-2 mt-auto">
           <Button 
             size="sm" 
-            className="flex-1 h-8 text-xs bg-primary hover:bg-primary-hover"
+            className="flex-1 h-8 text-xs bg-primary hover:bg-primary/90"
             onClick={handleAddToCart}
           >
             <Plus className="w-3 h-3 mr-1" />
