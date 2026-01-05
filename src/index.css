@@ -212,4 +212,26 @@
   .search-input {
     @apply w-full px-4 py-3 border border-input rounded-xl bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent;
   }
+
+  /* Sui Wallet Kit Overrides */
+  .wkit-button {
+    @apply !bg-primary !text-primary-foreground !rounded-lg !px-4 !py-2 !font-medium !transition-all !duration-200 hover:!bg-primary/90 !border-none !shadow-md hover:!shadow-lg;
+  }
+
+  .wkit-connected-button {
+    @apply !bg-primary/10 !text-primary !border !border-primary/30 !rounded-lg hover:!bg-primary/20;
+  }
+
+  .wkit-dialog__overlay {
+    @apply !bg-black/50 !backdrop-blur-sm;
+  }
+
+  .wkit-dialog__content {
+    @apply !bg-card !border !border-border !rounded-2xl !shadow-2xl;
+  }
+
+  /* ECO Token styling */
+  .eco-token-badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/10 text-primary text-sm font-medium;
+  }
 }

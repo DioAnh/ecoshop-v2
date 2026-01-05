@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import { Apple, Home, Shirt, Package, Zap, TrendingUp } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { useWallet } from '@suiet/wallet-kit';
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import HeroBanner from "@/components/HeroBanner";
 import CategoryCard from "@/components/CategoryCard";
 import ProductCard from "@/components/ProductCard";
-import GreenPointsWallet from "@/components/GreenPointsWallet";
 import { supabase } from "@/integrations/supabase/client";
 import organicFoodImage from "@/assets/organic-food.jpg";
 import homeProductsImage from "@/assets/home-products.jpg";
@@ -33,7 +32,7 @@ interface Category {
 }
 
 const Homepage = () => {
-  const { loading, user } = useAuth();
+  const wallet = useWallet();
   const navigate = useNavigate();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -102,17 +101,7 @@ const Homepage = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Đang tải...</p>
-        </div>
-      </div>
-    );
-  }
-  // Default icons for categories (you can customize this logic)
+  // Default icons for categories
   const getCategoryIcon = (index: number) => {
     const icons = [Apple, Home, Shirt, Package, Zap];
     return icons[index % icons.length];
@@ -276,12 +265,6 @@ const Homepage = () => {
           )}
         </section>
 
-        {/* GreenPoints Wallet - Only show if user is authenticated */}
-        {user && (
-          <section className="mb-12">
-            <GreenPointsWallet />
-          </section>
-        )}
 
         {/* Stats Section */}
         <section className="bg-eco-light/30 rounded-2xl p-8 text-center">
