@@ -1,37 +1,38 @@
-import { Search, ShoppingCart, User, Leaf, Plus, Home, Wallet, Info, QrCode, Vault } from "lucide-react";
+import { Search, ShoppingCart, Leaf, Plus, Home, Wallet, Info, QrCode, Vault } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/contexts/AuthContext";
 import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import AdminProductForm from "@/components/AdminProductForm";
+import ConnectWalletButton from "@/components/ConnectWalletButton";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { cn } from "@/lib/utils";
 
 const Header = () => {
-  const { user, isAdmin } = useAuth();
   const { getTotalItems } = useCart();
   const navigate = useNavigate();
   const [showAdminForm, setShowAdminForm] = useState(false);
+
   return (
     <header className="bg-background border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between gap-4">
           {/* Logo */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
             <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
               <Leaf className="w-6 h-6 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-primary">EcoShop</span>
+            <div>
+              <span className="text-xl font-bold text-primary block leading-tight">EcoShop</span>
+              <span className="text-[10px] text-muted-foreground">Shop-to-Earn</span>
+            </div>
           </div>
 
           {/* Navigation Menu */}
@@ -99,16 +100,6 @@ const Header = () => {
             >
               <QrCode className="w-5 h-5" />
             </Button>
-            {isAdmin && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowAdminForm(true)}
-                title="Thêm sản phẩm"
-              >
-                <Plus className="w-5 h-5" />
-              </Button>
-            )}
             <Button 
               variant="ghost" 
               size="icon" 
@@ -122,13 +113,9 @@ const Header = () => {
                 </span>
               )}
             </Button>
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => user ? navigate('/profile') : navigate('/auth')}
-            >
-              <User className="w-5 h-5" />
-            </Button>
+            
+            {/* Connect Wallet Button */}
+            <ConnectWalletButton />
           </div>
         </div>
       </div>
@@ -138,7 +125,6 @@ const Header = () => {
         open={showAdminForm}
         onOpenChange={setShowAdminForm}
         onProductAdded={() => {
-          // Refresh the page to show new products
           window.location.reload();
         }}
       />
