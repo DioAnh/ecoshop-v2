@@ -10,16 +10,12 @@ import Index from "./pages/Index";
 import ProductDetail from "./pages/ProductDetail";
 import CategoryProducts from "./pages/CategoryProducts";
 import Auth from "./pages/Auth";
-import Profile from "./pages/Profile";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
-import GreenPointsWallet from "./pages/GreenPointsWallet";
-import GreenDelivery from "./pages/GreenDelivery";
-import Partners from "./pages/Partners";
+import EcoProfile from "./pages/EcoProfile";
+import EcoVault from "./pages/EcoVault";
 import About from "./pages/About";
-import Dashboard from "./pages/Dashboard";
-import TwoWayExchange from "./pages/TwoWayExchange";
 
 const queryClient = new QueryClient();
 
@@ -45,26 +41,22 @@ const App = () => (
                 } 
               />
               <Route 
-                path="/profile" 
+                path="/eco-profile" 
                 element={
                   <ProtectedRoute>
-                    <Profile />
+                    <EcoProfile />
                   </ProtectedRoute>
                 } 
               />
               <Route 
-                path="/greenpoints" 
+                path="/eco-vault" 
                 element={
                   <ProtectedRoute>
-                    <GreenPointsWallet />
+                    <EcoVault />
                   </ProtectedRoute>
                 } 
               />
-              <Route path="/green-delivery" element={<GreenDelivery />} />
-              <Route path="/partners" element={<Partners />} />
               <Route path="/about" element={<About />} />
-              <Route path="/two-way-exchange" element={<TwoWayExchange />} />
-              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/product/:id" element={<ProductDetail />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

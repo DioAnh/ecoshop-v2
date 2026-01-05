@@ -1,4 +1,4 @@
-import { Search, ShoppingCart, User, Leaf, Plus, Home, Wallet, Bike, Store, Info, Recycle, QrCode, BarChart3, Package } from "lucide-react";
+import { Search, ShoppingCart, User, Leaf, Plus, Home, Wallet, Info, QrCode, Vault } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -50,50 +50,20 @@ const Header = () => {
               <NavigationMenuItem>
                 <NavigationMenuLink
                   className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
-                  onClick={() => navigate('/greenpoints')}
+                  onClick={() => navigate('/eco-profile')}
                 >
                   <Wallet className="w-4 h-4 mr-2" />
-                  Ví điểm GreenPoints
+                  My Eco Profile
                 </NavigationMenuLink>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
                 <NavigationMenuLink
                   className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
-                  onClick={() => navigate('/green-delivery')}
+                  onClick={() => navigate('/eco-vault')}
                 >
-                  <Bike className="w-4 h-4 mr-2" />
-                  Giao hàng xanh
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
-                  onClick={() => navigate('/two-way-exchange')}
-                >
-                  <Package className="w-4 h-4 mr-2" />
-                  Quy đổi 2 chiều
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
-                  onClick={() => navigate('/dashboard')}
-                >
-                  <BarChart3 className="w-4 h-4 mr-2" />
-                  Báo cáo
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  className={cn(navigationMenuTriggerStyle(), "cursor-pointer")}
-                  onClick={() => navigate('/partners')}
-                >
-                  <Store className="w-4 h-4 mr-2" />
-                  Đối tác
+                  <Vault className="w-4 h-4 mr-2" />
+                  Eco Vault
                 </NavigationMenuLink>
               </NavigationMenuItem>
               

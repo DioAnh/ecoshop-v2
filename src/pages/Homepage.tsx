@@ -305,13 +305,13 @@ const Homepage = () => {
         </section>
       </main>
 
-      {/* Footer */}
+      {/* Footer - Simplified for Web3 Demo */}
       <footer className="bg-primary text-primary-foreground mt-16">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-6">
           <div className="text-center">
-            <p className="text-lg font-medium mb-2">EcoShop - Mua sắm xanh, sống bền vững</p>
-            <p className="text-primary-foreground/80">
-              © 2024 EcoShop. Mọi quyền được bảo lưu.
+            <p className="text-lg font-medium mb-1">EcoShop - Shop-to-Earn on Sui Blockchain</p>
+            <p className="text-primary-foreground/80 text-sm">
+              © 2024 EcoShop. Powered by Sui Network.
             </p>
           </div>
         </div>
