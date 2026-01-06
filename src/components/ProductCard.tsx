@@ -9,7 +9,7 @@ import certFSC from "@/assets/cert-fsc.jpg";
 import certOrganic from "@/assets/cert-organic.jpg";
 
 interface ProductCardProps {
-  id: string;
+  id: string | number;
   name: string;
   price: number;
   originalPrice?: number;
@@ -37,22 +37,22 @@ const ProductCard = ({
   const { addToCart } = useCart();
   const { toast } = useToast();
 
-  // Categories that should show organic certification
   const organicCategories = ["Thời trang", "Thực phẩm", "Làm đẹp", "Chăm sóc sức khỏe"];
   const showOrganicCert = categoryName && organicCategories.some(cat => 
     categoryName.toLowerCase().includes(cat.toLowerCase())
   );
   
-  const getCO2BadgeClass = (emission: number) => {
-    if (emission < 1) return "co2-low";
-    if (emission < 3) return "co2-medium";
-    return "co2-high";
+  // Logic màu sắc cho CO2 Badge
+  const getCO2BadgeStyle = (emission: number) => {
+    if (emission < 1) return "bg-emerald-100 text-emerald-800 border-emerald-200";
+    if (emission < 3) return "bg-yellow-100 text-yellow-800 border-yellow-200";
+    return "bg-orange-100 text-orange-800 border-orange-200";
   };
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
     addToCart({
-      id: parseInt(id),
+      id: typeof id === 'string' ? parseInt(id) : id,
       name,
       price,
       originalPrice,
@@ -61,84 +61,99 @@ const ProductCard = ({
     toast({
       title: "Đã thêm vào giỏ hàng",
       description: `${name} đã được thêm vào giỏ hàng.`,
+      className: "bg-green-50 border-green-200"
     });
   };
 
   return (
     <div 
-      className="eco-card group cursor-pointer flex flex-col h-full transition-shadow duration-300 hover:shadow-lg hover:shadow-primary/10" 
+      className="group relative flex flex-col h-full bg-white rounded-2xl border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-hidden cursor-pointer" 
       onClick={() => navigate(`/product/${id}`)}
     >
-      {/* Fixed aspect ratio image container */}
-      <div className="relative overflow-hidden rounded-lg mb-3 aspect-square">
+      {/* 1. IMAGE SECTION */}
+      <div className="relative aspect-square overflow-hidden bg-gray-50">
         <img 
           src={image} 
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-        <div className="absolute top-2 left-2">
-          <div className={`co2-badge ${getCO2BadgeClass(co2Emission)}`}>
+        
+        {/* CO2 Badge - Glassmorphism Style */}
+        <div className="absolute top-3 left-3">
+          <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold shadow-sm border backdrop-blur-md bg-white/90 ${getCO2BadgeStyle(co2Emission)}`}>
             <Leaf className="w-3 h-3" />
-            {co2Emission}kg CO₂e
+            <span>{co2Emission}kg CO₂e</span>
           </div>
         </div>
-        <div className="absolute top-2 right-2 space-y-1">
+
+        {/* Cert Badges - Fix lỗi màu trắng trên nền trắng */}
+        <div className="absolute top-3 right-3 flex flex-col gap-1.5 items-end">
           {certification.map((cert) => (
-            <Badge key={cert} variant="secondary" className="text-xs bg-white/90">
+            <Badge 
+              key={cert} 
+              variant="secondary" 
+              className="text-[10px] px-2 py-0.5 bg-green-100 hover:bg-green-200 text-green-800 border-none shadow-sm"
+            >
               {cert}
             </Badge>
           ))}
         </div>
-        {/* Certification logos */}
-        <div className="absolute bottom-2 right-2 flex gap-1">
-          <img src={certFairtrade} alt="Fairtrade" className="w-6 h-6 bg-white rounded-sm p-0.5" />
-          <img src={certFSC} alt="FSC" className="w-6 h-6 bg-white rounded-sm p-0.5" />
-          {showOrganicCert && (
-            <img src={certOrganic} alt="Organic" className="w-6 h-6 bg-white rounded-sm p-0.5" />
-          )}
+
+        {/* Small Cert Logos at bottom */}
+        <div className="absolute bottom-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 translate-y-2 group-hover:translate-y-0">
+           <img src={certFairtrade} className="w-6 h-6 bg-white rounded shadow-sm p-0.5" />
+           <img src={certFSC} className="w-6 h-6 bg-white rounded shadow-sm p-0.5" />
+           {showOrganicCert && <img src={certOrganic} className="w-6 h-6 bg-white rounded shadow-sm p-0.5" />}
         </div>
       </div>
 
-      {/* Content area with flex-grow to push buttons down */}
-      <div className="flex flex-col flex-grow space-y-2">
-        {/* Title with fixed min-height and line-clamp */}
-        <h3 className="font-medium text-sm line-clamp-2 min-h-[2.5rem] text-foreground group-hover:text-primary transition-colors">
+      {/* 2. CONTENT SECTION - Fix Padding & Spacing */}
+      <div className="flex flex-col flex-grow p-4 space-y-3">
+        {/* Title */}
+        <h3 className="font-semibold text-sm leading-snug text-gray-700 line-clamp-2 min-h-[2.5rem] group-hover:text-primary transition-colors">
           {name}
         </h3>
         
-        <div className="flex items-center gap-2">
-          <span className="text-primary font-bold">₫{(price || 0).toLocaleString()}</span>
+        {/* Price Area */}
+        <div className="flex items-end gap-2">
+          <span className="text-lg font-extrabold text-primary">
+            ₫{(price || 0).toLocaleString()}
+          </span>
           {originalPrice && (
-            <span className="text-muted-foreground line-through text-sm">
+            <span className="text-xs text-muted-foreground line-through mb-1">
               ₫{originalPrice.toLocaleString()}
             </span>
           )}
         </div>
 
-        <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>⭐ {rating} | Đã bán {sold}</span>
+        {/* Rating & Sold */}
+        <div className="flex items-center justify-between text-xs text-muted-foreground border-t border-gray-100 pt-2 mt-auto">
+          <div className="flex items-center gap-1 text-yellow-500 font-medium">
+             <span>⭐ {rating}</span>
+          </div>
+          <span>Đã bán {sold}</span>
         </div>
 
-        {/* Buttons pushed to bottom with mt-auto */}
-        <div className="flex gap-2 pt-2 mt-auto">
+        {/* 3. BUTTONS - Micro Interactions */}
+        <div className="grid grid-cols-4 gap-2 pt-1">
           <Button 
             size="sm" 
-            className="flex-1 h-8 text-xs bg-primary hover:bg-primary/90"
+            className="col-span-3 rounded-lg bg-primary hover:bg-primary/90 text-xs font-semibold shadow-md hover:shadow-lg transition-all active:scale-95"
             onClick={handleAddToCart}
           >
-            <Plus className="w-3 h-3 mr-1" />
-            Thêm
+            <Plus className="w-3.5 h-3.5 mr-1.5" />
+            Thêm vào giỏ
           </Button>
           <Button 
             size="sm" 
-            variant="outline" 
-            className="h-8 px-2"
+            variant="secondary" 
+            className="col-span-1 rounded-lg bg-secondary/50 hover:bg-secondary text-primary transition-all active:scale-95"
             onClick={(e) => {
               e.stopPropagation();
               navigate(`/product/${id}`);
             }}
           >
-            <ShoppingCart className="w-3 h-3" />
+            <ShoppingCart className="w-4 h-4" />
           </Button>
         </div>
       </div>

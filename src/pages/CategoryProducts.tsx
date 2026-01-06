@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Package } from "lucide-react";
+import { ArrowLeft, Package, Filter } from "lucide-react";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 interface Product {
   id: string;
@@ -31,89 +32,69 @@ const CategoryProducts = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (categoryId) {
-      fetchCategoryAndProducts();
-    }
+    if (categoryId) { fetchCategoryAndProducts(); }
   }, [categoryId]);
 
   const fetchCategoryAndProducts = async () => {
     try {
       setLoading(true);
-      
       // Fetch category details
-      const { data: categoryData, error: categoryError } = await (supabase as any)
-        .from('category')
-        .select('*')
-        .eq('id', categoryId)
-        .single();
-
-      if (categoryError) throw categoryError;
+      const { data: categoryData } = await (supabase as any).from('category').select('*').eq('id', categoryId).single();
       setCategory(categoryData);
-
-      // Fetch products in this category
-      const { data: productsData, error: productsError } = await (supabase as any)
-        .from('products')
-        .select('*')
-        .eq('category', categoryId)
-        .order('created_at', { ascending: false });
-
-      if (productsError) throw productsError;
+      // Fetch products
+      const { data: productsData } = await (supabase as any).from('products').select('*').eq('category', categoryId).order('created_at', { ascending: false });
       setProducts(productsData || []);
-    } catch (error) {
-      console.error('Error fetching category products:', error);
-    } finally {
-      setLoading(false);
-    }
+    } catch (error) { console.error(error); } finally { setLoading(false); }
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Đang tải sản phẩm...</p>
-            </div>
-          </div>
+        <div className="container mx-auto px-4 py-20 text-center">
+           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+           <p className="text-muted-foreground animate-pulse">Đang tìm kiếm sản phẩm xanh...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50/50">
       <Header />
       
-      <main className="container mx-auto px-4 py-6">
-        {/* Back Button and Header */}
-        <div className="flex items-center gap-4 mb-6">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Về trang chủ
-          </button>
-        </div>
-
-        {/* Category Header */}
-        {category && (
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <Package className="w-8 h-8 text-primary" />
-              <h1 className="text-3xl font-bold text-foreground">{category.name}</h1>
-            </div>
-            <p className="text-muted-foreground">
-              Tìm thấy {products.length} sản phẩm trong danh mục này
-            </p>
+      {/* Category Header Banner */}
+      <div className="bg-primary/5 border-b border-primary/10">
+        <div className="container mx-auto px-4 py-8 md:py-12">
+          <Button variant="ghost" onClick={() => navigate('/')} className="mb-4 pl-0 hover:bg-transparent hover:text-primary text-muted-foreground">
+            <ArrowLeft className="w-4 h-4 mr-2" /> Trang chủ
+          </Button>
+          
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+             <div>
+                <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 flex items-center gap-3">
+                   {category?.name || "Danh mục"}
+                   <span className="text-sm font-normal bg-white px-3 py-1 rounded-full border border-gray-200 text-gray-500 shadow-sm">
+                      {products.length} sản phẩm
+                   </span>
+                </h1>
+                <p className="text-muted-foreground max-w-xl">
+                   Khám phá các sản phẩm {category?.name.toLowerCase()} thân thiện với môi trường, giúp bạn sống xanh mỗi ngày.
+                </p>
+             </div>
+             
+             {/* Filter Button (Mock UI) */}
+             <Button variant="outline" className="bg-white border-gray-200 shadow-sm">
+                <Filter className="w-4 h-4 mr-2" /> Bộ lọc
+             </Button>
           </div>
-        )}
+        </div>
+      </div>
 
+      <main className="container mx-auto px-4 py-8">
         {/* Products Grid */}
         {products.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {products.map((product) => (
               <ProductCard
                 key={product.id}
@@ -131,14 +112,11 @@ const CategoryProducts = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16">
-            <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-foreground mb-2">
-              Chưa có sản phẩm
-            </h3>
-            <p className="text-muted-foreground">
-              Danh mục này hiện chưa có sản phẩm nào.
-            </p>
+          <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
+            <Package className="w-16 h-16 text-gray-200 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-gray-700 mb-2">Chưa có sản phẩm</h3>
+            <p className="text-muted-foreground mb-6">Danh mục này đang được cập nhật thêm.</p>
+            <Button onClick={() => navigate('/')}>Quay lại trang chủ</Button>
           </div>
         )}
       </main>

@@ -14,6 +14,7 @@ import { useWalletContext } from '@/contexts/WalletContext';
 const ConnectWalletButton = () => {
   const wallet = useWallet();
   const navigate = useNavigate();
+  // Lấy dữ liệu từ Context (Đã có logic 150 ECO)
   const { shortAddress, ecoBalance } = useWalletContext();
 
   if (!wallet.connected) {
@@ -21,7 +22,6 @@ const ConnectWalletButton = () => {
       <ConnectButton 
         className="!bg-primary !text-primary-foreground !rounded-md !px-4 !py-2 !font-medium hover:!bg-primary/90 !transition-colors !flex !items-center !gap-2"
       >
-        <Wallet className="w-4 h-4" />
         Connect Wallet
       </ConnectButton>
     );
@@ -32,8 +32,10 @@ const ConnectWalletButton = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="outline" className="flex items-center gap-2 border-primary/30 bg-primary/5">
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+          {/* Hiển thị Short Address thật */}
           <span className="font-mono text-sm">{shortAddress}</span>
-          <div className="flex items-center gap-1 text-primary font-medium">
+          <div className="flex items-center gap-1 text-primary font-medium border-l border-primary/20 pl-2 ml-1">
+            {/* Hiển thị Balance Mock */}
             <span>{ecoBalance.toFixed(2)}</span>
             <span className="text-xs">ECO</span>
           </div>

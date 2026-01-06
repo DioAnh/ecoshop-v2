@@ -5,38 +5,33 @@ interface CategoryCardProps {
   id: number;
   title: string;
   icon: LucideIcon;
-  image: string;
-  description: string;
+  image?: string; // Giữ prop này để tương thích, dù có thể không dùng
   itemCount: number;
+  description?: string;
 }
 
-const CategoryCard = ({ id, title, icon: Icon, image, description, itemCount }: CategoryCardProps) => {
+const CategoryCard = ({ id, title, icon: Icon, itemCount }: CategoryCardProps) => {
   const navigate = useNavigate();
 
-  const handleClick = () => {
-    navigate(`/category/${id}`);
-  };
-
   return (
-    <div 
-      className="category-card cursor-pointer hover:transform hover:scale-105 transition-all duration-200" 
-      onClick={handleClick}
+    <div
+      onClick={() => navigate(`/category/${id}`)}
+      className="group flex flex-col items-center justify-center p-6 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full"
     >
-      <div className="relative mb-4">
-        <img 
-          src={image || '/placeholder.svg'} 
-          alt={title}
-          className="w-full h-32 object-cover rounded-lg"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg" />
-        <div className="absolute top-2 right-2 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center">
-          <Icon className="w-4 h-4 text-primary" />
-        </div>
+      {/* Icon Circle with Hover Effect */}
+      <div className="mb-4 p-4 rounded-full bg-emerald-50 text-emerald-600 group-hover:bg-emerald-500 group-hover:text-white transition-colors duration-300 shadow-inner">
+        <Icon className="w-8 h-8" strokeWidth={1.5} />
       </div>
       
-      <h3 className="font-semibold text-foreground mb-1">{title}</h3>
-      <p className="text-sm text-muted-foreground mb-2">{description}</p>
-      <span className="text-xs text-primary font-medium">{itemCount} sản phẩm</span>
+      {/* Title */}
+      <h3 className="font-bold text-gray-800 text-lg mb-1 group-hover:text-emerald-600 transition-colors">
+        {title}
+      </h3>
+      
+      {/* Subtitle */}
+      <span className="text-sm text-gray-400 font-medium">
+        {itemCount} sản phẩm
+      </span>
     </div>
   );
 };

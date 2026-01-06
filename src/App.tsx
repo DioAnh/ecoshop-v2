@@ -7,6 +7,7 @@ import { WalletProvider } from '@suiet/wallet-kit';
 import '@suiet/wallet-kit/style.css';
 import { WalletContextProvider } from "@/contexts/WalletContext";
 import { CartProvider } from "@/contexts/CartContext";
+import { AuthProvider } from "@/contexts/AuthContext"; // IMPORT AUTH PROVIDER
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import ProductDetail from "./pages/ProductDetail";
@@ -24,49 +25,53 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <WalletProvider autoConnect={false}>
+      {/* WalletContext quản lý số dư giả lập */}
       <WalletContextProvider>
-        <CartProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/category/:categoryId" element={<CategoryProducts />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route 
-                  path="/checkout" 
-                  element={
-                    <ProtectedRoute>
-                      <Checkout />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/eco-profile" 
-                  element={
-                    <ProtectedRoute>
-                      <EcoProfile />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route 
-                  path="/eco-vault" 
-                  element={
-                    <ProtectedRoute>
-                      <EcoVault />
-                    </ProtectedRoute>
-                  } 
-                />
-                <Route path="/about" element={<About />} />
-                <Route path="/product/:id" element={<ProductDetail />} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </CartProvider>
+        {/* AuthProvider quản lý User (Web3 + Supabase) - Cần nằm trong WalletContextProvider */}
+        <AuthProvider>
+          <CartProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/category/:categoryId" element={<CategoryProducts />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route 
+                    path="/checkout" 
+                    element={
+                      <ProtectedRoute>
+                        <Checkout />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/eco-profile" 
+                    element={
+                      <ProtectedRoute>
+                        <EcoProfile />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/eco-vault" 
+                    element={
+                      <ProtectedRoute>
+                        <EcoVault />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/product/:id" element={<ProductDetail />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </CartProvider>
+        </AuthProvider>
       </WalletContextProvider>
     </WalletProvider>
   </QueryClientProvider>
