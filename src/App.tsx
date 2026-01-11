@@ -1,14 +1,21 @@
+import { useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom"; // BrowserRouter import ở đây
 import { WalletProvider } from '@suiet/wallet-kit';
 import '@suiet/wallet-kit/style.css';
+
+// Contexts
 import { WalletContextProvider } from "@/contexts/WalletContext";
 import { CartProvider } from "@/contexts/CartContext";
-import { AuthProvider } from "@/contexts/AuthContext"; // IMPORT AUTH PROVIDER
+import { AuthProvider } from "@/contexts/AuthContext";
+import { BusinessProvider } from "@/contexts/BusinessContext";
+
+// Components & Pages
 import ProtectedRoute from "@/components/ProtectedRoute";
+import SplashScreen from "@/components/SplashScreen";
 import Index from "./pages/Index";
 import ProductDetail from "./pages/ProductDetail";
 import CategoryProducts from "./pages/CategoryProducts";
@@ -19,62 +26,74 @@ import NotFound from "./pages/NotFound";
 import EcoProfile from "./pages/EcoProfile";
 import EcoVault from "./pages/EcoVault";
 import About from "./pages/About";
+import ShipperDashboard from "./pages/ShipperDashboard";
+import BusinessDashboard from "./pages/BusinessDashboard";
+import AdminVerification from "./pages/AdminVerification";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <WalletProvider autoConnect={false}>
-      {/* WalletContext quản lý số dư giả lập */}
-      <WalletContextProvider>
-        {/* AuthProvider quản lý User (Web3 + Supabase) - Cần nằm trong WalletContextProvider */}
-        <AuthProvider>
-          <CartProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/category/:categoryId" element={<CategoryProducts />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route 
-                    path="/checkout" 
-                    element={
-                      <ProtectedRoute>
-                        <Checkout />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/eco-profile" 
-                    element={
-                      <ProtectedRoute>
-                        <EcoProfile />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/eco-vault" 
-                    element={
-                      <ProtectedRoute>
-                        <EcoVault />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/product/:id" element={<ProductDetail />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </TooltipProvider>
-          </CartProvider>
-        </AuthProvider>
-      </WalletContextProvider>
-    </WalletProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <WalletProvider autoConnect={false}>
+        
+        {/* --- ĐƯA BROWSER ROUTER RA NGOÀI CÙNG ĐỂ BAO BỌC TẤT CẢ CONTEXT --- */}
+        <BrowserRouter>
+          
+          {/* 1. AuthProvider (Sử dụng useNavigate nên phải nằm trong BrowserRouter) */}
+          <AuthProvider>
+            
+            {/* 2. WalletContext nằm trong AuthProvider để dùng user.id */}
+            <WalletContextProvider>
+              
+              {/* 3. BusinessContext */}
+              <BusinessProvider>
+                
+                <CartProvider>
+                  <TooltipProvider>
+                    <Toaster />
+                    <Sonner />
+                    
+                    {showSplash ? (
+                      <SplashScreen onFinish={() => setShowSplash(false)} />
+                    ) : (
+                      <Routes>
+                        {/* Public Routes */}
+                        <Route path="/" element={<Index />} />
+                        <Route path="/auth" element={<Auth />} />
+                        <Route path="/about" element={<About />} />
+                        <Route path="/category/:categoryId" element={<CategoryProducts />} />
+                        <Route path="/product/:id" element={<ProductDetail />} />
+                        <Route path="/cart" element={<Cart />} />
+
+                        {/* Protected Consumer Routes */}
+                        <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+                        <Route path="/eco-profile" element={<ProtectedRoute><EcoProfile /></ProtectedRoute>} />
+                        <Route path="/eco-vault" element={<ProtectedRoute><EcoVault /></ProtectedRoute>} />
+
+                        {/* Role-based Routes */}
+                        <Route path="/shipper" element={<ShipperDashboard />} />
+                        <Route path="/business" element={<BusinessDashboard />} />
+                        <Route path="/verification" element={<AdminVerification />} />
+
+                        {/* Catch-all */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    )}
+                  </TooltipProvider>
+                </CartProvider>
+                
+              </BusinessProvider>
+            </WalletContextProvider>
+          </AuthProvider>
+          
+        </BrowserRouter>
+        
+      </WalletProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

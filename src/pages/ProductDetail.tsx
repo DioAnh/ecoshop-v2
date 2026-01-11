@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, ShoppingCart, Plus, Leaf, Coins, Info } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Plus, Leaf, Coins, Info, ShieldCheck, Lock, TrendingUp, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -12,8 +12,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 interface Product {
   id: number;
   name: string;
-  selling_price: number; // Giá EcoShop (Cao)
-  original_price?: number; 
+  selling_price: number;
+  original_price?: number;
   image_url: string;
   co2_emission: number;
   descripton: string;
@@ -39,9 +39,11 @@ const ProductDetail = () => {
     } catch (error) { console.error(error); } finally { setLoading(false); }
   };
 
-  if (loading) return <div className="min-h-screen bg-background"><Header /><div className="container mx-auto px-4 py-20 text-center">Loading...</div></div>;
-  if (!product) return <div className="min-h-screen bg-background"><Header /><div className="container mx-auto px-4 py-20 text-center">Product not found</div></div>;
+  // --- 1. KIỂM TRA LOADING TRƯỚC (ĐỂ TRÁNH LỖI MÀN HÌNH TRẮNG) ---
+  if (loading) return <div className="min-h-screen bg-background"><Header /><div className="container mx-auto px-4 py-20 text-center">Đang tải dữ liệu...</div></div>;
+  if (!product) return <div className="min-h-screen bg-background"><Header /><div className="container mx-auto px-4 py-20 text-center">Sản phẩm không tồn tại</div></div>;
 
+  // --- 2. TÍNH TOÁN DỮ LIỆU (CHỈ CHẠY KHI ĐÃ CÓ PRODUCT) ---
   const getCO2BadgeClass = (emission: number) => emission < 1 ? "co2-low" : emission < 3 ? "co2-medium" : "co2-high";
   
   const handleBuyNow = () => { handleAddToCart(); navigate('/checkout'); };
@@ -50,18 +52,15 @@ const ProductDetail = () => {
     toast({ title: "Đã thêm vào giỏ hàng", description: `${product.name} đã thêm.` });
   };
 
-  // --- LOGIC GREEN PREMIUM & CAP 50 ECO ---
   const ecoShopPrice = product.selling_price || 0;
-  
-  // Tính Reward dựa trên CO2, nhưng Cap ở 50 ECO
+  // Cap Max 50 ECO
   const rawReward = product.co2_emission || 0;
-  const ecoReward = Math.min(rawReward, 50); // Cap Max 50 ECO
-  
-  // Tính Green Premium (tiền chênh lệch)
+  const ecoReward = Math.min(rawReward, 50); 
   const greenPremium = ecoReward * 1000;
-  
-  // Tính giá thị trường (Giả định để hiển thị)
   const marketPrice = ecoShopPrice - greenPremium;
+
+  // Mock trạng thái Pool cho sản phẩm (Task 4)
+  const poolSize = (product.selling_price * 1250 * 0.1).toLocaleString(); 
 
   return (
     <div className="min-h-screen bg-background">
@@ -80,7 +79,7 @@ const ProductDetail = () => {
               <h1 className="text-3xl font-bold text-foreground mb-2">{product.name}</h1>
               <div className="flex items-center gap-2 mb-4"><Badge variant="secondary" className="bg-green-100 text-green-800">Eco-Friendly</Badge></div>
 
-              {/* PRICE SECTION: ECO PRICE VS MARKET PRICE */}
+              {/* PRICE SECTION */}
               <div className="mb-6 p-4 bg-gray-50 border border-gray-100 rounded-xl">
                 <div className="flex flex-col mb-3">
                   <div className="flex items-end gap-3">
@@ -120,6 +119,50 @@ const ProductDetail = () => {
             <div className="flex gap-4 pt-4">
               <Button onClick={handleAddToCart} variant="outline" className="flex-1 h-12 text-base"><Plus className="w-4 h-4 mr-2" /> Thêm vào giỏ</Button>
               <Button onClick={handleBuyNow} className="flex-1 h-12 text-base font-bold shadow-lg shadow-primary/20"><ShoppingCart className="w-4 h-4 mr-2" /> Mua ngay</Button>
+            </div>
+
+            {/* FINANCIAL TRANSPARENCY CARD (Task 4) */}
+            <div className="mt-8 pt-8 border-t border-gray-100">
+              <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <ShieldCheck className="w-6 h-6 text-emerald-600" /> Minh bạch dòng tiền & Tác động
+              </h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Card 1: Locked Pool */}
+                <div className="p-4 bg-orange-50 border border-orange-100 rounded-xl">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-xs font-bold text-orange-700 uppercase tracking-wider">Locked Pool</span>
+                    <Lock className="w-4 h-4 text-orange-500" />
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">{poolSize} ₫</p>
+                  <p className="text-xs text-gray-500 mt-1">10% doanh thu bị khóa để đảm bảo cam kết xanh.</p>
+                </div>
+
+                {/* Card 2: Consumer Protection */}
+                <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">Bảo vệ người mua</span>
+                    <ShieldCheck className="w-4 h-4 text-blue-500" />
+                  </div>
+                  <p className="text-lg font-bold text-gray-900">Hoàn tiền 90%</p>
+                  <p className="text-xs text-gray-500 mt-1">Nếu dự án gian lận hoặc không đạt kiểm định CO2.</p>
+                </div>
+
+                {/* Card 3: Impact */}
+                <div className="p-4 bg-green-50 border border-green-100 rounded-xl">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="text-xs font-bold text-green-700 uppercase tracking-wider">Tác động thực</span>
+                    <TrendingUp className="w-4 h-4 text-green-500" />
+                  </div>
+                  <p className="text-lg font-bold text-gray-900">{product.co2_emission} kg CO₂ / sp</p>
+                  <p className="text-xs text-gray-500 mt-1">Dữ liệu được kiểm toán on-chain bởi VinaControl.</p>
+                </div>
+              </div>
+
+              <div className="mt-4 p-3 bg-gray-100 rounded-lg flex gap-3 items-center text-xs text-gray-500">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <p>Khi bạn mua sản phẩm này, bạn không chỉ là người tiêu dùng mà còn là <strong>nhà đầu tư vi mô</strong>. Nếu dự án thành công, Token ECO bạn nhận được sẽ có giá trị cao hơn nhờ hệ sinh thái phát triển.</p>
+              </div>
             </div>
           </div>
         </div>

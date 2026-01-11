@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useWallet } from '@suiet/wallet-kit';
+// Import Auth để lấy User ID hiện tại
+import { useAuth } from './AuthContext'; 
 
 export interface Investment {
   id: string;
@@ -19,6 +21,17 @@ export interface NFT {
   date: Date;
 }
 
+// Interface cho lịch sử thu gom rác (Dành cho Shipper)
+export interface RecycleLog {
+  id: string;
+  customerName: string;
+  wasteType: string;
+  weight: number;
+  ecoEarned: number;
+  status: 'collected' | 'processed'; // Đã thu gom vs Đã về kho
+  date: Date;
+}
+
 interface WalletContextType {
   isConnected: boolean;
   walletAddress: string | null;
@@ -31,12 +44,16 @@ interface WalletContextType {
   stakedAmount: number;
   investments: Investment[];
   nfts: NFT[];
+  recycleLogs: RecycleLog[]; // List rác đã thu gom
   addEcoTokens: (amount: number, co2Amount: number) => void;
   stakeEco: (amount: number, type: 'vault' | 'product', name: string, apr: number, duration?: string) => void;
   unstakeEco: (id: string, feePercentage?: number) => void;
   swapEcoToVnd: (amount: number) => void;
   withdrawVnd: (amount: number) => void;
   addPurchase: (product: string, ecoEarned: number, co2Saved: number) => void;
+  // HÀM MỚI CHO SHIPPER
+  addRecycleItem: (customerName: string, wasteType: string, weight: number) => void;
+  processRecyclingBatch: () => void; // Check-in kho
 }
 
 export interface PurchaseRecord {
@@ -70,6 +87,7 @@ const calculateRank = (co2Saved: number): string => {
 
 export const WalletContextProvider = ({ children }: { children: ReactNode }) => {
   const wallet = useWallet();
+  const { user } = useAuth(); // Lấy user hiện tại để chia tách ví
   
   const [ecoBalance, setEcoBalance] = useState<number>(0);
   const [vndBalance, setVndBalance] = useState<number>(0);
@@ -78,9 +96,16 @@ export const WalletContextProvider = ({ children }: { children: ReactNode }) => 
   const [purchaseHistory, setPurchaseHistory] = useState<PurchaseRecord[]>([]);
   const [investments, setInvestments] = useState<Investment[]>([]);
   const [nfts, setNfts] = useState<NFT[]>([]);
+  const [recycleLogs, setRecycleLogs] = useState<RecycleLog[]>([]);
 
+  // KEY ĐỂ LƯU STORAGE: Phụ thuộc vào User ID (hoặc Role)
+  const storageKey = user ? `ecoWalletData_${user.id}` : null;
+
+  // Load data khi User thay đổi
   useEffect(() => {
-    const savedData = localStorage.getItem('ecoWalletData');
+    if (!storageKey) return; // Chưa login thì ko load
+
+    const savedData = localStorage.getItem(storageKey);
     if (savedData) {
       const data = JSON.parse(savedData);
       setEcoBalance(data.ecoBalance || 0);
@@ -90,22 +115,35 @@ export const WalletContextProvider = ({ children }: { children: ReactNode }) => 
       setPurchaseHistory(data.purchaseHistory || []);
       setInvestments(data.investments || []);
       setNfts(data.nfts || []);
+      setRecycleLogs(data.recycleLogs || []);
+    } else {
+      // Reset về mặc định nếu là user mới (hoặc role mới)
+      setEcoBalance(0);
+      setVndBalance(0);
+      setTotalCO2Saved(0);
+      setStreak(0);
+      setPurchaseHistory([]);
+      setInvestments([]);
+      setNfts([]);
+      setRecycleLogs([]);
     }
-  }, []);
+  }, [storageKey]);
 
+  // Auto connect wallet fake logic
   useEffect(() => {
-    if (wallet.connected) {
-      setEcoBalance(prev => prev <= 0.5 ? 150.50 : prev);
-      setTotalCO2Saved(prev => prev === 0 ? 50.5 : prev);
-      setStreak(prev => prev === 0 ? 5 : prev);
+    if (wallet.connected && ecoBalance === 0) {
+      setEcoBalance(150.50); // Welcome bonus
     }
   }, [wallet.connected]);
 
+  // Save data khi state thay đổi
   useEffect(() => {
-    const dataToSave = { ecoBalance, vndBalance, totalCO2Saved, streak, purchaseHistory, investments, nfts };
-    localStorage.setItem('ecoWalletData', JSON.stringify(dataToSave));
-  }, [ecoBalance, vndBalance, totalCO2Saved, streak, purchaseHistory, investments, nfts]);
+    if (!storageKey) return;
+    const dataToSave = { ecoBalance, vndBalance, totalCO2Saved, streak, purchaseHistory, investments, nfts, recycleLogs };
+    localStorage.setItem(storageKey, JSON.stringify(dataToSave));
+  }, [ecoBalance, vndBalance, totalCO2Saved, streak, purchaseHistory, investments, nfts, recycleLogs, storageKey]);
 
+  // ... (Các hàm cũ giữ nguyên: addEcoTokens, stakeEco, unstakeEco, swap, withdraw, addPurchase) ...
   const addEcoTokens = (amount: number, co2Amount: number) => {
     setEcoBalance(prev => prev + amount);
     setTotalCO2Saved(prev => prev + co2Amount);
@@ -115,25 +153,10 @@ export const WalletContextProvider = ({ children }: { children: ReactNode }) => 
   const stakeEco = (amount: number, type: 'vault' | 'product', name: string, apr: number, duration?: string) => {
     if (amount <= ecoBalance) {
       setEcoBalance(prev => prev - amount);
-      const newInvest: Investment = {
-        id: Date.now().toString(),
-        type,
-        name,
-        amount,
-        apr,
-        date: new Date(),
-        duration: duration || "Linh hoạt"
-      };
+      const newInvest: Investment = { id: Date.now().toString(), type, name, amount, apr, date: new Date(), duration: duration || "Linh hoạt" };
       setInvestments(prev => [newInvest, ...prev]);
-
       if (type === 'product') {
-        const newNFT: NFT = {
-          id: `nft-${Date.now()}`,
-          name: `Certificate: ${name}`,
-          image: "https://cdn-icons-png.flaticon.com/512/11450/11450230.png",
-          tier: amount > 50 ? 'Gold' : 'Silver',
-          date: new Date()
-        };
+        const newNFT: NFT = { id: `nft-${Date.now()}`, name: `Certificate: ${name}`, image: "https://cdn-icons-png.flaticon.com/512/11450/11450230.png", tier: amount > 50 ? 'Gold' : 'Silver', date: new Date() };
         setNfts(prev => [newNFT, ...prev]);
       }
     }
@@ -148,14 +171,11 @@ export const WalletContextProvider = ({ children }: { children: ReactNode }) => 
     setInvestments(prev => prev.filter(i => i.id !== id));
   };
 
-  // --- LOGIC SWAP MỚI (PHÍ 0.1%) ---
   const swapEcoToVnd = (amount: number) => {
     if (amount <= ecoBalance) {
-      const fee = amount * 0.001; // 0.1%
+      const fee = amount * 0.001;
       const amountAfterFee = amount - fee;
-      
       setEcoBalance(prev => prev - amount);
-      // Quy đổi: 1 ECO = 1000 VND
       setVndBalance(prev => prev + (amountAfterFee * 1000));
     }
   };
@@ -170,6 +190,44 @@ export const WalletContextProvider = ({ children }: { children: ReactNode }) => 
     const newPurchase = { id: Date.now().toString(), product, ecoEarned, co2Saved, date: new Date() };
     setPurchaseHistory(prev => [newPurchase, ...prev]);
     addEcoTokens(ecoEarned, co2Saved);
+  };
+
+  // --- LOGIC MỚI CHO SHIPPER ---
+  
+  // 1. Shipper xác nhận thu gom rác từ khách
+  const addRecycleItem = (customerName: string, wasteType: string, weight: number) => {
+    // Giả định: 1kg rác = 10 ECO (Chia sẻ giữa Shipper và Consumer sau này)
+    const estimatedReward = weight * 10; 
+    
+    const newLog: RecycleLog = {
+      id: `rec-${Date.now()}`,
+      customerName,
+      wasteType,
+      weight,
+      ecoEarned: estimatedReward,
+      status: 'collected', // Mới thu gom, chưa về kho
+      date: new Date()
+    };
+    setRecycleLogs(prev => [newLog, ...prev]);
+  };
+
+  // 2. Shipper về kho Check-in -> Nhận thưởng
+  const processRecyclingBatch = () => {
+    // Lọc ra các item đang ở trạng thái 'collected'
+    const pendingItems = recycleLogs.filter(log => log.status === 'collected');
+    if (pendingItems.length === 0) return;
+
+    // Tính tổng thưởng cho Shipper (Shipper nhận 20% tổng giá trị lô rác)
+    const totalValue = pendingItems.reduce((sum, item) => sum + item.ecoEarned, 0);
+    const shipperReward = totalValue * 0.2; 
+
+    // Cộng tiền cho Shipper
+    setEcoBalance(prev => prev + shipperReward);
+    
+    // Cập nhật trạng thái logs thành 'processed'
+    setRecycleLogs(prev => prev.map(log => 
+      log.status === 'collected' ? { ...log, status: 'processed' } : log
+    ));
   };
 
   const stakedAmount = investments.reduce((acc, curr) => acc + curr.amount, 0);
@@ -192,7 +250,11 @@ export const WalletContextProvider = ({ children }: { children: ReactNode }) => 
     investments,
     nfts,
     purchaseHistory,
-    addPurchase
+    addPurchase,
+    // Export mới
+    recycleLogs,
+    addRecycleItem,
+    processRecyclingBatch
   };
 
   return <WalletContext.Provider value={value}>{children}</WalletContext.Provider>;
