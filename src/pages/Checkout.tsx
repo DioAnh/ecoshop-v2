@@ -7,12 +7,12 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useCart } from '@/contexts/CartContext';
 import { useWalletContext } from '@/contexts/WalletContext'; 
+import { useGreenFund } from '@/contexts/GreenFundContext'; // MỚI: Import GreenFund
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
 import Confetti from 'react-confetti';
 import { supabase } from '@/integrations/supabase/client';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Badge } from '@/components/ui/badge';
 
 const REINVEST_OPTIONS = [
   { id: '6m', duration: '6 Months', apr: 12, risk: 'Medium', riskColor: 'text-yellow-600' },
@@ -23,6 +23,7 @@ const REINVEST_OPTIONS = [
 const Checkout = () => {
   const { items, getTotalPrice, clearCart } = useCart();
   const { addPurchase, stakeEco } = useWalletContext(); 
+  const { collectProtocolFee } = useGreenFund(); // MỚI: Lấy hàm thu phí
   const { toast } = useToast();
   const navigate = useNavigate();
   
@@ -48,6 +49,9 @@ const Checkout = () => {
   const handleCheckout = async () => {
     setLoading(true);
     try {
+      const orderTotal = getTotalPrice(); // Lấy tổng giá trị đơn hàng
+
+      // --- LOGIC 1: TÍNH TOÁN ECO & CO2 ---
       let totalProductCO2 = 0;
       let totalProductEco = 0;
 
@@ -58,55 +62,38 @@ const Checkout = () => {
         items.forEach(cartItem => {
           const productDB = products.find(p => p.id === cartItem.id);
           const co2PerUnit = productDB?.co2_emission || 0;
-          
           const ecoPerUnit = Math.min(co2PerUnit, 50); 
           
-          const totalItemEco = ecoPerUnit * cartItem.quantity;
-          const totalItemCO2 = co2PerUnit * cartItem.quantity;
-          
-          totalProductEco += totalItemEco;
-          totalProductCO2 += totalItemCO2;
+          totalProductEco += ecoPerUnit * cartItem.quantity;
+          totalProductCO2 += co2PerUnit * cartItem.quantity;
 
-          addPurchase(cartItem.name, totalItemEco, totalItemCO2);
+          addPurchase(cartItem.name, ecoPerUnit * cartItem.quantity, co2PerUnit * cartItem.quantity);
         });
       }
 
+      // --- LOGIC 2: TÍNH PHÍ VẬN CHUYỂN ---
       let deliveryBonusEco = 0; 
       let deliveryBonusCO2 = 0; 
       let deliveryNote = "";
 
       switch (deliveryVehicle) {
-        case 'bicycle': 
-          deliveryBonusEco = 5; 
-          deliveryBonusCO2 = 2.5; 
-          deliveryNote = "Green Delivery (Bicycle)"; 
-          break;
-        case 'electric_standard': 
-          deliveryBonusEco = 2; 
-          deliveryBonusCO2 = 1.0; 
-          deliveryNote = "Green Delivery (EV)"; 
-          break;
-        case 'gas_standard': 
-          deliveryBonusEco = -2; 
-          deliveryBonusCO2 = -0.5; 
-          deliveryNote = "Standard Delivery (Gas)"; 
-          break;
-        case 'gas_express': 
-          deliveryBonusEco = -5; 
-          deliveryBonusCO2 = -2.0; 
-          deliveryNote = "Express Delivery (Gas)"; 
-          break;
+        case 'bicycle': deliveryBonusEco = 5; deliveryBonusCO2 = 2.5; deliveryNote = "Green Delivery (Bicycle)"; break;
+        case 'electric_standard': deliveryBonusEco = 2; deliveryBonusCO2 = 1.0; deliveryNote = "Green Delivery (EV)"; break;
+        case 'gas_standard': deliveryBonusEco = -2; deliveryBonusCO2 = -0.5; deliveryNote = "Standard Delivery (Gas)"; break;
+        case 'gas_express': deliveryBonusEco = -5; deliveryBonusCO2 = -2.0; deliveryNote = "Express Delivery (Gas)"; break;
       }
 
-      if (deliveryBonusEco !== 0) {
-        addPurchase(deliveryNote, deliveryBonusEco, deliveryBonusCO2);
-      }
+      if (deliveryBonusEco !== 0) addPurchase(deliveryNote, deliveryBonusEco, deliveryBonusCO2);
 
       const finalTotalEco = totalProductEco + deliveryBonusEco;
       const finalTotalCO2 = totalProductCO2 + deliveryBonusCO2;
 
       setEarnedEco(finalTotalEco);
       setSavedCO2(finalTotalCO2);
+
+      // --- LOGIC 3 (MỚI): THU PHÍ PROTOCOL VÀO REAL YIELD POOL ---
+      // Trích 5% giá trị đơn hàng vào Revenue Pool
+      collectProtocolFee(orderTotal);
 
       setTimeout(() => {
         setOrderSuccess(true);
@@ -162,7 +149,7 @@ const Checkout = () => {
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-gray-800">Payment Successful!</h2>
-                  <p className="text-muted-foreground text-sm">Your order is being processed.</p>
+                  <p className="text-muted-foreground text-sm">Your order has been processed on-chain.</p>
                 </div>
 
                 <div className={`w-full max-w-md bg-gradient-to-br border rounded-xl p-4 ${earnedEco >= 0 ? 'from-emerald-50 to-teal-50 border-emerald-100' : 'from-orange-50 to-red-50 border-red-100'}`}>
@@ -186,10 +173,19 @@ const Checkout = () => {
                       </div>
                     </div>
                   </div>
+                  
+                  {/* MỚI: Thông báo về Protocol Revenue */}
+                  <div className="mt-3 pt-3 border-t border-dashed border-emerald-200 text-center">
+                    <p className="text-[10px] text-gray-500 flex items-center justify-center gap-1">
+                      <TrendingUp className="w-3 h-3 text-blue-500" />
+                      <span>5% fee added to <strong>Community Revenue Pool</strong> (Real Yield)</span>
+                    </p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
+            {/* Phần Reinvest (Giữ nguyên code cũ) */}
             {earnedEco > 0 && !hasReinvested && (
               <div className="animate-in slide-in-from-bottom duration-700 delay-200">
                 <div className="relative">
@@ -284,6 +280,7 @@ const Checkout = () => {
     );
   }
 
+  // MÀN HÌNH FORM CHECKOUT (Giữ nguyên, chỉ import thêm hook)
   return (
     <div className="min-h-screen bg-gray-50/50">
       <Header />

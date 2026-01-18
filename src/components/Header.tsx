@@ -1,4 +1,4 @@
-import { ShoppingCart, User, Search, Store, Truck, ShieldCheck, LogOut, Copy, ChevronDown, Home, LayoutDashboard, Info } from "lucide-react";
+import { ShoppingCart, User, Search, Store, Truck, ShieldCheck, LogOut, Copy, ChevronDown, Home, LayoutDashboard, Info, Building2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Link, useNavigate } from "react-router-dom";
@@ -63,9 +63,14 @@ const Header = () => {
           {role === 'consumer' && (
             <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-gray-600">
               <Link to="/" className="hover:text-primary flex items-center gap-1"><Home className="w-4 h-4" /> Home</Link>
-              <Link to="/eco-profile" className="hover:text-primary flex items-center gap-1"><User className="w-4 h-4" /> My Profile</Link>
-              <Link to="/eco-vault" className="hover:text-primary flex items-center gap-1"><LayoutDashboard className="w-4 h-4" /> Eco Vault</Link>
-              <Link to="/about" className="hover:text-primary flex items-center gap-1"><Info className="w-4 h-4" /> About</Link>
+              
+              {/* NEW LINKS FOR STRATEGY & GREEN POOL */}
+              <Link to="/green-pool" className="hover:text-primary flex items-center gap-1"><Building2 className="w-4 h-4" /> Green Pool</Link>
+              
+              <Link to="/eco-profile" className="hover:text-primary flex items-center gap-1"><User className="w-4 h-4" /> Profile</Link>
+              <Link to="/eco-vault" className="hover:text-primary flex items-center gap-1"><LayoutDashboard className="w-4 h-4" /> Vault</Link>
+              
+              <Link to="/strategy" className="hover:text-primary flex items-center gap-1"><Info className="w-4 h-4" /> Why On-Chain?</Link>
             </nav>
           )}
         </div>

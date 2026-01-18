@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom"; 
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WalletProvider } from '@suiet/wallet-kit';
 import '@suiet/wallet-kit/style.css';
 
@@ -12,7 +12,7 @@ import { WalletContextProvider } from "@/contexts/WalletContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { BusinessProvider } from "@/contexts/BusinessContext";
-import { GreenFundProvider } from "@/contexts/GreenFundContext"; // MỚI: Import Green Fund
+import { GreenFundProvider } from "@/contexts/GreenFundContext"; // Import Context Quỹ Xanh
 
 // Components & Pages
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -30,6 +30,8 @@ import About from "./pages/About";
 import ShipperDashboard from "./pages/ShipperDashboard";
 import BusinessDashboard from "./pages/BusinessDashboard";
 import AdminVerification from "./pages/AdminVerification";
+import GreenPool from "./pages/GreenPool"; // Import trang Green Pool
+import StrategicModel from "./pages/StrategicModel"; // Import trang Strategy
 
 const queryClient = new QueryClient();
 
@@ -40,14 +42,16 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <WalletProvider autoConnect={false}>
         
+        {/* --- ROUTER BAO BỌC TOÀN BỘ ỨNG DỤNG --- */}
         <BrowserRouter>
+          
           <AuthProvider>
             <WalletContextProvider>
               
-              {/* Business Context */}
+              {/* Business Context quản lý sản phẩm doanh nghiệp */}
               <BusinessProvider>
                 
-                {/* MỚI: Bọc Green Fund Provider ở đây để các trang con dùng được */}
+                {/* Green Fund Context quản lý quỹ tài trợ & vĩ mô */}
                 <GreenFundProvider>
                   
                   <CartProvider>
@@ -59,25 +63,29 @@ const App = () => {
                         <SplashScreen onFinish={() => setShowSplash(false)} />
                       ) : (
                         <Routes>
-                          {/* Public Routes */}
+                          {/* --- PUBLIC ROUTES (Ai cũng xem được) --- */}
                           <Route path="/" element={<Index />} />
                           <Route path="/auth" element={<Auth />} />
                           <Route path="/about" element={<About />} />
                           <Route path="/category/:categoryId" element={<CategoryProducts />} />
                           <Route path="/product/:id" element={<ProductDetail />} />
                           <Route path="/cart" element={<Cart />} />
+                          
+                          {/* Các trang chiến lược & quỹ (Public để Investor xem) */}
+                          <Route path="/green-pool" element={<GreenPool />} />
+                          <Route path="/strategy" element={<StrategicModel />} />
 
-                          {/* Protected Consumer Routes */}
+                          {/* --- PROTECTED ROUTES (Cần đăng nhập ví/tài khoản) --- */}
                           <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
                           <Route path="/eco-profile" element={<ProtectedRoute><EcoProfile /></ProtectedRoute>} />
                           <Route path="/eco-vault" element={<ProtectedRoute><EcoVault /></ProtectedRoute>} />
 
-                          {/* Role-based Routes */}
+                          {/* --- ROLE-BASED ROUTES (Dành cho các vai trò đặc biệt) --- */}
                           <Route path="/shipper" element={<ShipperDashboard />} />
                           <Route path="/business" element={<BusinessDashboard />} />
                           <Route path="/verification" element={<AdminVerification />} />
 
-                          {/* Catch-all */}
+                          {/* Catch-all: Trang 404 */}
                           <Route path="*" element={<NotFound />} />
                         </Routes>
                       )}
@@ -89,6 +97,7 @@ const App = () => {
               </BusinessProvider>
             </WalletContextProvider>
           </AuthProvider>
+          
         </BrowserRouter>
         
       </WalletProvider>
@@ -96,4 +105,5 @@ const App = () => {
   );
 };
 
+// --- DÒNG QUAN TRỌNG ĐỂ SỬA LỖI MÀN HÌNH TRẮNG ---
 export default App;
