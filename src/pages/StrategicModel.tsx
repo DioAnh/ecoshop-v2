@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   ShieldCheck, Link, Zap, RefreshCw, BadgeDollarSign, 
   Target, Layers, TrendingUp, Fingerprint, 
-  Database, Box, Cpu, Network
+  Database, Box, Cpu, Network, BarChart3,
+  Milestone, Globe, Users, CheckCircle2
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useGreenFund } from "@/contexts/GreenFundContext";
@@ -23,16 +24,16 @@ const StrategicModel = () => {
             Sui x EcoShop
           </div>
           <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 mb-6 tracking-tight">
-            EcoShop <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-cyan-400">Tech Architecture</span>
+            EcoShop <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-cyan-400">Strategic Blueprint</span>
           </h1>
           <p className="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
             Leveraging <strong>Sui's Object-Centric Model</strong> to build the Financial Infrastructure for the Green Economy.
           </p>
         </div>
 
-        <Tabs defaultValue="why-sui" className="w-full">
+        <Tabs defaultValue="roadmap" className="w-full">
           <TabsList className="grid w-full grid-cols-5 mb-10 h-14 bg-gray-100 p-1 rounded-xl overflow-x-auto">
-            {/* Đưa Why Sui lên đầu để BGK thấy ngay */}
+            {/* Tabs ordered for pitch flow */}
             <TabsTrigger value="why-sui" className="rounded-lg font-bold data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-sm">Why Sui?</TabsTrigger>
             <TabsTrigger value="problem" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:text-red-600 data-[state=active]:shadow-sm">Problem</TabsTrigger>
             <TabsTrigger value="business-model" className="rounded-lg font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">Business Model</TabsTrigger>
@@ -157,7 +158,7 @@ const StrategicModel = () => {
             </div>
           </TabsContent>
 
-          {/* TAB 2: THE PROBLEM (Giữ nguyên) */}
+          {/* --- TAB 2: THE PROBLEM --- */}
           <TabsContent value="problem" className="animate-in fade-in slide-in-from-bottom-2 duration-500">
             <div className="mb-8 text-center">
               <h2 className="text-2xl font-bold text-gray-900">Why Consumers Don't Buy Green?</h2>
@@ -166,31 +167,32 @@ const StrategicModel = () => {
             <div className="grid md:grid-cols-2 gap-6">
               <Card className="border-l-4 border-l-red-500 bg-red-50/20">
                 <CardHeader className="pb-2"><CardTitle className="text-lg font-bold flex items-center gap-2 text-red-700"><BadgeDollarSign className="w-5 h-5" /> 1. The Green Premium</CardTitle></CardHeader>
-                <CardContent><p className="text-gray-700 mb-3 text-sm">Green products are <strong>20% - 100% more expensive</strong>.</p><div className="p-3 bg-white rounded-lg border border-emerald-100 shadow-sm"><p className="text-xs font-bold text-emerald-700">Solution:</p><p className="text-xs text-gray-600"><strong>Green Pool Subsidies:</strong> CSR funds auto-discount products.</p></div></CardContent>
+                <CardContent><p className="text-gray-700 mb-3 text-sm">Green products are <strong>20% - 100% more expensive</strong>.</p><div className="p-3 bg-white rounded-lg border border-emerald-100 shadow-sm"><p className="text-xs font-bold text-emerald-700 flex items-center gap-2"><Zap className="w-3 h-3" /> Solution:</p><p className="text-xs text-gray-600 mt-1"><strong>Green Pool Subsidies:</strong> CSR funds auto-discount products.</p></div></CardContent>
               </Card>
               <Card className="border-l-4 border-l-orange-500 bg-orange-50/20">
                 <CardHeader className="pb-2"><CardTitle className="text-lg font-bold flex items-center gap-2 text-orange-700"><Target className="w-5 h-5" /> 2. "My Impact is Tiny"</CardTitle></CardHeader>
-                <CardContent><p className="text-gray-700 mb-3 text-sm">Individual effort feels insignificant.</p><div className="p-3 bg-white rounded-lg border border-emerald-100 shadow-sm"><p className="text-xs font-bold text-emerald-700">Solution:</p><p className="text-xs text-gray-600"><strong>Dynamic NFTs:</strong> Visualize individual contribution.</p></div></CardContent>
+                <CardContent><p className="text-gray-700 mb-3 text-sm">Individual effort feels insignificant.</p><div className="p-3 bg-white rounded-lg border border-emerald-100 shadow-sm"><p className="text-xs font-bold text-emerald-700 flex items-center gap-2"><Zap className="w-3 h-3" /> Solution:</p><p className="text-xs text-gray-600 mt-1"><strong>Dynamic NFTs:</strong> Visualize individual contribution.</p></div></CardContent>
               </Card>
               <Card className="border-l-4 border-l-yellow-500 bg-yellow-50/20">
                 <CardHeader className="pb-2"><CardTitle className="text-lg font-bold flex items-center gap-2 text-yellow-700"><TrendingUp className="w-5 h-5" /> 3. Qualitative Benefits</CardTitle></CardHeader>
-                <CardContent><p className="text-gray-700 mb-3 text-sm">"Saving the planet" is vague and hard to verify.</p><div className="p-3 bg-white rounded-lg border border-emerald-100 shadow-sm"><p className="text-xs font-bold text-emerald-700">Solution:</p><p className="text-xs text-gray-600"><strong>On-chain Verification:</strong> CO2 saved is tokenized.</p></div></CardContent>
+                <CardContent><p className="text-gray-700 mb-3 text-sm">"Saving the planet" is vague and hard to verify.</p><div className="p-3 bg-white rounded-lg border border-emerald-100 shadow-sm"><p className="text-xs font-bold text-emerald-700 flex items-center gap-2"><Zap className="w-3 h-3" /> Solution:</p><p className="text-xs text-gray-600 mt-1"><strong>On-chain Verification:</strong> CO2 saved is tokenized.</p></div></CardContent>
               </Card>
               <Card className="border-l-4 border-l-purple-500 bg-purple-50/20">
                 <CardHeader className="pb-2"><CardTitle className="text-lg font-bold flex items-center gap-2 text-purple-700"><RefreshCw className="w-5 h-5" /> 4. Habit Friction</CardTitle></CardHeader>
-                <CardContent><p className="text-gray-700 mb-3 text-sm">Green lifestyle requires sacrificing convenience.</p><div className="p-3 bg-white rounded-lg border border-emerald-100 shadow-sm"><p className="text-xs font-bold text-emerald-700">Solution:</p><p className="text-xs text-gray-600"><strong>Shop-to-Earn:</strong> Make it profitable to be green.</p></div></CardContent>
+                <CardContent><p className="text-gray-700 mb-3 text-sm">Green lifestyle requires sacrificing convenience.</p><div className="p-3 bg-white rounded-lg border border-emerald-100 shadow-sm"><p className="text-xs font-bold text-emerald-700 flex items-center gap-2"><Zap className="w-3 h-3" /> Solution:</p><p className="text-xs text-gray-600 mt-1"><strong>Shop-to-Earn:</strong> Make it profitable to be green.</p></div></CardContent>
               </Card>
             </div>
           </TabsContent>
 
-          {/* TAB 3: BUSINESS MODEL (Giữ nguyên, thêm hiển thị Revenue) */}
+          {/* --- TAB 3: BUSINESS MODEL --- */}
           <TabsContent value="business-model" className="animate-in fade-in slide-in-from-bottom-2 duration-500">
             <div className="bg-gray-900 text-white rounded-2xl p-8 mb-8 relative overflow-hidden">
               <div className="absolute right-0 top-0 w-64 h-64 bg-emerald-500 rounded-full blur-[100px] opacity-20"></div>
               <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
                 <div>
                   <h3 className="text-emerald-400 font-bold uppercase text-sm tracking-wider mb-2">Protocol Real Revenue</h3>
-                  <div className="text-5xl font-extrabold mb-1">{revenuePoolBalance.toLocaleString()} <span className="text-xl font-normal text-gray-400">VND</span></div>
+                  {/* FIX: Handle undefined revenuePoolBalance */}
+                  <div className="text-5xl font-extrabold mb-1">{(revenuePoolBalance || 0).toLocaleString()} <span className="text-xl font-normal text-gray-400">VND</span></div>
                   <p className="text-gray-400 text-sm">Generated from 5% transaction fees. Backs Real Yield.</p>
                 </div>
                 <div className="flex gap-4">
@@ -207,12 +209,152 @@ const StrategicModel = () => {
             </div>
           </TabsContent>
 
-          {/* TAB 4: ROADMAP (Giữ nguyên) */}
+          {/* --- TAB 4: EXTENDED ROADMAP (NEW) --- */}
           <TabsContent value="roadmap" className="animate-in fade-in slide-in-from-bottom-2 duration-500">
-             <div className="relative border-l-4 border-gray-200 ml-6 space-y-12 py-4">
-              <div className="relative pl-8"><div className="absolute -left-[14px] top-0 w-6 h-6 bg-emerald-500 rounded-full border-4 border-white shadow-md"></div><h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">Phase 1: Validation <Badge className="bg-emerald-100 text-emerald-700">Live MVP</Badge></h3><p className="text-sm text-gray-500 mb-3">Q4 2025 - Q1 2026</p><ul className="space-y-2 text-gray-700 bg-gray-50 p-4 rounded-xl border border-gray-100"><li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div> Launch E-commerce Core.</li><li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div> Integrate Sui Wallet & zkLogin.</li></ul></div>
-              <div className="relative pl-8"><div className="absolute -left-[14px] top-0 w-6 h-6 bg-blue-500 rounded-full border-4 border-white shadow-md"></div><h3 className="text-xl font-bold text-gray-900">Phase 2: Liquidity & ReFi</h3><p className="text-sm text-gray-500 mb-3">Q2 2026 - Q4 2026</p><ul className="space-y-2 text-gray-700 bg-gray-50 p-4 rounded-xl border border-gray-100"><li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div> Launch Micro-investment Vaults.</li><li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div> Secondary Market for Dynamic NFTs.</li></ul></div>
-              <div className="relative pl-8"><div className="absolute -left-[14px] top-0 w-6 h-6 bg-purple-500 rounded-full border-4 border-white shadow-md"></div><h3 className="text-xl font-bold text-gray-900">Phase 3: DePIN & Expansion</h3><p className="text-sm text-gray-500 mb-3">2027+</p><ul className="space-y-2 text-gray-700 bg-gray-50 p-4 rounded-xl border border-gray-100"><li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div> IoT Integration (DePIN).</li><li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div> EcoShop DAO.</li></ul></div>
+            <div className="max-w-4xl mx-auto">
+              <div className="mb-8 p-4 bg-blue-50 border border-blue-100 rounded-xl flex gap-4 items-start">
+                <div className="p-2 bg-blue-100 rounded-full shrink-0">
+                  <Milestone className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-blue-900">Execution Strategy</h3>
+                  <p className="text-sm text-blue-700">
+                    Our roadmap prioritizes <strong>User Adoption</strong> first (Web2-like UX), then <strong>Financialization</strong> (ReFi), and finally <strong>Full Decentralization</strong> (DePIN & DAO).
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative border-l-4 border-gray-200 ml-6 space-y-16 py-4">
+                
+                {/* PHASE 1 */}
+                <div className="relative pl-10">
+                  <div className="absolute -left-[14px] top-0 w-6 h-6 bg-emerald-500 rounded-full border-4 border-white shadow-md ring-2 ring-emerald-100"></div>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+                    <h3 className="text-2xl font-bold text-gray-900">Phase 1: Foundation & Trust</h3>
+                    <div className="flex gap-2">
+                      <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-emerald-200">Q4 2025 - Q1 2026</Badge>
+                      <Badge variant="outline" className="text-emerald-600 border-emerald-200">Live MVP</Badge>
+                    </div>
+                  </div>
+                  
+                  <Card className="border-emerald-100 shadow-sm hover:shadow-md transition-shadow">
+                    <CardContent className="p-6 grid gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-3">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" />
+                          <div>
+                            <span className="font-bold text-gray-800">Invisible Web3 Onboarding (zkLogin)</span>
+                            <p className="text-sm text-gray-600">Users login via Google/Facebook. Wallet creation is handled in the background. Zero friction for non-crypto users.</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-3">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" />
+                          <div>
+                            <span className="font-bold text-gray-800">Green Pool v1 Pilot</span>
+                            <p className="text-sm text-gray-600">Onboard first 3 Strategic Sponsors (Vinamilk, Unilever). Manual disbursement verification.</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-3">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-500 mt-0.5 shrink-0" />
+                          <div>
+                            <span className="font-bold text-gray-800">Soulbound NFT Minting</span>
+                            <p className="text-sm text-gray-600">Issue "Seed" NFTs to early adopters to track reputation without tradability.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* PHASE 2 */}
+                <div className="relative pl-10">
+                  <div className="absolute -left-[14px] top-0 w-6 h-6 bg-blue-500 rounded-full border-4 border-white shadow-md ring-2 ring-blue-100"></div>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+                    <h3 className="text-2xl font-bold text-gray-900">Phase 2: Liquidity & ReFi</h3>
+                    <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-blue-200 w-fit">Q2 2026 - Q4 2026</Badge>
+                  </div>
+
+                  <Card className="border-blue-100 shadow-sm hover:shadow-md transition-shadow">
+                    <CardContent className="p-6 grid gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-3">
+                          <Zap className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
+                          <div>
+                            <span className="font-bold text-gray-800">Micro-Investment Vaults (Supply Chain Finance)</span>
+                            <p className="text-sm text-gray-600">Allow users to stake ECO tokens to fund specific product batches (e.g., "Fund 1 Ton of Organic Rice") and earn Real Yield.</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-3">
+                          <Zap className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
+                          <div>
+                            <span className="font-bold text-gray-800">DeepBook Integration</span>
+                            <p className="text-sm text-gray-600">Enable instant ECO &harr; USDC swaps directly on the platform using Sui's Central Limit Order Book.</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-3">
+                          <Zap className="w-5 h-5 text-blue-500 mt-0.5 shrink-0" />
+                          <div>
+                            <span className="font-bold text-gray-800">Automated Smart Disbursement</span>
+                            <p className="text-sm text-gray-600">Smart contracts automatically trigger refunds/rewards based on oracle data, removing manual operations.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* PHASE 3 */}
+                <div className="relative pl-10">
+                  <div className="absolute -left-[14px] top-0 w-6 h-6 bg-purple-500 rounded-full border-4 border-white shadow-md ring-2 ring-purple-100"></div>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+                    <h3 className="text-2xl font-bold text-gray-900">Phase 3: The "Hard Tech" Era</h3>
+                    <Badge className="bg-purple-100 text-purple-700 hover:bg-purple-100 border-purple-200 w-fit">2027+</Badge>
+                  </div>
+
+                  <Card className="border-purple-100 shadow-sm hover:shadow-md transition-shadow">
+                    <CardContent className="p-6 grid gap-4">
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-3">
+                          <Cpu className="w-5 h-5 text-purple-500 mt-0.5 shrink-0" />
+                          <div>
+                            <span className="font-bold text-gray-800">IoT & DePIN Oracle</span>
+                            <p className="text-sm text-gray-600">
+                              Deploy IoT sensors on verified delivery trucks/warehouses to automate "Proof of Green" data (Temperature, GPS, Weight) directly to Sui Blockchain.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-3">
+                          <Globe className="w-5 h-5 text-purple-500 mt-0.5 shrink-0" />
+                          <div>
+                            <span className="font-bold text-gray-800">Cross-border Green Trade</span>
+                            <p className="text-sm text-gray-600">Expand to Southeast Asia (ASEAN), standardizing Green Credits across borders.</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-3">
+                          <Users className="w-5 h-5 text-purple-500 mt-0.5 shrink-0" />
+                          <div>
+                            <span className="font-bold text-gray-800">EcoShop DAO Governance</span>
+                            <p className="text-sm text-gray-600">Transfer platform control (Fee rate, Green Pool allocation) to "Ancient Tree" NFT holders.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+
+              </div>
             </div>
           </TabsContent>
 
