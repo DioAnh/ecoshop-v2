@@ -19,18 +19,18 @@ const Auth = () => {
   const features = [
     {
       icon: Wallet,
-      title: 'Kết nối ví Sui',
-      description: 'Hỗ trợ Sui Wallet, Suiet, Surf và nhiều ví khác'
+      title: 'Connect Sui Wallet',
+      description: 'Supports Sui Wallet, Suiet, Surf and many others'
     },
     {
       icon: Coins,
-      title: 'Nhận ECO Token',
-      description: 'Mua sắm xanh, tích lũy token từ việc giảm CO2'
+      title: 'Earn ECO Tokens',
+      description: 'Shop green, accumulate tokens from reducing CO2'
     },
     {
       icon: Shield,
-      title: 'Bảo mật Web3',
-      description: 'Tài sản của bạn, quyền kiểm soát của bạn'
+      title: 'Web3 Security',
+      description: 'Your assets, your control'
     }
   ];
 
@@ -50,9 +50,9 @@ const Auth = () => {
 
         <Card className="border-primary/20 shadow-xl shadow-primary/10">
           <CardHeader className="text-center pb-4">
-            <CardTitle className="text-2xl">Kết nối ví để bắt đầu</CardTitle>
+            <CardTitle className="text-2xl">Connect Wallet to Start</CardTitle>
             <CardDescription className="text-base">
-              Mua sắm xanh, nhận thưởng token ECO trên blockchain Sui
+              Shop green, earn ECO token rewards on Sui blockchain
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -87,7 +87,7 @@ const Auth = () => {
 
             {/* Supported Wallets */}
             <div className="text-center">
-              <p className="text-xs text-muted-foreground mb-2">Ví được hỗ trợ</p>
+              <p className="text-xs text-muted-foreground mb-2">Supported Wallets</p>
               <div className="flex items-center justify-center gap-3 text-sm text-muted-foreground">
                 <span className="px-2 py-1 bg-muted rounded">Sui Wallet</span>
                 <span className="px-2 py-1 bg-muted rounded">Suiet</span>
@@ -104,14 +104,14 @@ const Auth = () => {
             onClick={() => navigate('/')}
             className="text-muted-foreground"
           >
-            ← Quay về trang chủ
+            ← Back to Home
           </Button>
         </div>
 
         {/* Info */}
         <p className="text-center text-xs text-muted-foreground mt-4 px-4">
-          Bằng việc kết nối ví, bạn đồng ý với các điều khoản sử dụng của EcoShop. 
-          Chúng tôi không bao giờ yêu cầu seed phrase của bạn.
+          By connecting your wallet, you agree to EcoShop's terms of service. 
+          We never ask for your seed phrase.
         </p>
       </div>
     </div>

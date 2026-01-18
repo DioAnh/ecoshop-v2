@@ -35,8 +35,8 @@ export default function CameraCapture() {
     } catch (error) {
       console.error("Error accessing camera:", error);
       toast({
-        title: "Lỗi camera",
-        description: "Không thể truy cập camera. Vui lòng kiểm tra quyền truy cập.",
+        title: "Camera Error",
+        description: "Cannot access camera. Please check permissions.",
         variant: "destructive",
       });
     }
@@ -66,8 +66,8 @@ export default function CameraCapture() {
         stopCamera();
         
         toast({
-          title: "Đã chụp ảnh!",
-          description: "Ảnh báo cáo thu gom đã được lưu.",
+          title: "Photo Captured!",
+          description: "Collection report photo has been saved.",
         });
       }
     }
@@ -107,16 +107,16 @@ export default function CameraCapture() {
           className="rounded-full gap-2"
         >
           <Camera className="w-5 h-5" />
-          Chụp Ảnh Báo Cáo
+          Capture Report Photo
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] bg-card">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-foreground">
-            Chụp Ảnh Thu Gom
+            Capture Collection Photo
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            Chụp ảnh hiện trường thu gom tái chế
+            Take a photo of the recycling collection items
           </DialogDescription>
         </DialogHeader>
 
@@ -151,7 +151,7 @@ export default function CameraCapture() {
                 size="lg"
               >
                 <Camera className="mr-3 h-8 w-8" />
-                Chụp Ảnh
+                Capture
               </Button>
             </div>
           ) : (
@@ -160,7 +160,7 @@ export default function CameraCapture() {
               <div className="relative rounded-lg overflow-hidden border-2 border-green-500">
                 <img
                   src={capturedImage}
-                  alt="Ảnh báo cáo thu gom"
+                  alt="Collection report"
                   className="w-full h-auto"
                 />
                 <Button
@@ -183,21 +183,21 @@ export default function CameraCapture() {
                   className="flex-1"
                 >
                   <RotateCcw className="mr-2 h-4 w-4" />
-                  Chụp lại
+                  Retake
                 </Button>
                 <Button
                   type="button"
                   onClick={() => {
                     toast({
-                      title: "Đã lưu ảnh!",
-                      description: "Ảnh báo cáo đã được lưu vào hệ thống.",
+                      title: "Saved!",
+                      description: "Report photo has been saved to the system.",
                     });
                     setOpen(false);
                   }}
                   variant="default"
                   className="flex-1"
                 >
-                  Xác nhận
+                  Confirm
                 </Button>
               </div>
             </div>

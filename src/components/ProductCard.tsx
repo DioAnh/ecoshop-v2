@@ -37,12 +37,13 @@ const ProductCard = ({
   const { addToCart } = useCart();
   const { toast } = useToast();
 
-  const organicCategories = ["Thời trang", "Thực phẩm", "Làm đẹp", "Chăm sóc sức khỏe"];
+  // Updated to check for English keywords as well
+  const organicCategories = ["Fashion", "Food", "Beauty", "Health", "Thời trang", "Thực phẩm", "Làm đẹp", "Chăm sóc sức khỏe"];
   const showOrganicCert = categoryName && organicCategories.some(cat => 
     categoryName.toLowerCase().includes(cat.toLowerCase())
   );
   
-  // Logic màu sắc cho CO2 Badge
+  // Logic for CO2 Badge colors
   const getCO2BadgeStyle = (emission: number) => {
     if (emission < 1) return "bg-emerald-100 text-emerald-800 border-emerald-200";
     if (emission < 3) return "bg-yellow-100 text-yellow-800 border-yellow-200";
@@ -59,8 +60,8 @@ const ProductCard = ({
       image
     });
     toast({
-      title: "Đã thêm vào giỏ hàng",
-      description: `${name} đã được thêm vào giỏ hàng.`,
+      title: "Added to Cart",
+      description: `${name} has been added to your cart.`,
       className: "bg-green-50 border-green-200"
     });
   };
@@ -86,7 +87,7 @@ const ProductCard = ({
           </div>
         </div>
 
-        {/* Cert Badges - Fix lỗi màu trắng trên nền trắng */}
+        {/* Cert Badges */}
         <div className="absolute top-3 right-3 flex flex-col gap-1.5 items-end">
           {certification.map((cert) => (
             <Badge 
@@ -107,7 +108,7 @@ const ProductCard = ({
         </div>
       </div>
 
-      {/* 2. CONTENT SECTION - Fix Padding & Spacing */}
+      {/* 2. CONTENT SECTION */}
       <div className="flex flex-col flex-grow p-4 space-y-3">
         {/* Title */}
         <h3 className="font-semibold text-sm leading-snug text-gray-700 line-clamp-2 min-h-[2.5rem] group-hover:text-primary transition-colors">
@@ -131,10 +132,10 @@ const ProductCard = ({
           <div className="flex items-center gap-1 text-yellow-500 font-medium">
              <span>⭐ {rating}</span>
           </div>
-          <span>Đã bán {sold}</span>
+          <span>Sold {sold}</span>
         </div>
 
-        {/* 3. BUTTONS - Micro Interactions */}
+        {/* 3. BUTTONS */}
         <div className="grid grid-cols-4 gap-2 pt-1">
           <Button 
             size="sm" 
@@ -142,7 +143,7 @@ const ProductCard = ({
             onClick={handleAddToCart}
           >
             <Plus className="w-3.5 h-3.5 mr-1.5" />
-            Thêm vào giỏ
+            Add to Cart
           </Button>
           <Button 
             size="sm" 

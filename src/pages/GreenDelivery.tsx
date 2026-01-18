@@ -17,8 +17,8 @@ const GreenDelivery = () => {
   const handleRecycleSubmit = async () => {
     if (!user) {
       toast({
-        title: "Vui lòng đăng nhập",
-        description: "Bạn cần đăng nhập để quy đổi điểm",
+        title: "Please Login",
+        description: "You need to login to exchange points",
         variant: "destructive",
       });
       return;
@@ -27,8 +27,8 @@ const GreenDelivery = () => {
     const weight = parseFloat(recycleWeight);
     if (isNaN(weight) || weight <= 0) {
       toast({
-        title: "Số liệu không hợp lệ",
-        description: "Vui lòng nhập số kg hợp lệ",
+        title: "Invalid Input",
+        description: "Please enter a valid weight",
         variant: "destructive",
       });
       return;
@@ -36,10 +36,10 @@ const GreenDelivery = () => {
 
     setIsSubmitting(true);
     try {
-      const pointsEarned = Math.floor(weight * 10); // 1kg = 10 điểm
-      const co2Saved = weight * 2.5; // Giả sử 1kg rác tái chế = 2.5kg CO2 tiết kiệm
+      const pointsEarned = Math.floor(weight * 10); // 1kg = 10 points
+      const co2Saved = weight * 2.5; // Assume 1kg waste = 2.5kg CO2 saved
 
-      // Lấy greenpoints hiện tại của user
+      // Get current greenpoints
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select('greenpoints')
@@ -48,7 +48,7 @@ const GreenDelivery = () => {
 
       if (userError) throw userError;
 
-      // Cập nhật greenpoints
+      // Update greenpoints
       const newGreenpoints = (userData?.greenpoints || 0) + pointsEarned;
       const { error: updateError } = await supabase
         .from('users')
@@ -57,7 +57,7 @@ const GreenDelivery = () => {
 
       if (updateError) throw updateError;
 
-      // Tạo transaction
+      // Create transaction
       const { error: transactionError } = await supabase
         .from('transactions')
         .insert({
@@ -65,22 +65,22 @@ const GreenDelivery = () => {
           greenpoints_earned: pointsEarned,
           co2_saved: co2Saved,
           amount: weight,
-          note: `Quy đổi ${weight}kg rác thải tái chế`,
+          note: `Recycled ${weight}kg waste`,
         });
 
       if (transactionError) throw transactionError;
 
       toast({
-        title: "Quy đổi thành công!",
-        description: `Bạn đã nhận ${pointsEarned} GreenPoints từ ${weight}kg rác thải tái chế`,
+        title: "Exchange Successful!",
+        description: `You received ${pointsEarned} GreenPoints for ${weight}kg recycled waste`,
       });
 
       setRecycleWeight('');
     } catch (error: any) {
       console.error('Error:', error);
       toast({
-        title: "Lỗi",
-        description: error.message || "Có lỗi xảy ra khi quy đổi điểm",
+        title: "Error",
+        description: error.message || "An error occurred during exchange",
         variant: "destructive",
       });
     } finally {
@@ -97,10 +97,10 @@ const GreenDelivery = () => {
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold text-foreground mb-2 flex items-center justify-center gap-3">
               <Bike className="w-8 h-8 text-primary" />
-              Giao hàng xanh
+              Green Delivery
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Dịch vụ giao hàng thân thiện với môi trường, góp phần giảm phát thải carbon và bảo vệ hành tinh
+              Eco-friendly delivery service, reducing carbon emissions and protecting the planet
             </p>
           </div>
 
@@ -110,12 +110,12 @@ const GreenDelivery = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-green-700">
                   <Bike className="w-5 h-5" />
-                  Xe máy điện
+                  Electric Bikes
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-green-600">
-                  100% xe máy điện, không khí thải, giảm 85% phát thải CO2 so với xe xăng truyền thống
+                  100% electric bikes, zero emissions, reducing CO2 by 85% compared to traditional gas vehicles
                 </p>
               </CardContent>
             </Card>
@@ -124,12 +124,12 @@ const GreenDelivery = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-blue-700">
                   <Clock className="w-5 h-5" />
-                  Giao hàng nhanh
+                  Fast Delivery
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-blue-600">
-                  Giao hàng trong 2-4 giờ trong nội thành, cam kết đúng giờ và an toàn
+                  2-4 hour delivery within the city, committed to punctuality and safety
                 </p>
               </CardContent>
             </Card>
@@ -138,12 +138,12 @@ const GreenDelivery = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-orange-700">
                   <MapPin className="w-5 h-5" />
-                  Phủ sóng rộng
+                  Wide Coverage
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-orange-600">
-                  Phủ sóng toàn bộ TP.HCM và Hà Nội, mở rộng ra các tỉnh thành khác
+                  Covering all of HCMC and Hanoi, expanding to other provinces
                 </p>
               </CardContent>
             </Card>
@@ -156,30 +156,30 @@ const GreenDelivery = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-primary">
                   <TreePine className="w-5 h-5" />
-                  Tác động môi trường
+                  Environmental Impact
                 </CardTitle>
                 <CardDescription>
-                  Những con số ấn tượng về việc bảo vệ môi trường
+                  Impressive numbers on environmental protection
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
                   <div>
-                    <p className="text-sm text-green-600 font-medium">CO2 tiết kiệm</p>
+                    <p className="text-sm text-green-600 font-medium">CO2 Saved</p>
                     <p className="text-2xl font-bold text-green-700">1,250 kg</p>
                   </div>
                   <TreePine className="w-8 h-8 text-green-600" />
                 </div>
                 <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
                   <div>
-                    <p className="text-sm text-blue-600 font-medium">Đơn hàng xanh</p>
+                    <p className="text-sm text-blue-600 font-medium">Green Orders</p>
                     <p className="text-2xl font-bold text-blue-700">12,500</p>
                   </div>
                   <Award className="w-8 h-8 text-blue-600" />
                 </div>
                 <div className="flex items-center justify-between p-4 bg-purple-50 rounded-lg">
                   <div>
-                    <p className="text-sm text-purple-600 font-medium">Km không khí thải</p>
+                    <p className="text-sm text-purple-600 font-medium">Zero Emission Km</p>
                     <p className="text-2xl font-bold text-purple-700">45,000 km</p>
                   </div>
                   <Truck className="w-8 h-8 text-purple-600" />
@@ -192,10 +192,10 @@ const GreenDelivery = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-primary">
                   <Truck className="w-5 h-5" />
-                  Quy trình giao hàng
+                  Delivery Process
                 </CardTitle>
                 <CardDescription>
-                  Từ kho hàng đến tay khách hàng
+                  From warehouse to customer
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -205,9 +205,9 @@ const GreenDelivery = () => {
                       1
                     </div>
                     <div>
-                      <h4 className="font-semibold text-foreground">Xác nhận đơn hàng</h4>
+                      <h4 className="font-semibold text-foreground">Order Confirmation</h4>
                       <p className="text-sm text-muted-foreground">
-                        Hệ thống tự động xác nhận và chuẩn bị đơn hàng
+                        System automatically confirms and prepares order
                       </p>
                     </div>
                   </div>
@@ -216,9 +216,9 @@ const GreenDelivery = () => {
                       2
                     </div>
                     <div>
-                      <h4 className="font-semibold text-foreground">Tối ưu lộ trình</h4>
+                      <h4 className="font-semibold text-foreground">Route Optimization</h4>
                       <p className="text-sm text-muted-foreground">
-                        AI tính toán lộ trình ngắn nhất, tiết kiệm năng lượng
+                        AI calculates shortest, energy-saving routes
                       </p>
                     </div>
                   </div>
@@ -227,9 +227,9 @@ const GreenDelivery = () => {
                       3
                     </div>
                     <div>
-                      <h4 className="font-semibold text-foreground">Giao hàng xanh</h4>
+                      <h4 className="font-semibold text-foreground">Green Delivery</h4>
                       <p className="text-sm text-muted-foreground">
-                        Shipper sử dụng xe máy điện giao hàng đến tận nơi
+                        Shipper uses electric bike to deliver to your door
                       </p>
                     </div>
                   </div>
@@ -238,9 +238,9 @@ const GreenDelivery = () => {
                       4
                     </div>
                     <div>
-                      <h4 className="font-semibold text-foreground">Hoàn thành</h4>
+                      <h4 className="font-semibold text-foreground">Completion</h4>
                       <p className="text-sm text-muted-foreground">
-                        Tích điểm GreenPoints cho mỗi đơn hàng xanh
+                        Earn GreenPoints for every green delivery
                       </p>
                     </div>
                   </div>
@@ -254,57 +254,57 @@ const GreenDelivery = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-green-700">
                 <Recycle className="w-6 h-6" />
-                Quy đổi chai nhựa & rác thải tái chế
+                Recycle Exchange
               </CardTitle>
               <CardDescription>
-                Đổi rác thải tái chế lấy GreenPoints - 1kg = 10 điểm
+                Exchange recyclables for GreenPoints - 1kg = 10 points
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <h4 className="font-semibold text-green-700">Rác thải được chấp nhận:</h4>
+                  <h4 className="font-semibold text-green-700">Accepted Waste:</h4>
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      Chai nhựa (PET, HDPE)
+                      Plastic Bottles (PET, HDPE)
                     </li>
                     <li className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      Giấy, bìa carton
+                      Paper, Cardboard
                     </li>
                     <li className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      Lon nhôm, kim loại
+                      Aluminum Cans, Metal
                     </li>
                     <li className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      Thủy tinh
+                      Glass
                     </li>
                   </ul>
                   <div className="p-4 bg-white rounded-lg border border-green-200">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-green-700">Tỷ lệ quy đổi</span>
-                      <span className="text-2xl font-bold text-green-700">1kg = 10 điểm</span>
+                      <span className="text-sm font-medium text-green-700">Exchange Rate</span>
+                      <span className="text-2xl font-bold text-green-700">1kg = 10 points</span>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Mỗi 1kg rác tái chế giúp giảm ~2.5kg phát thải CO₂
+                      Every 1kg recycled saves ~2.5kg CO₂ emissions
                     </p>
                   </div>
                 </div>
                 
                 <div className="space-y-4">
-                  <h4 className="font-semibold text-green-700">Quy đổi ngay:</h4>
+                  <h4 className="font-semibold text-green-700">Exchange Now:</h4>
                   <div className="space-y-4 p-4 bg-white rounded-lg border border-green-200">
                     <div>
                       <label className="text-sm font-medium text-foreground mb-2 block">
-                        Số kg rác thải tái chế
+                        Weight (kg)
                       </label>
                       <Input
                         type="number"
                         step="0.1"
                         min="0"
-                        placeholder="Nhập số kg (VD: 2.5)"
+                        placeholder="Enter weight (e.g., 2.5)"
                         value={recycleWeight}
                         onChange={(e) => setRecycleWeight(e.target.value)}
                         className="border-green-300 focus:border-green-500"
@@ -313,10 +313,10 @@ const GreenDelivery = () => {
                     {recycleWeight && parseFloat(recycleWeight) > 0 && (
                       <div className="p-3 bg-green-50 rounded-lg">
                         <p className="text-sm text-green-700">
-                          Bạn sẽ nhận được: <span className="font-bold">{Math.floor(parseFloat(recycleWeight) * 10)} GreenPoints</span>
+                          You will receive: <span className="font-bold">{Math.floor(parseFloat(recycleWeight) * 10)} GreenPoints</span>
                         </p>
                         <p className="text-xs text-green-600 mt-1">
-                          Giảm phát thải: ~{(parseFloat(recycleWeight) * 2.5).toFixed(2)} kg CO₂
+                          Reduced Emissions: ~{(parseFloat(recycleWeight) * 2.5).toFixed(2)} kg CO₂
                         </p>
                       </div>
                     )}
@@ -325,11 +325,11 @@ const GreenDelivery = () => {
                       disabled={isSubmitting || !recycleWeight || parseFloat(recycleWeight) <= 0}
                       className="w-full bg-green-600 hover:bg-green-700"
                     >
-                      {isSubmitting ? 'Đang xử lý...' : 'Xác nhận quy đổi'}
+                      {isSubmitting ? 'Processing...' : 'Confirm Exchange'}
                     </Button>
                     {!user && (
                       <p className="text-xs text-center text-amber-600">
-                        Vui lòng đăng nhập để quy đổi điểm
+                        Please login to exchange points
                       </p>
                     )}
                   </div>
@@ -341,9 +341,9 @@ const GreenDelivery = () => {
           {/* Benefits Section */}
           <Card className="mt-8">
             <CardHeader>
-              <CardTitle className="text-center">Lợi ích của giao hàng xanh</CardTitle>
+              <CardTitle className="text-center">Benefits of Green Delivery</CardTitle>
               <CardDescription className="text-center">
-                Cùng nhau xây dựng tương lai bền vững
+                Building a sustainable future together
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -352,36 +352,36 @@ const GreenDelivery = () => {
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <TreePine className="w-6 h-6 text-green-600" />
                   </div>
-                  <h4 className="font-semibold text-foreground mb-2">Giảm phát thải</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Reduce Emissions</h4>
                   <p className="text-sm text-muted-foreground">
-                    Giảm 85% khí thải CO2 so với phương tiện truyền thống
+                    Reduce CO2 emissions by 85% compared to traditional vehicles
                   </p>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Award className="w-6 h-6 text-blue-600" />
                   </div>
-                  <h4 className="font-semibold text-foreground mb-2">Tích điểm xanh</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Earn Green Points</h4>
                   <p className="text-sm text-muted-foreground">
-                    Nhận thêm GreenPoints cho mỗi đơn hàng giao bằng xe điện
+                    Earn extra GreenPoints for every electric vehicle delivery
                   </p>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Clock className="w-6 h-6 text-purple-600" />
                   </div>
-                  <h4 className="font-semibold text-foreground mb-2">Giao hàng nhanh</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Fast Delivery</h4>
                   <p className="text-sm text-muted-foreground">
-                    Xe máy điện linh hoạt, giao hàng nhanh chóng trong thành phố
+                    Flexible electric bikes, fast delivery within the city
                   </p>
                 </div>
                 <div className="text-center">
                   <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
                     <MapPin className="w-6 h-6 text-orange-600" />
                   </div>
-                  <h4 className="font-semibold text-foreground mb-2">Chi phí tối ưu</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Cost Effective</h4>
                   <p className="text-sm text-muted-foreground">
-                    Tiết kiệm chi phí vận chuyển nhờ hiệu quả năng lượng cao
+                    Save on shipping costs thanks to high energy efficiency
                   </p>
                 </div>
               </div>

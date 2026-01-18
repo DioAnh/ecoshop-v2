@@ -46,21 +46,21 @@ const GreenPointsWallet = () => {
       name: 'Voucher 50K',
       value: '50.000đ',
       required_points: 100,
-      description: 'Giảm 50.000đ cho đơn hàng từ 200.000đ'
+      description: 'Discount 50.000đ for orders from 200.000đ'
     },
     {
       id: 'voucher-100k',
       name: 'Voucher 100K', 
       value: '100.000đ',
       required_points: 200,
-      description: 'Giảm 100.000đ cho đơn hàng từ 500.000đ'
+      description: 'Discount 100.000đ for orders from 500.000đ'
     },
     {
       id: 'voucher-200k',
       name: 'Voucher 200K',
       value: '200.000đ', 
       required_points: 400,
-      description: 'Giảm 200.000đ cho đơn hàng từ 1.000.000đ'
+      description: 'Discount 200.000đ for orders from 1.000.000đ'
     }
   ];
 
@@ -113,7 +113,7 @@ const GreenPointsWallet = () => {
         const dayCO2 = dayTransactions.reduce((sum, t) => sum + (t.co2_saved || 0), 0);
         
         chartData.push({
-          date: date.toLocaleDateString('vi-VN', { day: 'numeric', month: 'short' }),
+          date: date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' }),
           co2_saved: Number(dayCO2.toFixed(2)),
           fullDate: dateStr
         });
@@ -123,8 +123,8 @@ const GreenPointsWallet = () => {
     } catch (error: any) {
       console.error('Error fetching data:', error);
       toast({
-        title: "Lỗi",
-        description: "Không thể tải thông tin",
+        title: "Error",
+        description: "Cannot load information",
         variant: "destructive"
       });
     } finally {
@@ -135,8 +135,8 @@ const GreenPointsWallet = () => {
   const redeemVoucher = async (voucher: Voucher) => {
     if (!userData || userData.greenpoints < voucher.required_points) {
       toast({
-        title: "Không đủ điểm",
-        description: `Bạn cần ${voucher.required_points} GreenPoint để đổi voucher này`,
+        title: "Insufficient Points",
+        description: `You need ${voucher.required_points} GreenPoints to redeem this voucher`,
         variant: "destructive"
       });
       return;
@@ -161,22 +161,22 @@ const GreenPointsWallet = () => {
           amount: 0,
           greenpoints_earned: -voucher.required_points,
           co2_saved: 0,
-          note: `Đổi ${voucher.name}`
+          note: `Redeemed ${voucher.name}`
         });
 
       if (transactionError) throw transactionError;
 
       toast({
-        title: "Đổi voucher thành công!",
-        description: `Bạn đã đổi ${voucher.name} thành công`,
+        title: "Voucher Redeemed!",
+        description: `You successfully redeemed ${voucher.name}`,
       });
 
       // Refresh data
       fetchData();
     } catch (error: any) {
       toast({
-        title: "Lỗi", 
-        description: "Không thể đổi voucher: " + error.message,
+        title: "Error", 
+        description: "Cannot redeem voucher: " + error.message,
         variant: "destructive"
       });
     }
@@ -188,7 +188,7 @@ const GreenPointsWallet = () => {
         <Header />
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
-            <p className="text-lg text-muted-foreground">Vui lòng đăng nhập để xem ví GreenPoints</p>
+            <p className="text-lg text-muted-foreground">Please login to view GreenPoints Wallet</p>
           </div>
         </div>
       </div>
@@ -202,7 +202,7 @@ const GreenPointsWallet = () => {
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Đang tải thông tin...</p>
+            <p className="text-muted-foreground">Loading information...</p>
           </div>
         </div>
       </div>
@@ -218,9 +218,9 @@ const GreenPointsWallet = () => {
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-foreground mb-2 flex items-center gap-3">
               <Wallet className="w-8 h-8 text-primary" />
-              Ví điểm GreenPoints
+              GreenPoints Wallet
             </h1>
-            <p className="text-muted-foreground">Quản lý điểm thưởng và tác động môi trường của bạn</p>
+            <p className="text-muted-foreground">Manage your reward points and environmental impact</p>
           </div>
 
         {/* CO2 Emissions Chart */}
@@ -228,10 +228,10 @@ const GreenPointsWallet = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-primary" />
-              Biểu đồ phát thải CO₂ cá nhân (30 ngày)
+              Personal CO₂ Emissions (30 Days)
             </CardTitle>
             <CardDescription>
-              Theo dõi lượng CO₂ tiết kiệm được từ các hoạt động xanh của bạn
+              Track CO₂ saved from your green activities
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -239,8 +239,8 @@ const GreenPointsWallet = () => {
               <div className="h-80 flex items-center justify-center text-muted-foreground">
                 <div className="text-center">
                   <TreePine className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>Chưa có dữ liệu phát thải CO₂</p>
-                  <p className="text-sm mt-1">Hãy mua sắm xanh để theo dõi tác động của bạn!</p>
+                  <p>No CO₂ emission data yet</p>
+                  <p className="text-sm mt-1">Start shopping green to track your impact!</p>
                 </div>
               </div>
             ) : (
@@ -261,7 +261,7 @@ const GreenPointsWallet = () => {
                     />
                     <YAxis 
                       label={{ 
-                        value: 'CO₂ tiết kiệm (kg)', 
+                        value: 'CO₂ Saved (kg)', 
                         angle: -90, 
                         position: 'insideLeft',
                         style: { fill: 'hsl(var(--muted-foreground))' }
@@ -269,8 +269,8 @@ const GreenPointsWallet = () => {
                       tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }}
                     />
                     <Tooltip 
-                      formatter={(value: any) => [`${value} kg`, 'CO₂ tiết kiệm']}
-                      labelFormatter={(label) => `Ngày: ${label}`}
+                      formatter={(value: any) => [`${value} kg`, 'CO₂ Saved']}
+                      labelFormatter={(label) => `Date: ${label}`}
                       contentStyle={{
                         backgroundColor: 'hsl(var(--card))',
                         border: '1px solid hsl(var(--border))',
@@ -302,7 +302,7 @@ const GreenPointsWallet = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-primary">
                   <Coins className="w-5 h-5" />
-                  Số dư GreenPoints
+                  GreenPoints Balance
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -310,7 +310,7 @@ const GreenPointsWallet = () => {
                   {userData?.greenpoints || 0}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Điểm khả dụng
+                  Available Points
                 </div>
               </CardContent>
             </Card>
@@ -320,7 +320,7 @@ const GreenPointsWallet = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-green-700">
                   <TreePine className="w-5 h-5" />
-                  CO2 đã tiết kiệm
+                  CO₂ Saved
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -338,7 +338,7 @@ const GreenPointsWallet = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2 text-blue-700">
                   <ShoppingBag className="w-5 h-5" />
-                  Tổng giao dịch
+                  Total Transactions
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -346,7 +346,7 @@ const GreenPointsWallet = () => {
                   {transactions.length}
                 </div>
                 <div className="text-sm text-blue-600">
-                  Giao dịch xanh
+                  Green Transactions
                 </div>
               </CardContent>
             </Card>
@@ -358,31 +358,31 @@ const GreenPointsWallet = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="w-5 h-5 text-primary" />
-                  Lịch sử giao dịch
+                  Transaction History
                 </CardTitle>
                 <CardDescription>
-                  Theo dõi các giao dịch và điểm thưởng gần đây
+                  Track recent transactions and rewards
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4 max-h-96 overflow-y-auto">
                   {transactions.length === 0 ? (
                     <p className="text-center text-muted-foreground py-4">
-                      Chưa có giao dịch nào
+                      No transactions yet
                     </p>
                   ) : (
                     transactions.map((transaction) => (
                       <div key={transaction.id} className="flex items-center justify-between p-3 border border-border rounded-lg">
                         <div>
                           <p className="font-medium text-foreground">
-                            {transaction.note || 'Giao dịch mua hàng'}
+                            {transaction.note || 'Purchase Transaction'}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            {new Date(transaction.created_at).toLocaleDateString('vi-VN')}
+                            {new Date(transaction.created_at).toLocaleDateString('en-US')}
                           </p>
                           {transaction.co2_saved > 0 && (
                             <p className="text-sm text-green-600">
-                              Tiết kiệm: {transaction.co2_saved}kg CO2
+                              Saved: {transaction.co2_saved}kg CO2
                             </p>
                           )}
                         </div>
@@ -390,7 +390,7 @@ const GreenPointsWallet = () => {
                           <div className={`font-bold ${
                             transaction.greenpoints_earned >= 0 ? 'text-green-600' : 'text-red-500'
                           }`}>
-                            {transaction.greenpoints_earned >= 0 ? '+' : ''}{transaction.greenpoints_earned} điểm
+                            {transaction.greenpoints_earned >= 0 ? '+' : ''}{transaction.greenpoints_earned} points
                           </div>
                           {transaction.amount > 0 && (
                             <div className="text-sm text-muted-foreground">
@@ -410,10 +410,10 @@ const GreenPointsWallet = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Gift className="w-5 h-5 text-primary" />
-                  Đổi voucher
+                  Redeem Voucher
                 </CardTitle>
                 <CardDescription>
-                  Sử dụng GreenPoint để đổi voucher giảm giá
+                  Use GreenPoints to redeem discount vouchers
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -433,7 +433,7 @@ const GreenPointsWallet = () => {
                         <div className="flex items-center gap-2">
                           <Coins className="w-4 h-4 text-green-600" />
                           <span className="text-sm font-medium">
-                            {voucher.required_points} điểm
+                            {voucher.required_points} points
                           </span>
                         </div>
                         <Button
@@ -445,7 +445,7 @@ const GreenPointsWallet = () => {
                             : "bg-gray-300 text-gray-500 cursor-not-allowed"
                           }
                         >
-                          {hasEnoughPoints ? "Đổi ngay" : "Không đủ điểm"}
+                          {hasEnoughPoints ? "Redeem" : "Insufficient Points"}
                         </Button>
                       </div>
                     </div>

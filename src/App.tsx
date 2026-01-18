@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom"; // BrowserRouter import ở đây
+import { BrowserRouter, Routes, Route } from "react-router-dom"; 
 import { WalletProvider } from '@suiet/wallet-kit';
 import '@suiet/wallet-kit/style.css';
 
@@ -12,6 +12,7 @@ import { WalletContextProvider } from "@/contexts/WalletContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { BusinessProvider } from "@/contexts/BusinessContext";
+import { GreenFundProvider } from "@/contexts/GreenFundContext"; // MỚI: Import Green Fund
 
 // Components & Pages
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -39,56 +40,55 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <WalletProvider autoConnect={false}>
         
-        {/* --- ĐƯA BROWSER ROUTER RA NGOÀI CÙNG ĐỂ BAO BỌC TẤT CẢ CONTEXT --- */}
         <BrowserRouter>
-          
-          {/* 1. AuthProvider (Sử dụng useNavigate nên phải nằm trong BrowserRouter) */}
           <AuthProvider>
-            
-            {/* 2. WalletContext nằm trong AuthProvider để dùng user.id */}
             <WalletContextProvider>
               
-              {/* 3. BusinessContext */}
+              {/* Business Context */}
               <BusinessProvider>
                 
-                <CartProvider>
-                  <TooltipProvider>
-                    <Toaster />
-                    <Sonner />
-                    
-                    {showSplash ? (
-                      <SplashScreen onFinish={() => setShowSplash(false)} />
-                    ) : (
-                      <Routes>
-                        {/* Public Routes */}
-                        <Route path="/" element={<Index />} />
-                        <Route path="/auth" element={<Auth />} />
-                        <Route path="/about" element={<About />} />
-                        <Route path="/category/:categoryId" element={<CategoryProducts />} />
-                        <Route path="/product/:id" element={<ProductDetail />} />
-                        <Route path="/cart" element={<Cart />} />
+                {/* MỚI: Bọc Green Fund Provider ở đây để các trang con dùng được */}
+                <GreenFundProvider>
+                  
+                  <CartProvider>
+                    <TooltipProvider>
+                      <Toaster />
+                      <Sonner />
+                      
+                      {showSplash ? (
+                        <SplashScreen onFinish={() => setShowSplash(false)} />
+                      ) : (
+                        <Routes>
+                          {/* Public Routes */}
+                          <Route path="/" element={<Index />} />
+                          <Route path="/auth" element={<Auth />} />
+                          <Route path="/about" element={<About />} />
+                          <Route path="/category/:categoryId" element={<CategoryProducts />} />
+                          <Route path="/product/:id" element={<ProductDetail />} />
+                          <Route path="/cart" element={<Cart />} />
 
-                        {/* Protected Consumer Routes */}
-                        <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-                        <Route path="/eco-profile" element={<ProtectedRoute><EcoProfile /></ProtectedRoute>} />
-                        <Route path="/eco-vault" element={<ProtectedRoute><EcoVault /></ProtectedRoute>} />
+                          {/* Protected Consumer Routes */}
+                          <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+                          <Route path="/eco-profile" element={<ProtectedRoute><EcoProfile /></ProtectedRoute>} />
+                          <Route path="/eco-vault" element={<ProtectedRoute><EcoVault /></ProtectedRoute>} />
 
-                        {/* Role-based Routes */}
-                        <Route path="/shipper" element={<ShipperDashboard />} />
-                        <Route path="/business" element={<BusinessDashboard />} />
-                        <Route path="/verification" element={<AdminVerification />} />
+                          {/* Role-based Routes */}
+                          <Route path="/shipper" element={<ShipperDashboard />} />
+                          <Route path="/business" element={<BusinessDashboard />} />
+                          <Route path="/verification" element={<AdminVerification />} />
 
-                        {/* Catch-all */}
-                        <Route path="*" element={<NotFound />} />
-                      </Routes>
-                    )}
-                  </TooltipProvider>
-                </CartProvider>
+                          {/* Catch-all */}
+                          <Route path="*" element={<NotFound />} />
+                        </Routes>
+                      )}
+                    </TooltipProvider>
+                  </CartProvider>
+                  
+                </GreenFundProvider>
                 
               </BusinessProvider>
             </WalletContextProvider>
           </AuthProvider>
-          
         </BrowserRouter>
         
       </WalletProvider>

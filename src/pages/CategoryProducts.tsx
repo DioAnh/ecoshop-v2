@@ -53,7 +53,7 @@ const CategoryProducts = () => {
         <Header />
         <div className="container mx-auto px-4 py-20 text-center">
            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-           <p className="text-muted-foreground animate-pulse">Đang tìm kiếm sản phẩm xanh...</p>
+           <p className="text-muted-foreground animate-pulse">Searching for green products...</p>
         </div>
       </div>
     );
@@ -67,25 +67,25 @@ const CategoryProducts = () => {
       <div className="bg-primary/5 border-b border-primary/10">
         <div className="container mx-auto px-4 py-8 md:py-12">
           <Button variant="ghost" onClick={() => navigate('/')} className="mb-4 pl-0 hover:bg-transparent hover:text-primary text-muted-foreground">
-            <ArrowLeft className="w-4 h-4 mr-2" /> Trang chủ
+            <ArrowLeft className="w-4 h-4 mr-2" /> Home
           </Button>
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
              <div>
                 <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 mb-2 flex items-center gap-3">
-                   {category?.name || "Danh mục"}
+                   {category?.name || "Category"}
                    <span className="text-sm font-normal bg-white px-3 py-1 rounded-full border border-gray-200 text-gray-500 shadow-sm">
-                      {products.length} sản phẩm
+                      {products.length} products
                    </span>
                 </h1>
                 <p className="text-muted-foreground max-w-xl">
-                   Khám phá các sản phẩm {category?.name.toLowerCase()} thân thiện với môi trường, giúp bạn sống xanh mỗi ngày.
+                   Discover eco-friendly {category?.name.toLowerCase()} products to help you live greener every day.
                 </p>
              </div>
              
              {/* Filter Button (Mock UI) */}
              <Button variant="outline" className="bg-white border-gray-200 shadow-sm">
-                <Filter className="w-4 h-4 mr-2" /> Bộ lọc
+                <Filter className="w-4 h-4 mr-2" /> Filter
              </Button>
           </div>
         </div>
@@ -114,9 +114,9 @@ const CategoryProducts = () => {
         ) : (
           <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
             <Package className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-700 mb-2">Chưa có sản phẩm</h3>
-            <p className="text-muted-foreground mb-6">Danh mục này đang được cập nhật thêm.</p>
-            <Button onClick={() => navigate('/')}>Quay lại trang chủ</Button>
+            <h3 className="text-xl font-bold text-gray-700 mb-2">No products found</h3>
+            <p className="text-muted-foreground mb-6">This category is being updated.</p>
+            <Button onClick={() => navigate('/')}>Back to Home</Button>
           </div>
         )}
       </main>

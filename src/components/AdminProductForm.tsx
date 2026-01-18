@@ -30,11 +30,11 @@ const AdminProductForm = ({ open, onOpenChange, onProductAdded }: AdminProductFo
   });
 
   const categories = [
-    'Thực phẩm organic',
-    'Đồ gia dụng xanh',
-    'Thời trang tái chế',
-    'Bao bì sinh học',
-    'Tiết kiệm năng lượng'
+    'Organic Food',
+    'Green Household',
+    'Recycled Fashion',
+    'Bio-packaging',
+    'Energy Saving'
   ];
 
   const resetForm = () => {
@@ -54,12 +54,11 @@ const AdminProductForm = ({ open, onOpenChange, onProductAdded }: AdminProductFo
     if (!file) return;
 
     // For demo purposes, we'll use a placeholder image URL
-    // In a real app, you'd upload to Supabase Storage
     setForm({ ...form, imageUrl: 'https://via.placeholder.com/400x300?text=' + encodeURIComponent(file.name) });
     
     toast({
-      title: "Ảnh đã được chọn",
-      description: `Đã chọn file: ${file.name}`,
+      title: "Image Selected",
+      description: `Selected file: ${file.name}`,
     });
   };
 
@@ -68,8 +67,8 @@ const AdminProductForm = ({ open, onOpenChange, onProductAdded }: AdminProductFo
     
     if (!form.name || !form.category || !form.price) {
       toast({
-        title: "Lỗi",
-        description: "Vui lòng điền đầy đủ thông tin bắt buộc",
+        title: "Error",
+        description: "Please fill in all required fields",
         variant: "destructive"
       });
       return;
@@ -94,8 +93,8 @@ const AdminProductForm = ({ open, onOpenChange, onProductAdded }: AdminProductFo
       if (error) throw error;
 
       toast({
-        title: "Thành công!",
-        description: "Sản phẩm đã được thêm vào cửa hàng",
+        title: "Success!",
+        description: "Product has been added to the store",
       });
 
       resetForm();
@@ -103,8 +102,8 @@ const AdminProductForm = ({ open, onOpenChange, onProductAdded }: AdminProductFo
       onProductAdded();
     } catch (error: any) {
       toast({
-        title: "Lỗi",
-        description: "Không thể thêm sản phẩm: " + error.message,
+        title: "Error",
+        description: "Could not add product: " + error.message,
         variant: "destructive"
       });
     } finally {
@@ -116,32 +115,32 @@ const AdminProductForm = ({ open, onOpenChange, onProductAdded }: AdminProductFo
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Thêm sản phẩm mới</DialogTitle>
+          <DialogTitle>Add New Product</DialogTitle>
           <DialogDescription>
-            Điền thông tin để thêm sản phẩm vào cửa hàng
+            Enter product details to add to the marketplace
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Tên sản phẩm *</Label>
+            <Label htmlFor="name">Product Name *</Label>
             <Input
               id="name"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
-              placeholder="Ví dụ: Bình nước thủy tinh tái chế"
+              placeholder="Ex: Recycled Glass Bottle"
               required
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="category">Loại sản phẩm *</Label>
+            <Label htmlFor="category">Category *</Label>
             <Select
               value={form.category}
               onValueChange={(value) => setForm({ ...form, category: value })}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Chọn danh mục" />
+                <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((category) => (
@@ -154,7 +153,7 @@ const AdminProductForm = ({ open, onOpenChange, onProductAdded }: AdminProductFo
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="price">Giá bán (VND) *</Label>
+            <Label htmlFor="price">Price (VND) *</Label>
             <Input
               id="price"
               type="number"
@@ -168,7 +167,7 @@ const AdminProductForm = ({ open, onOpenChange, onProductAdded }: AdminProductFo
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="co2Emission">Lượng CO₂ (kg)</Label>
+            <Label htmlFor="co2Emission">CO₂ Emission (kg)</Label>
             <Input
               id="co2Emission"
               type="number"
@@ -181,7 +180,7 @@ const AdminProductForm = ({ open, onOpenChange, onProductAdded }: AdminProductFo
           </div>
 
           <div className="space-y-2">
-            <Label>Hình ảnh sản phẩm</Label>
+            <Label>Product Image</Label>
             <div className="flex gap-2 mb-2">
               <Button
                 type="button"
@@ -201,7 +200,7 @@ const AdminProductForm = ({ open, onOpenChange, onProductAdded }: AdminProductFo
                 className="flex items-center gap-2"
               >
                 <Upload className="w-4 h-4" />
-                Tải lên
+                Upload
               </Button>
             </div>
 
@@ -220,7 +219,7 @@ const AdminProductForm = ({ open, onOpenChange, onProductAdded }: AdminProductFo
                   className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
                 />
                 <p className="text-sm text-muted-foreground mt-1">
-                  Chọn file ảnh (.jpg, .png, .webp)
+                  Select image file (.jpg, .png, .webp)
                 </p>
               </div>
             )}
@@ -249,12 +248,12 @@ const AdminProductForm = ({ open, onOpenChange, onProductAdded }: AdminProductFo
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Mô tả sản phẩm</Label>
+            <Label htmlFor="description">Description</Label>
             <Textarea
               id="description"
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              placeholder="Mô tả chi tiết về sản phẩm..."
+              placeholder="Detailed product description..."
               rows={3}
             />
           </div>
@@ -266,10 +265,10 @@ const AdminProductForm = ({ open, onOpenChange, onProductAdded }: AdminProductFo
               onClick={() => onOpenChange(false)}
               className="flex-1"
             >
-              Hủy
+              Cancel
             </Button>
             <Button type="submit" disabled={isLoading} className="flex-1">
-              {isLoading ? "Đang thêm..." : "Xác nhận"}
+              {isLoading ? "Adding..." : "Confirm"}
             </Button>
           </div>
         </form>

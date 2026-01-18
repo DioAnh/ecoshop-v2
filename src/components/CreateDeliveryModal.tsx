@@ -32,12 +32,12 @@ import { toast } from "@/hooks/use-toast";
 import { Plus, Camera, X } from "lucide-react";
 
 const formSchema = z.object({
-  customerName: z.string().trim().min(1, "Vui lòng nhập tên khách hàng").max(100),
-  orderCode: z.string().trim().min(1, "Vui lòng nhập mã đơn mua").regex(/^\d+$/, "Mã đơn mua phải là số"),
-  phoneNumber: z.string().trim().min(10, "Số điện thoại phải có ít nhất 10 số").max(11, "Số điện thoại không hợp lệ").regex(/^\d+$/, "Số điện thoại chỉ được chứa số"),
-  weightKg: z.string().trim().min(1, "Vui lòng nhập số lượng kg").regex(/^\d+(\.\d+)?$/, "Số lượng kg phải là số"),
-  shipperName: z.string().trim().min(1, "Vui lòng nhập tên shipper").max(100),
-  warehouseAddress: z.string().min(1, "Vui lòng chọn địa chỉ kho"),
+  customerName: z.string().trim().min(1, "Please enter customer name").max(100),
+  orderCode: z.string().trim().min(1, "Please enter order code").regex(/^\d+$/, "Order code must be a number"),
+  phoneNumber: z.string().trim().min(10, "Phone number must be at least 10 digits").max(11, "Invalid phone number").regex(/^\d+$/, "Phone number must contain digits only"),
+  weightKg: z.string().trim().min(1, "Please enter weight").regex(/^\d+(\.\d+)?$/, "Weight must be a number"),
+  shipperName: z.string().trim().min(1, "Please enter shipper name").max(100),
+  warehouseAddress: z.string().min(1, "Please select warehouse address"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -103,11 +103,11 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
       const weightKg = parseFloat(values.weightKg);
 
       if (isNaN(orderCode) || isNaN(phoneNumber) || isNaN(weightKg)) {
-        throw new Error("Dữ liệu số không hợp lệ");
+        throw new Error("Invalid numeric data");
       }
 
       const { data, error } = await (supabase as any).from("2waydelivery").insert({
-        "Tên khách hàng": values.customerName.trim(),
+        "Tên khách hàng": values.customerName.trim(), // Keep DB column names as is
         "Mã đơn mua": orderCode,
         "Số điện thoại": phoneNumber,
         "Số lượng kg": weightKg,
@@ -118,8 +118,8 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
       if (error) throw error;
 
       toast({
-        title: "Tạo đơn thành công!",
-        description: "Đơn thu về đã được tạo và lưu vào hệ thống.",
+        title: "Order Created!",
+        description: "Return order has been created and saved to system.",
       });
 
       form.reset();
@@ -128,8 +128,8 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
     } catch (error: any) {
       console.error("Error creating delivery:", error);
       toast({
-        title: "Lỗi",
-        description: error.message || "Không thể tạo đơn thu về. Vui lòng kiểm tra lại thông tin.",
+        title: "Error",
+        description: error.message || "Could not create return order. Please check inputs.",
         variant: "destructive",
       });
     } finally {
@@ -142,14 +142,14 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
       <DialogTrigger asChild>
         <Button className="bg-green-600 hover:bg-green-700 text-white rounded-full">
           <Plus className="w-4 h-4 mr-2" />
-          Tạo Đơn Thu Về
+          Create Return Order
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px] bg-card">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-foreground">Tạo Đơn Thu Về</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-foreground">Create Return Order</DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            Nhập thông tin route giao hàng kết hợp thu gom tái chế
+            Enter route info for delivery combined with recycling collection
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -159,9 +159,9 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
               name="customerName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tên khách hàng</FormLabel>
+                  <FormLabel>Customer Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nhập tên khách hàng" {...field} />
+                    <Input placeholder="Enter customer name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -173,9 +173,9 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
               name="orderCode"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Mã đơn mua</FormLabel>
+                  <FormLabel>Order Code</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Nhập mã đơn mua" {...field} />
+                    <Input type="number" placeholder="Enter order code" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -187,11 +187,11 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
               name="phoneNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Số điện thoại</FormLabel>
+                  <FormLabel>Phone Number</FormLabel>
                   <FormControl>
                     <Input 
                       type="tel" 
-                      placeholder="Nhập số điện thoại (10-11 số)" 
+                      placeholder="Enter phone number" 
                       maxLength={11}
                       {...field} 
                     />
@@ -206,9 +206,9 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
               name="weightKg"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Số lượng kg</FormLabel>
+                  <FormLabel>Weight (kg)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Nhập số lượng kg" {...field} />
+                    <Input type="number" placeholder="Enter weight" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -220,9 +220,9 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
               name="shipperName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tên shipper</FormLabel>
+                  <FormLabel>Shipper Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nhập tên shipper" {...field} />
+                    <Input placeholder="Enter shipper name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -234,11 +234,11 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
               name="warehouseAddress"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Địa chỉ kho</FormLabel>
+                  <FormLabel>Warehouse Address</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Chọn địa chỉ kho" />
+                        <SelectValue placeholder="Select warehouse" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -258,7 +258,7 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
             {/* Camera Capture Section */}
             <div className="space-y-3 pt-2">
               <FormLabel className="text-base font-semibold">
-                Ảnh Báo Cáo Thu Gom
+                Collection Report Photo
               </FormLabel>
               
               <input
@@ -278,13 +278,13 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
                   size="lg"
                 >
                   <Camera className="mr-2 h-6 w-6" />
-                  📸 Chụp Ảnh Báo Cáo
+                  📸 Capture Photo
                 </Button>
               ) : (
                 <div className="relative rounded-lg overflow-hidden border-2 border-green-500">
                   <img 
                     src={capturedImage} 
-                    alt="Ảnh báo cáo thu gom" 
+                    alt="Collection Report" 
                     className="w-full h-auto"
                   />
                   <Button
@@ -307,14 +307,14 @@ export default function CreateDeliveryModal({ onSuccess }: CreateDeliveryModalPr
                 className="flex-1"
                 onClick={() => setOpen(false)}
               >
-                Hủy
+                Cancel
               </Button>
               <Button
                 type="submit"
                 className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-full"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Đang tạo..." : "Tạo Route"}
+                {isSubmitting ? "Creating..." : "Create Route"}
               </Button>
             </div>
           </form>

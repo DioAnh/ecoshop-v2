@@ -56,25 +56,25 @@ import carbonVCU from "@/assets/carbon-vcu.jpg";
 
 // Mock data
 const wasteData = [
-  { name: "Giấy", value: 35, color: "hsl(var(--eco-green))" },
-  { name: "Nhựa", value: 25, color: "hsl(var(--accent))" },
-  { name: "Kim loại", value: 20, color: "hsl(var(--earth-brown))" },
-  { name: "Thủy tinh", value: 20, color: "hsl(var(--co2-low))" },
+  { name: "Paper", value: 35, color: "hsl(var(--eco-green))" },
+  { name: "Plastic", value: 25, color: "hsl(var(--accent))" },
+  { name: "Metal", value: 20, color: "hsl(var(--earth-brown))" },
+  { name: "Glass", value: 20, color: "hsl(var(--co2-low))" },
 ];
 
 const monthlyEmissions = [
-  { month: "T1", co2: 120 },
-  { month: "T2", co2: 100 },
-  { month: "T3", co2: 95 },
-  { month: "T4", co2: 85 },
-  { month: "T5", co2: 80 },
-  { month: "T6", co2: 75 },
-  { month: "T7", co2: 70 },
-  { month: "T8", co2: 65 },
-  { month: "T9", co2: 60 },
-  { month: "T10", co2: 55 },
-  { month: "T11", co2: 50 },
-  { month: "T12", co2: 45 },
+  { month: "Jan", co2: 120 },
+  { month: "Feb", co2: 100 },
+  { month: "Mar", co2: 95 },
+  { month: "Apr", co2: 85 },
+  { month: "May", co2: 80 },
+  { month: "Jun", co2: 75 },
+  { month: "Jul", co2: 70 },
+  { month: "Aug", co2: 65 },
+  { month: "Sep", co2: 60 },
+  { month: "Oct", co2: 55 },
+  { month: "Nov", co2: 50 },
+  { month: "Dec", co2: 45 },
 ];
 
 const departmentData = [
@@ -93,19 +93,19 @@ const quarterlyTrend = [
 ];
 
 const pointsHistory = [
-  { date: "25/03/2025", activity: "Mua sản phẩm xanh", points: "+50" },
-  { date: "20/03/2025", activity: "Quy đổi ve chai", points: "+30" },
-  { date: "15/03/2025", activity: "Giao hàng bằng xe đạp", points: "+20" },
-  { date: "10/03/2025", activity: "Đổi voucher", points: "-100" },
-  { date: "05/03/2025", activity: "Mua sản phẩm xanh", points: "+45" },
+  { date: "25/03/2025", activity: "Bought Green Product", points: "+50" },
+  { date: "20/03/2025", activity: "Recycled Waste", points: "+30" },
+  { date: "15/03/2025", activity: "Bicycle Delivery", points: "+20" },
+  { date: "10/03/2025", activity: "Voucher Exchange", points: "-100" },
+  { date: "05/03/2025", activity: "Bought Green Product", points: "+45" },
 ];
 
 const topEmployees = [
-  { name: "Nguyễn Văn A", reduction: 150, points: 450 },
-  { name: "Trần Thị B", reduction: 130, points: 390 },
-  { name: "Lê Văn C", reduction: 120, points: 360 },
-  { name: "Phạm Thị D", reduction: 110, points: 330 },
-  { name: "Hoàng Văn E", reduction: 100, points: 300 },
+  { name: "Nguyen Van A", reduction: 150, points: 450 },
+  { name: "Tran Thi B", reduction: 130, points: 390 },
+  { name: "Le Van C", reduction: 120, points: 360 },
+  { name: "Pham Thi D", reduction: 110, points: 330 },
+  { name: "Hoang Van E", reduction: 100, points: 300 },
 ];
 
 const topCompanies = [
@@ -131,7 +131,7 @@ const carbonCredits = [
     image: carbonVCS,
     price: 120000,
     trees: 100,
-    description: "Tiêu chuẩn tín chỉ carbon tự nguyện phổ biến nhất thế giới"
+    description: "Most widely used voluntary carbon credit standard"
   },
   { 
     id: 2, 
@@ -140,7 +140,7 @@ const carbonCredits = [
     image: carbonGoldStandard,
     price: 180000,
     trees: 150,
-    description: "Tín chỉ carbon cao cấp với tác động phát triển bền vững"
+    description: "Premium carbon credit with sustainable development impact"
   },
   { 
     id: 3, 
@@ -149,7 +149,7 @@ const carbonCredits = [
     image: carbonIREC,
     price: 80000,
     trees: 70,
-    description: "Chứng chỉ năng lượng tái tạo quốc tế"
+    description: "International Renewable Energy Certificate"
   },
   { 
     id: 4, 
@@ -158,7 +158,7 @@ const carbonCredits = [
     image: carbonVCU,
     price: 100000,
     trees: 85,
-    description: "Đơn vị carbon tự nguyện được công nhận rộng rãi"
+    description: "Widely recognized voluntary carbon units"
   },
 ];
 
@@ -196,17 +196,17 @@ const Dashboard = () => {
   const handleCompanySelect = (companyId: string) => {
     setSelectedCompany(companyId);
     const company = companyList.find(c => c.id === companyId);
-    toast.success(`Dữ liệu phát thải cá nhân và GreenPoint sẽ được đồng bộ với công ty ${company?.name}`);
+    toast.success(`Personal emissions and GreenPoint data synced with ${company?.name}`);
   };
 
   const handleBuyCarbonCredit = (credit: typeof carbonCredits[0]) => {
     if (greenpoints < credit.price) {
-      toast.error(`Không đủ GreenPoints! Bạn cần ${credit.price.toLocaleString()} điểm.`);
+      toast.error(`Insufficient GreenPoints! You need ${credit.price.toLocaleString()} points.`);
       return;
     }
     
     toast.success(
-      `🎉 Đã mua tín chỉ ${credit.name}! Bạn có thể trồng được ${credit.trees} cây xanh để bù đắp carbon.`,
+      `🎉 Purchased ${credit.name} credit! You can plant ${credit.trees} trees to offset carbon.`,
       { duration: 5000 }
     );
   };
@@ -217,18 +217,18 @@ const Dashboard = () => {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
-            📊 Báo cáo phát thải & GreenPoint
+            📊 Emissions Report & GreenPoint
           </h1>
           <p className="text-muted-foreground">
-            Theo dõi phát thải CO₂e và điểm GreenPoint của bạn
+            Track your CO₂e emissions and GreenPoints
           </p>
         </div>
 
         <Tabs defaultValue="individual" className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 lg:w-[600px]">
-            <TabsTrigger value="individual">Cá nhân</TabsTrigger>
-            <TabsTrigger value="company">Doanh nghiệp</TabsTrigger>
-            <TabsTrigger value="partner">Doanh nghiệp sàn</TabsTrigger>
+            <TabsTrigger value="individual">Individual</TabsTrigger>
+            <TabsTrigger value="company">Company</TabsTrigger>
+            <TabsTrigger value="partner">Merchant</TabsTrigger>
           </TabsList>
 
           {/* Tab 1: Individual */}
@@ -239,21 +239,21 @@ const Dashboard = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Leaf className="text-primary" />
-                    Tổng quan phát thải
+                    Emissions Overview
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <p className="text-sm text-muted-foreground">Tổng CO₂e đã phát thải</p>
+                    <p className="text-sm text-muted-foreground">Total CO₂e Emitted</p>
                     <p className="text-3xl font-bold text-foreground">1,250 kg</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">CO₂e đã giảm</p>
+                    <p className="text-sm text-muted-foreground">CO₂e Reduced</p>
                     <p className="text-3xl font-bold text-primary">350 kg</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground mb-2">
-                      Mục tiêu giảm phát thải tháng này: 70%
+                      Monthly Reduction Goal: 70%
                     </p>
                     <Progress value={70} className="h-3" />
                   </div>
@@ -265,19 +265,19 @@ const Dashboard = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Award className="text-accent" />
-                    Điểm GreenPoint
+                    GreenPoints
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <p className="text-sm text-muted-foreground">Điểm tích lũy hiện tại</p>
+                    <p className="text-sm text-muted-foreground">Current Points Balance</p>
                     <p className="text-3xl font-bold text-accent">
-                      {loading ? "..." : `${greenpoints.toLocaleString()} điểm`}
+                      {loading ? "..." : `${greenpoints.toLocaleString()} points`}
                     </p>
                   </div>
                   <Button className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90">
                     <Gift className="mr-2 h-4 w-4" />
-                    Đổi điểm lấy quà
+                    Redeem Rewards
                   </Button>
                 </CardContent>
               </Card>
@@ -287,7 +287,7 @@ const Dashboard = () => {
             <div className="grid gap-6 md:grid-cols-2">
               <Card className="eco-card">
                 <CardHeader>
-                  <CardTitle>Tỷ lệ rác tái chế</CardTitle>
+                  <CardTitle>Recycling Rate</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
@@ -316,7 +316,7 @@ const Dashboard = () => {
 
               <Card className="eco-card">
                 <CardHeader>
-                  <CardTitle>Phát thải CO₂e theo tháng</CardTitle>
+                  <CardTitle>Monthly CO₂e Emissions</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
@@ -335,15 +335,15 @@ const Dashboard = () => {
             {/* Company Sync */}
             <Card className="eco-card">
               <CardHeader>
-                <CardTitle>Đồng bộ với công ty</CardTitle>
+                <CardTitle>Sync with Company</CardTitle>
                 <CardDescription>
-                  Kết nối dữ liệu của bạn với công ty để tham gia các thử thách xanh
+                  Connect your data with your company to join green challenges
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Select onValueChange={handleCompanySelect}>
                   <SelectTrigger className="w-full md:w-[400px]">
-                    <SelectValue placeholder="Chọn công ty của bạn" />
+                    <SelectValue placeholder="Select your company" />
                   </SelectTrigger>
                   <SelectContent>
                     {companyList.map((company) => (
@@ -359,15 +359,15 @@ const Dashboard = () => {
             {/* Points History */}
             <Card className="eco-card">
               <CardHeader>
-                <CardTitle>Lịch sử giao dịch GreenPoint</CardTitle>
+                <CardTitle>GreenPoint Transaction History</CardTitle>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Ngày</TableHead>
-                      <TableHead>Hoạt động</TableHead>
-                      <TableHead className="text-right">Điểm</TableHead>
+                      <TableHead>Date</TableHead>
+                      <TableHead>Activity</TableHead>
+                      <TableHead className="text-right">Points</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -396,7 +396,7 @@ const Dashboard = () => {
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
               <Card className="eco-card">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium">Tổng CO₂e công ty</CardTitle>
+                  <CardTitle className="text-sm font-medium">Total Company CO₂e</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold">8,500 kg</p>
@@ -404,7 +404,7 @@ const Dashboard = () => {
               </Card>
               <Card className="eco-card">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium">CO₂e đã giảm</CardTitle>
+                  <CardTitle className="text-sm font-medium">CO₂e Reduced</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-2xl font-bold text-primary">2,100 kg</p>
@@ -414,7 +414,7 @@ const Dashboard = () => {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium flex items-center gap-2">
                     <Users className="h-4 w-4" />
-                    Nhân viên tham gia
+                    Active Employees
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -425,7 +425,7 @@ const Dashboard = () => {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium flex items-center gap-2">
                     <Award className="h-4 w-4" />
-                    Tổng GreenPoint
+                    Total GreenPoints
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -436,7 +436,7 @@ const Dashboard = () => {
 
             <Card className="eco-card">
               <CardHeader>
-                <CardTitle>Phát thải theo phòng ban</CardTitle>
+                <CardTitle>Emissions by Department</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -446,8 +446,8 @@ const Dashboard = () => {
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="co2Emitted" fill="hsl(var(--muted-foreground))" name="CO₂e phát thải" stackId="a" />
-                    <Bar dataKey="co2Reduced" fill="hsl(var(--primary))" name="CO₂e đã giảm" stackId="a" />
+                    <Bar dataKey="co2Emitted" fill="hsl(var(--muted-foreground))" name="CO₂e Emitted" stackId="a" />
+                    <Bar dataKey="co2Reduced" fill="hsl(var(--primary))" name="CO₂e Reduced" stackId="a" />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -458,15 +458,15 @@ const Dashboard = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <TrendingDown className="text-primary" />
-                    Top nhân viên giảm phát thải
+                    Top Reducers
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Tên</TableHead>
-                        <TableHead className="text-right">CO₂e giảm (kg)</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead className="text-right">CO₂e Reduced (kg)</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -485,15 +485,15 @@ const Dashboard = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Award className="text-accent" />
-                    Top GreenPoint
+                    Top GreenPoint Earners
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Tên</TableHead>
-                        <TableHead className="text-right">Điểm</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead className="text-right">Points</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -513,18 +513,18 @@ const Dashboard = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Medal className="text-primary" />
-                  Bảng xếp hạng công ty xanh
+                  Green Company Leaderboard
                 </CardTitle>
-                <CardDescription>Top 10 công ty giảm phát thải nhiều nhất</CardDescription>
+                <CardDescription>Top 10 companies with highest emissions reduction</CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-16">Hạng</TableHead>
-                      <TableHead>Công ty</TableHead>
-                      <TableHead className="text-right">CO₂e giảm (kg)</TableHead>
-                      <TableHead className="text-center">Huy hiệu</TableHead>
+                      <TableHead className="w-16">Rank</TableHead>
+                      <TableHead>Company</TableHead>
+                      <TableHead className="text-right">CO₂e Reduced (kg)</TableHead>
+                      <TableHead className="text-center">Medal</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -545,22 +545,22 @@ const Dashboard = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Building2 className="text-primary" />
-                  Thử thách xanh
+                  Green Challenge
                 </CardTitle>
                 <CardDescription>
-                  Mục tiêu chung: Giảm 3,000 kg CO₂e trong tháng này
+                  Team Goal: Reduce 3,000 kg CO₂e this month
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
                   <div className="flex justify-between mb-2">
-                    <span className="text-sm">Tiến độ: 2,100 / 3,000 kg</span>
+                    <span className="text-sm">Progress: 2,100 / 3,000 kg</span>
                     <span className="text-sm font-bold text-primary">70%</span>
                   </div>
                   <Progress value={70} className="h-3" />
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  🎁 Phần thưởng: Mỗi nhân viên nhận thêm 100 GreenPoint khi đạt mục tiêu!
+                  🎁 Reward: Each employee gets +100 GreenPoints when goal is met!
                 </p>
               </CardContent>
             </Card>
@@ -570,10 +570,10 @@ const Dashboard = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Leaf className="text-primary" />
-                  Quy đổi tín chỉ carbon
+                  Exchange Carbon Credits
                 </CardTitle>
                 <CardDescription>
-                  Mua tín chỉ carbon để bù đắp lượng phát thải của công ty
+                  Purchase carbon credits to offset company emissions
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -596,7 +596,7 @@ const Dashboard = () => {
                             {credit.price.toLocaleString()} GreenPoints
                           </p>
                           <p className="text-xs text-muted-foreground">{credit.description}</p>
-                          <p className="text-xs text-accent mt-1">🌱 Trồng được {credit.trees} cây</p>
+                          <p className="text-xs text-accent mt-1">🌱 Plants {credit.trees} trees</p>
                         </div>
                       </div>
                       <Button 
@@ -605,7 +605,7 @@ const Dashboard = () => {
                         onClick={() => handleBuyCarbonCredit(credit)}
                         disabled={loading || greenpoints < credit.price}
                       >
-                        {greenpoints < credit.price ? "Không đủ điểm" : "Mua tín chỉ"}
+                        {greenpoints < credit.price ? "Insufficient Points" : "Buy Credit"}
                       </Button>
                     </div>
                   ))}
@@ -621,7 +621,7 @@ const Dashboard = () => {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium flex items-center gap-2">
                     <Package className="h-4 w-4" />
-                    Phát thải từ bao bì
+                    Packaging Emissions
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -632,7 +632,7 @@ const Dashboard = () => {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium flex items-center gap-2">
                     <Truck className="h-4 w-4" />
-                    Phát thải vận chuyển
+                    Transport Emissions
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -643,7 +643,7 @@ const Dashboard = () => {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium flex items-center gap-2">
                     <Leaf className="h-4 w-4" />
-                    Phát thải sản phẩm
+                    Product Emissions
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -654,7 +654,7 @@ const Dashboard = () => {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium flex items-center gap-2">
                     <Award className="h-4 w-4" />
-                    GreenPoint khách hàng
+                    Customer GreenPoints
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -665,7 +665,7 @@ const Dashboard = () => {
 
             <Card className="eco-card">
               <CardHeader>
-                <CardTitle>Xu hướng giảm phát thải theo quý</CardTitle>
+                <CardTitle>Quarterly Emission Reduction Trend</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
@@ -675,9 +675,9 @@ const Dashboard = () => {
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="packaging" stroke="hsl(var(--earth-brown))" name="Bao bì" strokeWidth={2} />
-                    <Line type="monotone" dataKey="transport" stroke="hsl(var(--accent))" name="Vận chuyển" strokeWidth={2} />
-                    <Line type="monotone" dataKey="product" stroke="hsl(var(--primary))" name="Sản phẩm" strokeWidth={2} />
+                    <Line type="monotone" dataKey="packaging" stroke="hsl(var(--earth-brown))" name="Packaging" strokeWidth={2} />
+                    <Line type="monotone" dataKey="transport" stroke="hsl(var(--accent))" name="Transport" strokeWidth={2} />
+                    <Line type="monotone" dataKey="product" stroke="hsl(var(--primary))" name="Product" strokeWidth={2} />
                   </LineChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -687,33 +687,33 @@ const Dashboard = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Medal className="text-primary" />
-                  Nhãn xanh & Thưởng GreenPoint
+                  Green Label & Rewards
                 </CardTitle>
                 <CardDescription>
-                  Doanh nghiệp của bạn đã vượt chuẩn phát thải!
+                  Your business has exceeded emissions standards!
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-4">
                   <div className="text-6xl">🏆</div>
                   <div>
-                    <p className="text-lg font-bold text-primary">GREEN LABEL - Hạng Vàng</p>
+                    <p className="text-lg font-bold text-primary">GREEN LABEL - Gold Tier</p>
                     <p className="text-sm text-muted-foreground">
-                      Khách hàng mua sản phẩm của bạn nhận +15% GreenPoint thưởng
+                      Customers buying your products get +15% bonus GreenPoints
                     </p>
                   </div>
                 </div>
                 <div className="grid gap-3 md:grid-cols-3">
                   <div className="p-4 rounded-lg bg-background/80">
-                    <p className="text-sm text-muted-foreground">Điểm TB/Khách hàng</p>
-                    <p className="text-xl font-bold text-accent">65 điểm</p>
+                    <p className="text-sm text-muted-foreground">Avg Points/Customer</p>
+                    <p className="text-xl font-bold text-accent">65 pts</p>
                   </div>
                   <div className="p-4 rounded-lg bg-background/80">
-                    <p className="text-sm text-muted-foreground">Xếp hạng ngành</p>
+                    <p className="text-sm text-muted-foreground">Industry Rank</p>
                     <p className="text-xl font-bold text-primary">#2</p>
                   </div>
                   <div className="p-4 rounded-lg bg-background/80">
-                    <p className="text-sm text-muted-foreground">Tổng khách hàng</p>
+                    <p className="text-sm text-muted-foreground">Total Customers</p>
                     <p className="text-xl font-bold">1,245</p>
                   </div>
                 </div>
@@ -722,22 +722,22 @@ const Dashboard = () => {
 
             <Card className="eco-card">
               <CardHeader>
-                <CardTitle>So sánh với doanh nghiệp cùng ngành</CardTitle>
-                <CardDescription>Ngành: Thời trang bền vững</CardDescription>
+                <CardTitle>Industry Comparison</CardTitle>
+                <CardDescription>Sector: Sustainable Fashion</CardDescription>
               </CardHeader>
               <CardContent>
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Doanh nghiệp</TableHead>
-                      <TableHead className="text-right">CO₂e TB/sản phẩm</TableHead>
-                      <TableHead className="text-right">GreenPoint TB</TableHead>
-                      <TableHead className="text-center">Nhãn</TableHead>
+                      <TableHead>Business</TableHead>
+                      <TableHead className="text-right">Avg CO₂e/Product</TableHead>
+                      <TableHead className="text-right">Avg GreenPoints</TableHead>
+                      <TableHead className="text-center">Label</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     <TableRow className="bg-primary/5">
-                      <TableCell className="font-bold">Doanh nghiệp của bạn</TableCell>
+                      <TableCell className="font-bold">Your Business</TableCell>
                       <TableCell className="text-right text-primary font-bold">2.3 kg</TableCell>
                       <TableCell className="text-right text-accent font-bold">65</TableCell>
                       <TableCell className="text-center">🏆</TableCell>
@@ -770,10 +770,10 @@ const Dashboard = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Leaf className="text-primary" />
-                  Quy đổi tín chỉ carbon
+                  Exchange Carbon Credits
                 </CardTitle>
                 <CardDescription>
-                  Mua tín chỉ carbon để bù đắp lượng phát thải
+                  Purchase carbon credits to offset emissions
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -796,7 +796,7 @@ const Dashboard = () => {
                             {credit.price.toLocaleString()} GreenPoints
                           </p>
                           <p className="text-xs text-muted-foreground">{credit.description}</p>
-                          <p className="text-xs text-accent mt-1">🌱 Trồng được {credit.trees} cây</p>
+                          <p className="text-xs text-accent mt-1">🌱 Plants {credit.trees} trees</p>
                         </div>
                       </div>
                       <Button 
@@ -805,7 +805,7 @@ const Dashboard = () => {
                         onClick={() => handleBuyCarbonCredit(credit)}
                         disabled={loading || greenpoints < credit.price}
                       >
-                        {greenpoints < credit.price ? "Không đủ điểm" : "Mua tín chỉ"}
+                        {greenpoints < credit.price ? "Insufficient Points" : "Buy Credit"}
                       </Button>
                     </div>
                   ))}

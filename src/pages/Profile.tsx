@@ -33,21 +33,21 @@ const Profile = () => {
       name: 'Voucher 50K',
       value: '50.000đ',
       required_points: 100,
-      description: 'Giảm 50.000đ cho đơn hàng từ 200.000đ'
+      description: 'Discount 50.000đ for orders from 200.000đ'
     },
     {
       id: 'voucher-100k',
       name: 'Voucher 100K', 
       value: '100.000đ',
       required_points: 200,
-      description: 'Giảm 100.000đ cho đơn hàng từ 500.000đ'
+      description: 'Discount 100.000đ for orders from 500.000đ'
     },
     {
       id: 'voucher-200k',
       name: 'Voucher 200K',
       value: '200.000đ', 
       required_points: 400,
-      description: 'Giảm 200.000đ cho đơn hàng từ 1.000.000đ'
+      description: 'Discount 200.000đ for orders from 1.000.000đ'
     }
   ];
 
@@ -70,8 +70,8 @@ const Profile = () => {
     } catch (error: any) {
       console.error('Error fetching user data:', error);
       toast({
-        title: "Lỗi",
-        description: "Không thể tải thông tin người dùng",
+        title: "Error",
+        description: "Cannot load user information",
         variant: "destructive"
       });
     } finally {
@@ -82,8 +82,8 @@ const Profile = () => {
   const redeemVoucher = async (voucher: Voucher) => {
     if (!userData || userData.greenpoints < voucher.required_points) {
       toast({
-        title: "Không đủ điểm",
-        description: `Bạn cần ${voucher.required_points} GreenPoint để đổi voucher này`,
+        title: "Insufficient Points",
+        description: `You need ${voucher.required_points} GreenPoints to redeem this voucher`,
         variant: "destructive"
       });
       return;
@@ -108,22 +108,22 @@ const Profile = () => {
           amount: 0,
           greenpoints_earned: -voucher.required_points,
           co2_saved: 0,
-          note: `Đổi ${voucher.name}`
+          note: `Redeemed ${voucher.name}`
         });
 
       if (transactionError) throw transactionError;
 
       toast({
-        title: "Đổi voucher thành công!",
-        description: `Bạn đã đổi ${voucher.name} thành công`,
+        title: "Voucher Redeemed!",
+        description: `You successfully redeemed ${voucher.name}`,
       });
 
       // Refresh user data
       fetchUserData();
     } catch (error: any) {
       toast({
-        title: "Lỗi", 
-        description: "Không thể đổi voucher: " + error.message,
+        title: "Error", 
+        description: "Cannot redeem voucher: " + error.message,
         variant: "destructive"
       });
     }
@@ -132,8 +132,8 @@ const Profile = () => {
   const handleSignOut = async () => {
     await signOut();
     toast({
-      title: "Đăng xuất thành công",
-      description: "Hẹn gặp lại bạn!",
+      title: "Signed Out",
+      description: "See you again!",
     });
   };
 
@@ -142,7 +142,7 @@ const Profile = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Đang tải thông tin...</p>
+          <p className="text-muted-foreground">Loading information...</p>
         </div>
       </div>
     );
@@ -160,14 +160,14 @@ const Profile = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-foreground">
-                  Trang cá nhân
+                  My Profile
                 </h1>
                 <p className="text-muted-foreground">{userData?.email}</p>
               </div>
             </div>
             <Button variant="outline" onClick={handleSignOut} className="flex items-center gap-2">
               <LogOut className="w-4 h-4" />
-              Đăng xuất
+              Sign Out
             </Button>
           </div>
 
@@ -179,7 +179,7 @@ const Profile = () => {
                 GreenPoints
               </CardTitle>
               <CardDescription className="text-green-600">
-                Điểm thưởng từ việc mua sắm xanh
+                Points earned from green shopping
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -189,7 +189,7 @@ const Profile = () => {
                   {userData?.greenpoints || 0}
                 </div>
                 <div className="text-green-600">
-                  GreenPoint khả dụng
+                  Available Points
                 </div>
               </div>
             </CardContent>
@@ -200,10 +200,10 @@ const Profile = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Gift className="w-5 h-5 text-primary" />
-                Đổi voucher
+                Redeem Voucher
               </CardTitle>
               <CardDescription>
-                Sử dụng GreenPoint để đổi voucher giảm giá
+                Use GreenPoints to redeem discount vouchers
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -223,7 +223,7 @@ const Profile = () => {
                       <div className="flex items-center gap-2">
                         <Coins className="w-4 h-4 text-green-600" />
                         <span className="text-sm font-medium">
-                          {voucher.required_points} điểm
+                          {voucher.required_points} points
                         </span>
                       </div>
                       <Button
@@ -235,7 +235,7 @@ const Profile = () => {
                           : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         }
                       >
-                        {hasEnoughPoints ? "Đổi ngay" : "Không đủ điểm"}
+                        {hasEnoughPoints ? "Redeem" : "Insufficient Points"}
                       </Button>
                     </div>
                   </div>

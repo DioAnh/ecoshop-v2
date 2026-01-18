@@ -5,7 +5,7 @@ interface CategoryCardProps {
   id: number;
   title: string;
   icon: LucideIcon;
-  image?: string; // Giữ prop này để tương thích, dù có thể không dùng
+  image?: string; 
   itemCount: number;
   description?: string;
 }
@@ -30,7 +30,7 @@ const CategoryCard = ({ id, title, icon: Icon, itemCount }: CategoryCardProps) =
       
       {/* Subtitle */}
       <span className="text-sm text-gray-400 font-medium">
-        {itemCount} sản phẩm
+        {itemCount} products
       </span>
     </div>
   );

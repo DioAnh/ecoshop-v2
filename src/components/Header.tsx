@@ -1,11 +1,11 @@
-import { ShoppingCart, User, Menu, Search, Package, Store, Truck, ShieldCheck, LogOut, Copy, ChevronDown, Wallet, Home, LayoutDashboard, Info } from "lucide-react";
+import { ShoppingCart, User, Search, Store, Truck, ShieldCheck, LogOut, Copy, ChevronDown, Home, LayoutDashboard, Info } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth, UserRole } from "@/contexts/AuthContext";
 import { useWalletContext } from "@/contexts/WalletContext";
-import { useWallet, ConnectButton } from '@suiet/wallet-kit'; // Import ConnectButton
+import { useWallet, ConnectButton } from '@suiet/wallet-kit';
 import { useToast } from "@/hooks/use-toast";
 import {
   DropdownMenu,
@@ -25,11 +25,12 @@ const Header = () => {
   const wallet = useWallet();
   const { toast } = useToast();
 
+  // TRANSLATED ROLE CONFIG
   const roleConfig: Record<UserRole, { color: string; icon: any; label: string }> = {
-    consumer: { color: "bg-emerald-100 text-emerald-800", icon: User, label: "Người mua" },
+    consumer: { color: "bg-emerald-100 text-emerald-800", icon: User, label: "Consumer" },
     shipper: { color: "bg-blue-100 text-blue-800", icon: Truck, label: "Shipper" },
-    business: { color: "bg-purple-100 text-purple-800", icon: Store, label: "Doanh nghiệp" },
-    verifier: { color: "bg-orange-100 text-orange-800", icon: ShieldCheck, label: "Kiểm định viên" },
+    business: { color: "bg-purple-100 text-purple-800", icon: Store, label: "Business" },
+    verifier: { color: "bg-orange-100 text-orange-800", icon: ShieldCheck, label: "Verifier" },
   };
 
   const currentRoleConfig = roleConfig[role] || roleConfig['consumer'];
@@ -37,13 +38,13 @@ const Header = () => {
   const handleCopyAddress = () => {
     if (wallet.account?.address) {
       navigator.clipboard.writeText(wallet.account.address);
-      toast({ title: "Đã sao chép", description: "Địa chỉ ví đã lưu vào clipboard." });
+      toast({ title: "Copied!", description: "Wallet address copied to clipboard." });
     }
   };
 
   const handleDisconnect = () => {
     wallet.disconnect();
-    toast({ title: "Đã ngắt kết nối", description: "Ví của bạn đã đăng xuất thành công." });
+    toast({ title: "Disconnected", description: "Your wallet has been disconnected." });
   };
 
   return (
@@ -52,7 +53,6 @@ const Header = () => {
         
         {/* --- LEFT SECTION: LOGO & MENU --- */}
         <div className="flex items-center gap-6">
-          {/* Logo */}
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
             <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
               <LeafIcon className="h-5 w-5 text-white" />
@@ -60,13 +60,12 @@ const Header = () => {
             <span className="text-xl font-bold text-primary hidden md:inline-block">EcoShop</span>
           </div>
 
-          {/* Navigation Links (ĐÃ KHÔI PHỤC) */}
           {role === 'consumer' && (
             <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-gray-600">
-              <Link to="/" className="hover:text-primary flex items-center gap-1"><Home className="w-4 h-4" /> Trang chủ</Link>
-              <Link to="/eco-profile" className="hover:text-primary flex items-center gap-1"><User className="w-4 h-4" /> My Eco Profile</Link>
+              <Link to="/" className="hover:text-primary flex items-center gap-1"><Home className="w-4 h-4" /> Home</Link>
+              <Link to="/eco-profile" className="hover:text-primary flex items-center gap-1"><User className="w-4 h-4" /> My Profile</Link>
               <Link to="/eco-vault" className="hover:text-primary flex items-center gap-1"><LayoutDashboard className="w-4 h-4" /> Eco Vault</Link>
-              <Link to="/about" className="hover:text-primary flex items-center gap-1"><Info className="w-4 h-4" /> Giới thiệu</Link>
+              <Link to="/about" className="hover:text-primary flex items-center gap-1"><Info className="w-4 h-4" /> About</Link>
             </nav>
           )}
         </div>
@@ -75,7 +74,7 @@ const Header = () => {
         {role === 'consumer' && (
           <div className="hidden md:flex flex-1 max-w-sm mx-4 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input className="pl-9 bg-secondary/50 border-none h-9" placeholder="Tìm kiếm sản phẩm xanh..." />
+            <Input className="pl-9 bg-secondary/50 border-none h-9" placeholder="Search for green products..." />
           </div>
         )}
 
@@ -91,26 +90,25 @@ const Header = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>Chế độ Demo (Switch Role)</DropdownMenuLabel>
+              <DropdownMenuLabel>Demo Mode (Switch Role)</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => switchRole('consumer')} className="cursor-pointer">
-                <User className="w-4 h-4 mr-2" /> Consumer (Người mua)
+                <User className="w-4 h-4 mr-2" /> Consumer
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => switchRole('shipper')} className="cursor-pointer">
-                <Truck className="w-4 h-4 mr-2" /> Shipper (Vận chuyển)
+                <Truck className="w-4 h-4 mr-2" /> Shipper
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => switchRole('business')} className="cursor-pointer">
-                <Store className="w-4 h-4 mr-2" /> Business (Doanh nghiệp)
+                <Store className="w-4 h-4 mr-2" /> Business
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => switchRole('verifier')} className="cursor-pointer">
-                <ShieldCheck className="w-4 h-4 mr-2" /> Verifier (Kiểm định)
+                <ShieldCheck className="w-4 h-4 mr-2" /> Verifier
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* WALLET LOGIC (ĐÃ SỬA) */}
+          {/* WALLET LOGIC */}
           {wallet.connected ? (
-            // Nếu ĐÃ kết nối -> Hiện Custom Dropdown để Logout
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="hidden md:flex items-center bg-secondary/50 px-3 py-1.5 rounded-full border border-border h-9 hover:bg-secondary/80">
@@ -126,24 +124,22 @@ const Header = () => {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>Ví Web3</DropdownMenuLabel>
+                <DropdownMenuLabel>Web3 Wallet</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleCopyAddress} className="cursor-pointer">
-                  <Copy className="w-4 h-4 mr-2" /> Sao chép địa chỉ
+                  <Copy className="w-4 h-4 mr-2" /> Copy Address
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleDisconnect} className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50">
-                  <LogOut className="w-4 h-4 mr-2" /> Ngắt kết nối ví
+                  <LogOut className="w-4 h-4 mr-2" /> Disconnect
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-            // Nếu CHƯA kết nối -> Hiện nút ConnectButton của thư viện
             <div className="scale-90 origin-right">
-                <ConnectButton label="Kết nối ví" />
+                <ConnectButton label="Connect Wallet" />
             </div>
           )}
 
-          {/* Cart Icon */}
           {role === 'consumer' && (
             <Button variant="ghost" size="icon" className="relative h-9 w-9" onClick={() => navigate('/cart')}>
               <ShoppingCart className="h-5 w-5" />
@@ -155,7 +151,6 @@ const Header = () => {
             </Button>
           )}
 
-          {/* Profile Icon Mobile */}
           <Button variant="ghost" size="icon" className="md:hidden h-9 w-9" onClick={() => navigate('/eco-profile')}>
             <User className="h-5 w-5" />
           </Button>

@@ -6,9 +6,9 @@ import Header from '@/components/Header';
 const Partners = () => {
   const partnerCategories = [
     {
-      title: "Đối tác sản xuất",
+      title: "Manufacturing Partners",
       icon: <Store className="w-6 h-6" />,
-      description: "Các nhà sản xuất cam kết sustainability",
+      description: "Manufacturers committed to sustainability",
       partners: [
         "Green Fashion Co.",
         "Organic Food Vietnam",
@@ -17,9 +17,9 @@ const Partners = () => {
       ]
     },
     {
-      title: "Đối tác logistics",
+      title: "Logistics Partners",
       icon: <TrendingUp className="w-6 h-6" />,
-      description: "Mạng lưới vận chuyển xanh",
+      description: "Green transportation network",
       partners: [
         "Green Delivery Network",
         "Eco Logistics VN",
@@ -28,9 +28,9 @@ const Partners = () => {
       ]
     },
     {
-      title: "Đối tác công nghệ",
+      title: "Technology Partners",
       icon: <Target className="w-6 h-6" />,
-      description: "Giải pháp công nghệ bền vững",
+      description: "Sustainable technology solutions",
       partners: [
         "Smart IoT Solutions",
         "Green Tech Innovations",
@@ -42,23 +42,23 @@ const Partners = () => {
 
   const benefits = [
     {
-      title: "Mở rộng thị trường",
-      description: "Tiếp cận khách hàng quan tâm đến sản phẩm xanh",
+      title: "Market Expansion",
+      description: "Reach customers interested in green products",
       icon: <Users className="w-8 h-8 text-blue-600" />
     },
     {
-      title: "Chứng nhận xanh",
-      description: "Được công nhận là doanh nghiệp bền vững",
+      title: "Green Certification",
+      description: "Recognized as a sustainable business",
       icon: <Award className="w-8 h-8 text-green-600" />
     },
     {
-      title: "Hỗ trợ marketing",
-      description: "Quảng bá sản phẩm trên nền tảng EcoShop",
+      title: "Marketing Support",
+      description: "Promote products on the EcoShop platform",
       icon: <TrendingUp className="w-8 h-8 text-purple-600" />
     },
     {
-      title: "Đào tạo & Tư vấn",
-      description: "Hỗ trợ chuyển đổi xanh cho doanh nghiệp",
+      title: "Training & Consulting",
+      description: "Support green transition for businesses",
       icon: <Target className="w-8 h-8 text-orange-600" />
     }
   ];
@@ -72,10 +72,10 @@ const Partners = () => {
           <div className="mb-8 text-center">
             <h1 className="text-3xl font-bold text-foreground mb-2 flex items-center justify-center gap-3">
               <Handshake className="w-8 h-8 text-primary" />
-              Đối tác
+              Partners
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Cùng nhau xây dựng hệ sinh thái kinh doanh bền vững, tạo ra giá trị cho cộng đồng và môi trường
+              Building a sustainable business ecosystem together, creating value for the community and environment
             </p>
           </div>
 
@@ -108,9 +108,9 @@ const Partners = () => {
           {/* Partnership Benefits */}
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle className="text-center">Lợi ích khi trở thành đối tác</CardTitle>
+              <CardTitle className="text-center">Partnership Benefits</CardTitle>
               <CardDescription className="text-center">
-                Những giá trị mà chúng tôi mang lại cho đối tác
+                Values we bring to our partners
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -134,9 +134,9 @@ const Partners = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             <Card>
               <CardHeader>
-                <CardTitle>Quy trình hợp tác</CardTitle>
+                <CardTitle>Partnership Process</CardTitle>
                 <CardDescription>
-                  Các bước để trở thành đối tác của EcoShop
+                  Steps to become an EcoShop partner
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -146,9 +146,9 @@ const Partners = () => {
                       1
                     </div>
                     <div>
-                      <h4 className="font-semibold text-foreground">Đăng ký</h4>
+                      <h4 className="font-semibold text-foreground">Register</h4>
                       <p className="text-sm text-muted-foreground">
-                        Điền form đăng ký và gửi thông tin doanh nghiệp
+                        Fill out the registration form and submit business information
                       </p>
                     </div>
                   </div>
@@ -157,9 +157,9 @@ const Partners = () => {
                       2
                     </div>
                     <div>
-                      <h4 className="font-semibold text-foreground">Đánh giá</h4>
+                      <h4 className="font-semibold text-foreground">Evaluate</h4>
                       <p className="text-sm text-muted-foreground">
-                        Kiểm tra tiêu chuẩn sustainability và chất lượng sản phẩm
+                        Review sustainability standards and product quality
                       </p>
                     </div>
                   </div>
@@ -168,9 +168,9 @@ const Partners = () => {
                       3
                     </div>
                     <div>
-                      <h4 className="font-semibold text-foreground">Ký kết</h4>
+                      <h4 className="font-semibold text-foreground">Sign</h4>
                       <p className="text-sm text-muted-foreground">
-                        Thỏa thuận hợp tác và ký hợp đồng đối tác
+                        Cooperation agreement and partnership contract signing
                       </p>
                     </div>
                   </div>
@@ -179,9 +179,9 @@ const Partners = () => {
                       4
                     </div>
                     <div>
-                      <h4 className="font-semibold text-foreground">Triển khai</h4>
+                      <h4 className="font-semibold text-foreground">Deploy</h4>
                       <p className="text-sm text-muted-foreground">
-                        Hỗ trợ setup và bắt đầu kinh doanh trên nền tảng
+                        Support setup and start doing business on the platform
                       </p>
                     </div>
                   </div>
@@ -191,36 +191,36 @@ const Partners = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>Tiêu chí đối tác</CardTitle>
+                <CardTitle>Partner Criteria</CardTitle>
                 <CardDescription>
-                  Những yêu cầu để trở thành đối tác của chúng tôi
+                  Requirements to become our partner
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm">Cam kết phát triển bền vững</span>
+                    <span className="text-sm">Commitment to sustainable development</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm">Sản phẩm thân thiện môi trường</span>
+                    <span className="text-sm">Eco-friendly products</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm">Quy trình sản xuất xanh</span>
+                    <span className="text-sm">Green manufacturing process</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm">Chứng nhận chất lượng quốc tế</span>
+                    <span className="text-sm">International quality certification</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm">Tầm nhìn dài hạn về ESG</span>
+                    <span className="text-sm">Long-term ESG vision</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-sm">Tương thích với giá trị EcoShop</span>
+                    <span className="text-sm">Compatible with EcoShop values</span>
                   </div>
                 </div>
               </CardContent>
@@ -231,13 +231,13 @@ const Partners = () => {
           <Card className="bg-gradient-to-r from-primary/10 to-eco-light/20 border-primary/20">
             <CardContent className="text-center py-8">
               <h3 className="text-2xl font-bold text-foreground mb-4">
-                Sẵn sàng trở thành đối tác?
+                Ready to become a partner?
               </h3>
               <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-                Cùng nhau xây dựng tương lai bền vững. Liên hệ với chúng tôi để khám phá cơ hội hợp tác.
+                Build a sustainable future together. Contact us to explore partnership opportunities.
               </p>
               <Button size="lg" className="bg-primary hover:bg-primary/90">
-                Đăng ký trở thành đối tác
+                Register as a Partner
               </Button>
             </CardContent>
           </Card>

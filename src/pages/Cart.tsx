@@ -29,22 +29,22 @@ const Cart = () => {
         <div className="mb-6">
           <Link to="/" className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors font-medium">
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Tiếp tục mua sắm
+            Continue Shopping
           </Link>
         </div>
 
         <div className="flex items-center gap-3 mb-8">
            <ShoppingBag className="w-8 h-8 text-primary" />
-           <h1 className="text-3xl font-bold text-gray-800">Giỏ hàng của bạn</h1>
-           <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-bold">{items.length} món</span>
+           <h1 className="text-3xl font-bold text-gray-800">Your Cart</h1>
+           <span className="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-bold">{items.length} items</span>
         </div>
 
         {items.length === 0 ? (
            <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
              <ShoppingBag className="w-20 h-20 mx-auto text-gray-200 mb-4" />
-             <p className="text-xl font-medium text-gray-500 mb-6">Giỏ hàng của bạn đang trống</p>
+             <p className="text-xl font-medium text-gray-500 mb-6">Your cart is empty</p>
              <Link to="/">
-               <Button size="lg" className="rounded-full px-8">Khám phá sản phẩm ngay</Button>
+               <Button size="lg" className="rounded-full px-8">Explore Products</Button>
              </Link>
            </div>
         ) : (
@@ -83,7 +83,7 @@ const Cart = () => {
                      <div className="text-right min-w-[100px]">
                         <p className="font-bold text-lg text-gray-800 mb-1">{formatPrice(item.price * item.quantity)}</p>
                         <button onClick={() => removeFromCart(item.id)} className="text-xs text-red-500 hover:text-red-700 font-medium flex items-center justify-end gap-1 transition-colors">
-                           <Trash2 className="w-3 h-3" /> Xóa
+                           <Trash2 className="w-3 h-3" /> Remove
                         </button>
                      </div>
                   </div>
@@ -95,31 +95,31 @@ const Cart = () => {
             <div className="lg:col-span-1 lg:sticky lg:top-24">
               <Card className="border-none shadow-lg bg-gradient-to-br from-white to-gray-50 rounded-2xl overflow-hidden">
                 <CardHeader className="bg-primary/5 pb-4">
-                  <CardTitle className="text-lg text-primary">Tóm tắt đơn hàng</CardTitle>
+                  <CardTitle className="text-lg text-primary">Order Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 pt-6">
                   <div className="flex justify-between text-gray-600">
-                    <span>Tạm tính:</span>
+                    <span>Subtotal:</span>
                     <span className="font-medium">{formatPrice(getTotalPrice())}</span>
                   </div>
                   <div className="flex justify-between text-gray-600">
-                    <span>Phí vận chuyển:</span>
-                    <span className="text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded text-xs">Miễn phí (Eco)</span>
+                    <span>Shipping Fee:</span>
+                    <span className="text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded text-xs">Free (Eco)</span>
                   </div>
                   <div className="border-t border-dashed border-gray-300 pt-4 mt-2">
                     <div className="flex justify-between items-end">
-                      <span className="font-bold text-gray-800">Tổng cộng:</span>
+                      <span className="font-bold text-gray-800">Total:</span>
                       <span className="text-2xl font-extrabold text-primary">{formatPrice(getTotalPrice())}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground text-right mt-1">(Đã bao gồm VAT)</p>
+                    <p className="text-xs text-muted-foreground text-right mt-1">(VAT included)</p>
                   </div>
                 </CardContent>
                 <CardFooter className="flex-col gap-3 pb-6 px-6">
                   <Button className="w-full text-lg py-6 rounded-xl font-bold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all active:scale-95" onClick={handleCheckout}>
-                    Tiến hành thanh toán
+                    Proceed to Checkout
                   </Button>
                   <Button variant="outline" className="w-full border-gray-200 hover:bg-white hover:text-primary rounded-xl" onClick={() => navigate('/')}>
-                    Mua thêm sản phẩm khác
+                    Continue Shopping
                   </Button>
                 </CardFooter>
               </Card>
