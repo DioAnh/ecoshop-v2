@@ -18,13 +18,14 @@ import { GreenFundProvider } from "@/contexts/GreenFundContext"; // Import Conte
 import ProtectedRoute from "@/components/ProtectedRoute";
 import SplashScreen from "@/components/SplashScreen";
 import Index from "./pages/Index";
+import Products from "./pages/Products"; // <--- MỚI: Import trang danh sách sản phẩm
 import ProductDetail from "./pages/ProductDetail";
 import CategoryProducts from "./pages/CategoryProducts";
 import Auth from "./pages/Auth";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
-import EcoProfile from "./pages/EcoProfile";
+import EcoProfile from "./pages/EcoProfile"; // Đổi tên Profile -> EcoProfile (nếu bạn đã đổi tên file) hoặc giữ nguyên Profile
 import EcoVault from "./pages/EcoVault";
 import About from "./pages/About";
 import ShipperDashboard from "./pages/ShipperDashboard";
@@ -65,6 +66,7 @@ const App = () => {
                         <Routes>
                           {/* --- PUBLIC ROUTES (Ai cũng xem được) --- */}
                           <Route path="/" element={<Index />} />
+                          <Route path="/products" element={<Products />} /> {/* <--- QUAN TRỌNG: Route cho trang Market */}
                           <Route path="/auth" element={<Auth />} />
                           <Route path="/about" element={<About />} />
                           <Route path="/category/:categoryId" element={<CategoryProducts />} />
@@ -77,6 +79,7 @@ const App = () => {
 
                           {/* --- PROTECTED ROUTES (Cần đăng nhập ví/tài khoản) --- */}
                           <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+                          {/* Lưu ý: Kiểm tra tên file EcoProfile hoặc Profile trong project của bạn */}
                           <Route path="/eco-profile" element={<ProtectedRoute><EcoProfile /></ProtectedRoute>} />
                           <Route path="/eco-vault" element={<ProtectedRoute><EcoVault /></ProtectedRoute>} />
 
@@ -105,5 +108,4 @@ const App = () => {
   );
 };
 
-// --- DÒNG QUAN TRỌNG ĐỂ SỬA LỖI MÀN HÌNH TRẮNG ---
 export default App;

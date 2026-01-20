@@ -1,172 +1,179 @@
-import { ShoppingCart, User, Search, Store, Truck, ShieldCheck, LogOut, Copy, ChevronDown, Home, LayoutDashboard, Info, Building2 } from "lucide-react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { 
+  ShoppingCart, Menu, X, Leaf, 
+  Store, BarChart3, ShieldCheck, User, 
+  Truck, Building2, ChevronDown, Landmark // <--- Thêm Landmark icon
+} from "lucide-react";
+import { ConnectButton } from '@suiet/wallet-kit'; 
 import { useCart } from "@/contexts/CartContext";
-import { useAuth, UserRole } from "@/contexts/AuthContext";
-import { useWalletContext } from "@/contexts/WalletContext";
-import { useWallet, ConnectButton } from '@suiet/wallet-kit';
-import { useToast } from "@/hooks/use-toast";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
 const Header = () => {
-  const { cartCount } = useCart();
-  const { user, role, switchRole } = useAuth();
-  const { ecoBalance } = useWalletContext();
+  const location = useLocation();
   const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { items } = useCart();
   
-  const wallet = useWallet();
-  const { toast } = useToast();
+  const [currentRole, setCurrentRole] = useState<"Consumer" | "Shipper" | "Business">("Consumer");
 
-  // TRANSLATED ROLE CONFIG
-  const roleConfig: Record<UserRole, { color: string; icon: any; label: string }> = {
-    consumer: { color: "bg-emerald-100 text-emerald-800", icon: User, label: "Consumer" },
-    shipper: { color: "bg-blue-100 text-blue-800", icon: Truck, label: "Shipper" },
-    business: { color: "bg-purple-100 text-purple-800", icon: Store, label: "Business" },
-    verifier: { color: "bg-orange-100 text-orange-800", icon: ShieldCheck, label: "Verifier" },
-  };
+  // Danh sách Menu - Đã thêm "Eco Vault"
+  const navItems = [
+    { label: "Home", path: "/" },
+    { label: "Market", path: "/products", icon: <Store className="w-4 h-4" /> },
+    { label: "Green Pool", path: "/green-pool", icon: <BarChart3 className="w-4 h-4" /> },
+    { label: "Eco Vault", path: "/eco-vault", icon: <Landmark className="w-4 h-4" /> }, // <--- MỤC MỚI
+    { label: "Strategy", path: "/strategy", icon: <ShieldCheck className="w-4 h-4" /> },
+  ];
 
-  const currentRoleConfig = roleConfig[role] || roleConfig['consumer'];
+  const isActive = (path: string) => location.pathname === path;
 
-  const handleCopyAddress = () => {
-    if (wallet.account?.address) {
-      navigator.clipboard.writeText(wallet.account.address);
-      toast({ title: "Copied!", description: "Wallet address copied to clipboard." });
-    }
-  };
-
-  const handleDisconnect = () => {
-    wallet.disconnect();
-    toast({ title: "Disconnected", description: "Your wallet has been disconnected." });
+  const handleRoleChange = (role: "Consumer" | "Shipper" | "Business") => {
+    setCurrentRole(role);
+    if (role === "Shipper") navigate("/shipper");
+    else if (role === "Business") navigate("/business");
+    else navigate("/"); 
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+    <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-100 z-50">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         
-        {/* --- LEFT SECTION: LOGO & MENU --- */}
-        <div className="flex items-center gap-6">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
-            <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-              <LeafIcon className="h-5 w-5 text-white" />
-            </div>
-            <span className="text-xl font-bold text-primary hidden md:inline-block">EcoShop</span>
+        {/* LEFT: LOGO */}
+        <Link to="/" className="flex items-center gap-2 group mr-4">
+          <div className="bg-emerald-600 text-white p-1.5 rounded-lg group-hover:bg-emerald-700 transition-colors">
+            <Leaf className="w-6 h-6" />
           </div>
+          <span className="text-xl font-bold text-gray-900 tracking-tight hidden sm:block">
+            EcoShop
+          </span>
+        </Link>
 
-          {role === 'consumer' && (
-            <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-gray-600">
-              <Link to="/" className="hover:text-primary flex items-center gap-1"><Home className="w-4 h-4" /> Home</Link>
-              
-              {/* NEW LINKS FOR STRATEGY & GREEN POOL */}
-              <Link to="/green-pool" className="hover:text-primary flex items-center gap-1"><Building2 className="w-4 h-4" /> Green Pool</Link>
-              
-              <Link to="/eco-profile" className="hover:text-primary flex items-center gap-1"><User className="w-4 h-4" /> Profile</Link>
-              <Link to="/eco-vault" className="hover:text-primary flex items-center gap-1"><LayoutDashboard className="w-4 h-4" /> Vault</Link>
-              
-              <Link to="/strategy" className="hover:text-primary flex items-center gap-1"><Info className="w-4 h-4" /> Why On-Chain?</Link>
-            </nav>
-          )}
-        </div>
+        {/* CENTER: DESKTOP NAVIGATION */}
+        <nav className="hidden lg:flex items-center gap-1">
+          {navItems.map((item) => (
+            <Link key={item.path} to={item.path}>
+              <Button 
+                variant="ghost" 
+                className={`text-sm font-medium transition-all ${
+                  isActive(item.path) 
+                    ? "text-emerald-700 bg-emerald-50 hover:bg-emerald-100" 
+                    : "text-gray-600 hover:text-emerald-600 hover:bg-transparent"
+                }`}
+              >
+                {item.icon && <span className="mr-2 opacity-70">{item.icon}</span>}
+                {item.label}
+              </Button>
+            </Link>
+          ))}
+        </nav>
 
-        {/* --- MIDDLE SECTION: SEARCH BAR --- */}
-        {role === 'consumer' && (
-          <div className="hidden md:flex flex-1 max-w-sm mx-4 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input className="pl-9 bg-secondary/50 border-none h-9" placeholder="Search for green products..." />
-          </div>
-        )}
-
-        {/* --- RIGHT SECTION: ACTIONS --- */}
-        <div className="flex items-center gap-3">
+        {/* RIGHT: ACTIONS & ROLE SWITCHER */}
+        <div className="flex items-center gap-2 sm:gap-3 ml-auto">
           
           {/* ROLE SWITCHER */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className={`border-2 ${currentRoleConfig.color} border-transparent hover:border-current transition-all h-9`}>
-                <currentRoleConfig.icon className="w-4 h-4 mr-2" />
-                <span className="font-bold hidden sm:inline-block">{currentRoleConfig.label}</span>
+              <Button variant="outline" className="hidden md:flex items-center gap-2 bg-emerald-50 border-emerald-100 text-emerald-800 hover:bg-emerald-100 h-9">
+                {currentRole === "Consumer" && <User className="w-4 h-4" />}
+                {currentRole === "Shipper" && <Truck className="w-4 h-4" />}
+                {currentRole === "Business" && <Building2 className="w-4 h-4" />}
+                <span className="font-semibold">{currentRole}</span>
+                <ChevronDown className="w-3 h-3 opacity-50" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>Demo Mode (Switch Role)</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => switchRole('consumer')} className="cursor-pointer">
-                <User className="w-4 h-4 mr-2" /> Consumer
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuItem onClick={() => handleRoleChange("Consumer")} className="cursor-pointer gap-2">
+                <User className="w-4 h-4" /> Consumer
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => switchRole('shipper')} className="cursor-pointer">
-                <Truck className="w-4 h-4 mr-2" /> Shipper
+              <DropdownMenuItem onClick={() => handleRoleChange("Shipper")} className="cursor-pointer gap-2">
+                <Truck className="w-4 h-4" /> Shipper
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => switchRole('business')} className="cursor-pointer">
-                <Store className="w-4 h-4 mr-2" /> Business
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => switchRole('verifier')} className="cursor-pointer">
-                <ShieldCheck className="w-4 h-4 mr-2" /> Verifier
+              <DropdownMenuItem onClick={() => handleRoleChange("Business")} className="cursor-pointer gap-2">
+                <Building2 className="w-4 h-4" /> Business
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* WALLET LOGIC */}
-          {wallet.connected ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="hidden md:flex items-center bg-secondary/50 px-3 py-1.5 rounded-full border border-border h-9 hover:bg-secondary/80">
-                  <div className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></div>
-                  <span className="text-xs font-mono font-medium text-foreground mr-2">
-                    {wallet.account?.address ? `${wallet.account.address.substring(0, 4)}...${wallet.account.address.substring(wallet.account.address.length - 4)}` : 'Connected'}
-                  </span>
-                  <div className="h-4 w-px bg-border mx-1"></div>
-                  <span className="text-xs font-bold text-primary ml-1 mr-1">
-                    {ecoBalance ? ecoBalance.toFixed(2) : '0.00'} ECO
-                  </span>
-                  <ChevronDown className="w-3 h-3 text-muted-foreground ml-1" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>Web3 Wallet</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleCopyAddress} className="cursor-pointer">
-                  <Copy className="w-4 h-4 mr-2" /> Copy Address
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleDisconnect} className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50">
-                  <LogOut className="w-4 h-4 mr-2" /> Disconnect
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <div className="scale-90 origin-right">
-                <ConnectButton label="Connect Wallet" />
-            </div>
-          )}
-
-          {role === 'consumer' && (
-            <Button variant="ghost" size="icon" className="relative h-9 w-9" onClick={() => navigate('/cart')}>
-              <ShoppingCart className="h-5 w-5" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-[10px] font-medium text-white flex items-center justify-center">
-                  {cartCount}
-                </span>
+          {/* CART BUTTON */}
+          <Link to="/cart">
+            <Button variant="ghost" size="icon" className="relative text-gray-600 hover:text-emerald-600">
+              <ShoppingCart className="w-5 h-5" />
+              {items.length > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-red-500 text-white text-[10px]">
+                  {items.length}
+                </Badge>
               )}
             </Button>
-          )}
+          </Link>
 
-          <Button variant="ghost" size="icon" className="md:hidden h-9 w-9" onClick={() => navigate('/eco-profile')}>
-            <User className="h-5 w-5" />
+          {/* PROFILE BUTTON */}
+          <Link to="/eco-profile" className="hidden sm:block">
+             <Button variant="ghost" className="text-gray-700 hover:text-emerald-600 hover:bg-gray-50 flex items-center gap-2 px-3">
+                <User className="w-5 h-5" />
+                <span className="font-medium">Profile</span>
+             </Button>
+          </Link>
+
+          {/* CONNECT WALLET */}
+          <div className="hidden sm:block">
+             <ConnectButton 
+                label="Connect Wallet"
+                className="!bg-emerald-600 !text-white !font-bold !rounded-full !px-4 !h-10 hover:!bg-emerald-700 transition-all text-sm"
+             />
+          </div>
+
+          {/* MOBILE MENU TOGGLE */}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="lg:hidden"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </Button>
         </div>
       </div>
+
+      {/* MOBILE MENU CONTENT */}
+      {isMobileMenuOpen && (
+        <div className="lg:hidden border-t border-gray-100 bg-white absolute w-full left-0 shadow-lg p-4 flex flex-col gap-2 animate-in slide-in-from-top-2">
+          {navItems.map((item) => (
+            <Link key={item.path} to={item.path} onClick={() => setIsMobileMenuOpen(false)}>
+              <Button 
+                variant="ghost" 
+                className={`w-full justify-start ${isActive(item.path) ? "bg-emerald-50 text-emerald-700" : ""}`}
+              >
+                {item.icon && <span className="mr-2">{item.icon}</span>}
+                {item.label}
+              </Button>
+            </Link>
+          ))}
+          
+          <hr className="my-2 border-gray-100" />
+          
+          {/* Mobile Role Switcher */}
+          <p className="text-xs font-semibold text-gray-400 uppercase px-4 mb-1">Switch Role</p>
+          <div className="grid grid-cols-3 gap-2 px-2">
+             <Button variant={currentRole === "Consumer" ? "default" : "outline"} size="sm" onClick={() => handleRoleChange("Consumer")} className={currentRole === "Consumer" ? "bg-emerald-600" : ""}>Consumer</Button>
+             <Button variant={currentRole === "Shipper" ? "default" : "outline"} size="sm" onClick={() => handleRoleChange("Shipper")} className={currentRole === "Shipper" ? "bg-blue-600" : ""}>Shipper</Button>
+             <Button variant={currentRole === "Business" ? "default" : "outline"} size="sm" onClick={() => handleRoleChange("Business")} className={currentRole === "Business" ? "bg-purple-600" : ""}>Business</Button>
+          </div>
+
+          <div className="pt-2 mt-2 border-t border-gray-100">
+             <ConnectButton className="!w-full !justify-center" />
+          </div>
+        </div>
+      )}
     </header>
   );
 };
-
-const LeafIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.77 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
-);
 
 export default Header;
